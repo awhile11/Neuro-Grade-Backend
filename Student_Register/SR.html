@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Registration - NeuroGrade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="SR.css">
+
+   
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Student Registration</h1>
+      <p>Create your NeuroGrade account to access your learning materials</p>
+    </div>
+    
+    <div class="form-container">
+      <form id="registrationForm">
+        <!-- Personal Information Section -->
+        <div class="form-section">
+          <h2>Personal Information</h2>
+          <div class="input-group">
+            <div class="input-box">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" placeholder="Enter your first name" required>
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="input-box">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" placeholder="Enter your last name" required>
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          
+          <div class="input-box">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email address" required>
+            <i class="fas fa-envelope"></i>
+          </div>
+        </div>
+        
+        <!-- Account Security Section -->
+        <div class="form-section">
+          <h2>Account Security</h2>
+          <div class="input-box">
+            <label for="password">Create Password</label>
+            <input type="password" id="password" placeholder="Create a strong password" required>
+            <i class="fas fa-lock"></i>
+          </div>
+          
+          <div class="input-box">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+            <i class="fas fa-lock"></i>
+          </div>
+        </div>
+        
+        <!-- Teacher and Subjects Section -->
+        <div class="form-section">
+          <h2>Teacher & Subjects Information</h2>
+          <div class="input-box">
+            <label for="teacher">Teacher's Name</label>
+            <input type="text" id="teacher" placeholder="Enter your teacher's full name" required>
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+          
+          <h3 style="margin: 20px 0 15px; color: #555;">Subjects</h3>
+          
+          <div class="subject-entry">
+            <div class="input-box">
+              <label for="subject">Subject Name</label>
+              <input type="text" id="subject" placeholder="Enter subject name">
+            </div>
+            <button type="button" class="add-btn" id="addSubject">
+              <i class="fas fa-plus"></i> Add Subject
+            </button>
+          </div>
+          
+          <div class="subject-list" id="subjectList">
+            <p style="text-align: center; color: #999;" id="noSubjects">No subjects added yet</p>
+            <!-- Subjects will be added here dynamically -->
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn">Create Account</button>
+        
+        <div class="login-link">
+          Already have an account? <a href="#">Log in here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <div class="modal-icon">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <h2>Registration Successful!</h2>
+      <p class="modal-message">Your student number has been sent to your email address.</p>
+      <div class="student-number" id="generatedStudentNumber"></div>
+      <p class="modal-message">Please check your inbox and use this student number to log in to your account.</p>
+      <button class="modal-btn" id="modalOkBtn">OK</button>
+    </div>
+  </div>
+
+  <script type = "module" src="js/SRegister.js"></script>
+  
+</body>
+</html>
