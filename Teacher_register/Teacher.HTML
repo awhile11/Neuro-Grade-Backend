@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Registration - NeuroGrade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="Teacher.css">
+
+  </head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Teacher Registration</h1>
+      <p>Create your NeuroGrade teacher account to manage your classes</p>
+    </div>
+    
+    <div class="form-container">
+      <form id="registrationForm">
+        <!-- Personal Information Section -->
+        <div class="form-section">
+          <h2>Personal Information</h2>
+          <div class="input-group">
+            <div class="input-box">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" placeholder="Enter your first name" required>
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="input-box">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" placeholder="Enter your last name" required>
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          
+          <div class="input-box">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email address" required>
+            <i class="fas fa-envelope"></i>
+          </div>
+        </div>
+        
+        <!-- Account Security Section -->
+        <div class="form-section">
+          <h2>Account Security</h2>
+          <div class="input-box">
+            <label for="password">Create Password</label>
+            <input type="password" id="password" placeholder="Create a strong password" required>
+            <i class="fas fa-lock"></i>
+          </div>
+          
+          <div class="input-box">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+            <i class="fas fa-lock"></i>
+          </div>
+        </div>
+        
+        <!-- Subjects Section -->
+        <div class="form-section">
+          <h2>Subjects You Teach</h2>
+          
+          <div class="subject-entry">
+            <div class="input-box">
+              <label for="subject">Subject Name</label>
+              <input type="text" id="subject" placeholder="Enter subject name">
+            </div>
+            <button type="button" class="add-btn" id="addSubject">
+              <i class="fas fa-plus"></i> Add Subject
+            </button>
+          </div>
+          
+          <div class="subject-list" id="subjectList">
+            <p style="text-align: center; color: #999;" id="noSubjects">No subjects added yet</p>
+            <!-- Subjects will be added here dynamically -->
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn" id = "submitSignUp">Create Teacher Account</button>
+        
+        <div class="login-link">
+          Already have an account? <a href="#">Log in here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <div class="modal-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Registration Successful!</h2>
+      <p class="modal-message">Your teacher account has been created successfully.</p>
+      <div class="teacher-id" id="generatedTeacherId">TEA-<span id="teacherIdNumber"></span></div>
+      <p class="modal-message">You can now log in to your account and start managing your classes.</p>
+      <button class="modal-btn" id="modalOkBtn">Continue to Login</button>
+    </div>
+  </div>
+
+  <script type ="module">
+
+    // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  import {getFirestore, setDoc, doc} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js"; 
+
+  
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_jkCjYBpGzkwxtLmC6DKF7g0xxAAUPck",
+    authDomain: "neuro-grade-aefa0.firebaseapp.com",
+    projectId: "neuro-grade-aefa0",
+    storageBucket: "neuro-grade-aefa0.firebasestorage.app",
+    messagingSenderId: "301322876081",
+    appId: "1:301322876081:web:c3fd4b8302da63462e5e90"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth();
+  const db = getFirestore();
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const subjectInput = document.getElementById('subject');
+      const addSubjectBtn = document.getElementById('addSubject');
+      const subjectList = document.getElementById('subjectList');
+      const noSubjects = document.getElementById('noSubjects');
+      const form = document.getElementById('registrationForm');
+      const successModal = document.getElementById('successModal');
+      const teacherIdNumber = document.getElementById('teacherIdNumber');
+      const modalOkBtn = document.getElementById('modalOkBtn');
+      const submitSignUp = document.getElementById("submitSignUp");
+      
+      let subjects = [];
+      
+      // Function to generate a random teacher ID
+      function generateTeacherId() {
+        return Math.floor(10000 + Math.random() * 90000).toString();
+      }
+      
+      // Function to add a subject
+      function addSubject() {
+        const subjectName = subjectInput.value.trim();
+        
+        if (subjectName === '') {
+          alert('Please enter a subject name');
+          return;
+        }
+        
+        if (subjects.includes(subjectName)) {
+          alert('This subject has already been added');
+          return;
+        }
+        
+        subjects.push(subjectName);
+        updateSubjectList();
+        
+        // Clear the input
+        subjectInput.value = '';
+        subjectInput.focus();
+      }
+      
+      // Function to update the subject list UI
+      function updateSubjectList() {
+        if (subjects.length === 0) {
+          noSubjects.style.display = 'block';
+          return;
+        }
+        
+        noSubjects.style.display = 'none';
+        
+        // Clear the list first
+        subjectList.innerHTML = '';
+        
+        // Add each subject to the list
+        subjects.forEach((subject, index) => {
+          const subjectItem = document.createElement('div');
+          subjectItem.className = 'subject-item';
+          subjectItem.innerHTML = `
+            <span>${subject}</span>
+            <button type="button" class="remove-btn" data-index="${index}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          subjectList.appendChild(subjectItem);
+        });
+        
+        // Add event listeners to remove buttons
+        const removeButtons = document.querySelectorAll('.remove-btn');
+        removeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            subjects.splice(index, 1);
+            updateSubjectList();
+          });
+        });
+      }
+      
+      // Function to validate the form
+      function validateForm() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const email = document.getElementById('email').value;
+        
+        if (password !== confirmPassword) {
+          alert('Passwords do not match');
+          return false;
+        }
+        
+        if (subjects.length === 0) {
+          alert('Please add at least one subject you teach');
+          return false;
+        }
+        
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert('Please enter a valid email address');
+          return false;
+        }
+        
+        return true;
+      }
+      
+      // Function to show success modal
+      function showSuccessModal(teacherId) {
+        teacherIdNumber.textContent = teacherId;
+        successModal.style.display = 'flex';
+      }
+      
+      // Event listeners
+      addSubjectBtn.addEventListener('click', addSubject);
+      
+      subjectInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addSubject();
+        }
+      });
+      
+      submitSignUp.addEventListener("click", async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+
+         const email = document.getElementById("email").value;
+         const password = document.getElementById("password").value;
+         const firstName = document.getElementById("firstName").value;
+         const lastName = document.getElementById("lastName").value;
+         const teacherId = generateTeacherId();
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Save teacher data in Firestore
+        await setDoc(doc(db, "teachers", user.uid), {
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          subjects: subjects,
+          teacherId: teacherId,
+          createdAt: new Date()
+
+          
+        });
+
+        showSuccessModal(teacherId);
+
+
+      } catch (error) {
+        console.error(error);
+        alert(error.message);
+      }
+    });
+
+      modalOkBtn.addEventListener('click', function() {
+        successModal.style.display = 'none';
+        // In a real application, you would redirect to login page
+        // window.location.href = 'login.html';
+      });
+    });
+  </script>
+
+  </body>
+</html>
