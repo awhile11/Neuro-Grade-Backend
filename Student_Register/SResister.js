@@ -52,12 +52,14 @@ function updateSubjectList() {
   subjects.forEach((subj, index) => {
     const subjectItem = document.createElement("div");
     subjectItem.className = "subject-item";
-    subjectItem.innerHTML = `
-      <span>${subj}</span>
+    subjectItem.innerHTML = 
+    
+    `<span>${subj}</span>
       <button type="button" class="remove-btn" data-index="${index}">
         <i class="fas fa-times"></i>
       </button>
-    `;
+    `
+      ;
     subjectList.appendChild(subjectItem);
   });
 
