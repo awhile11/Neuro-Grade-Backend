@@ -1,7 +1,8 @@
-  // Import the Firebase SDKs you need
-  // import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-  // import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+ //Import the Firebase SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { auth, db } from "../services/firebase-init.js";
+
   // Your Firebase project config (from Firebase Console → Project Settings)
   const firebaseConfig = {
     apiKey: "AIzaSyDZ5cw7ZtR2R8dxeGJTlf8A4fxRBKdSGvk",
@@ -14,9 +15,9 @@ import { auth, db } from "../services/firebase-init.js";
     measurementId: "G-92LDP7B16L"
   };
 
-  // Initialize Firebase
-  //const app = initializeApp(firebaseConfig);
-  //const auth = getAuth(app);
+  //Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
   // Login with Email/Password
   document.getElementById("studentForm").addEventListener("submit", async (e) => {
