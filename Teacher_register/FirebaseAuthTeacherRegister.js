@@ -1,6 +1,5 @@
 // FirebaseAuthTeacherRegister.js
 
-// Imports
 // import { auth, db } from "./teacher-services/firebase-init.js";
 // import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 // import { setDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
