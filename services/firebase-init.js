@@ -1,10 +1,7 @@
-// firebase-init.js
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, setDoc, addDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-//imported emulators
-import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
-import { connectFirestoreEmulator } from "firebase/firestore"; // you may already have this
+import { getFirestore, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFunctions, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";  // Correct import for Functions
 
 // Your Firebase config
 const firebaseConfig = {
