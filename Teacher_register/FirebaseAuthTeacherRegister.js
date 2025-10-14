@@ -9,6 +9,7 @@ import { validateForm, subjects,generateTeacherId, showSuccessModal, showErrorMo
 import { auth, db } from "../services/firebase-init.js";
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { setDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   initTeacherSubjects();
   const form = document.getElementById("registrationForm");
