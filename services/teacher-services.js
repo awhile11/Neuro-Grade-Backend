@@ -7,6 +7,8 @@ export let subjects = [];
 export function generateTeacherId() {
   return Math.floor(10000 + Math.random() * 90000).toString();
 }
+  console.log(generateTeacherId)
+  console.log(Math)
 
 // Show success modal
 export function showSuccessModal(teacherId) {
