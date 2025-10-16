@@ -1,6 +1,5 @@
 // FirebaseAuthTeacherRegister.js
 
-// Imports
 // import { auth, db } from "./teacher-services/firebase-init.js";
 // import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 // import { setDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
@@ -10,6 +9,10 @@ import { auth, db } from "../services/firebase-init.js";
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { setDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
+<<<<<<< HEAD
+=======
+//  Validate form fields
+>>>>>>> 52fb1474f1a9a875b8303fa978b593f28c41fa8f
 document.addEventListener("DOMContentLoaded", () => {
   initTeacherSubjects();
   const form = document.getElementById("registrationForm");
@@ -19,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorModal = document.getElementById("errorModal");
   const errorOkBtn = document.getElementById("errorOkBtn");
 
+//  Handle form submission
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -29,8 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    
-    if (!subjects || !subjects.length) {
+   // Ensure at least one subject is added 
+    if (subjects.length === 0) {
       showErrorModal("Please add at least one subject before registering.");
       return;
     }
@@ -50,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
         firstName,
         lastName,
         email,
-        subjects, // ✅ Store teacher’s subjects
+        subjects, //  Store teacher’s subjects
         teacherId,
         role: "teacher",
         createdAt: new Date(), 
@@ -58,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("User created:", userCredential.user.uid);
 
       // 4. Show success modal 
-      //showErrorModal(error.message);
+      showSuccessModal(firstName+" " +lastName+ "created successfully");
       teacherIdNumber.textContent = teacherId;
       successModal.style.display = "flex";
     } 
@@ -70,13 +74,19 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           showErrorModal("This email is already registered. Please log in instead.");
         }
+        else{
+          showErrorModal(error.message);
+        }
     }
   });
   
   errorOkBtn.addEventListener("click", () => {
     errorModal.style.display = "none";
   }); 
+
   modalOkBtn.addEventListener("click", () => {
+    successModal.style.display = "none";
     window.location.href = "login.html";
   });
+
 });

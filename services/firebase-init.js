@@ -1,7 +1,7 @@
-// firebase-init.js
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, setDoc, addDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFunctions, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";  // Correct import for Functions
 
 // Your Firebase config
 const firebaseConfig = {
@@ -15,9 +15,16 @@ const firebaseConfig = {
 
 // ✅ Initialize Firebase only once
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const functions = getFunctions(app);
+
+// Use emulators if on localhost
+if (window.location.hostname === "localhost") {
+  connectFirestoreEmulator(db, "localhost", 8080);    // Firestore
+  connectFunctionsEmulator(functions, "localhost", 5001); // Cloud Functions
+}
 
 // Export shared instances
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { app, auth, db };
+export { app, auth, db, functions };
