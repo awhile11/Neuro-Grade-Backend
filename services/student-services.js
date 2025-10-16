@@ -142,7 +142,8 @@ export async function fetchTeacherNames() {
   return teacherNames;
 }
 // Fetch subjects for a given teacher
-export async function fetchTeacherSubjects(teacherName) {
+// Fetch subjects for one or multiple teachers
+export async function fetchTeacherSubjects(teacherNames) {
   const subjects = [];
   try {
     const teachersRef = collection(db, "teachers");
@@ -151,15 +152,25 @@ export async function fetchTeacherSubjects(teacherName) {
     querySnapshot.forEach((doc) => {
       const teacherData = doc.data();
       const fullName = teacherData.firstName + " " + teacherData.lastName;
-      if (fullName === teacherName && Array.isArray(teacherData.subjects)) {
-        subjects.push(...teacherData.subjects);
+
+      // Check if this teacher is in the array
+      if (Array.isArray(teacherNames) && teacherNames.includes(fullName)) {
+        if (Array.isArray(teacherData.subjects)) {
+          subjects.push(...teacherData.subjects);
+        }
+      } else if (typeof teacherNames === "string" && fullName === teacherNames) {
+        if (Array.isArray(teacherData.subjects)) {
+          subjects.push(...teacherData.subjects);
+        }
       }
     });
   } catch (error) {
     console.error("Error fetching teacher subjects: ", error);
   }
-  return subjects;
+  // Remove duplicates
+  return [...new Set(subjects)];
 }
+
 
 
 // Automatically initialize subjects UI on DOM load
