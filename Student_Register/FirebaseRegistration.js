@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
         firstName,
         lastName,
         email,
-        subjects, // ✅ Store teacher’s subjects
-        //teacherId,
+        subjects, // Store teacher’s subjects
+        studentId,
         role: "student",
         createdAt: new Date(), 
       });
