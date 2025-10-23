@@ -13,11 +13,12 @@ const firebaseConfig = {
   appId: "1:301322876081:web:c3fd4b8302da63462e5e90"
 };
 
-// ✅ Initialize Firebase only once
+// Initialize Firebase only once
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const db = getFirestore(app);
 const functions = getFunctions(app);
 
-// Use emulators if on localhost
+//emulators for localhost
 if (window.location.hostname === "localhost") {
   connectFirestoreEmulator(db, "localhost", 8080);    // Firestore
   connectFunctionsEmulator(functions, "localhost", 5001); // Cloud Functions
@@ -25,6 +26,6 @@ if (window.location.hostname === "localhost") {
 
 // Export shared instances
 const auth = getAuth(app);
-const db = getFirestore(app);
+
 
 export { app, auth, db, functions };

@@ -1,14 +1,15 @@
 // FirebaseAuthStudentRegister.js
-import { 
-  validateForm, 
+import 
+{ 
+  validateForm,
   subjects, 
   generateStudentId, 
   showSuccessModal, 
   showErrorModal, 
   initStudentSubjects, 
   fetchTeacherNames, 
-  fetchTeacherSubjects 
-} from "../services/student-services.js";
+  fetchTeacherSubjects
+} from "../services/student-sevices/student-services.js";
 
 import { auth, db } from "../services/firebase-init.js";
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
@@ -29,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Fetch teacher names and populate dropdown
   const teacherNames = await fetchTeacherNames();
   if (teacherNames.length > 0) {
-    teacherNames.forEach((name) => {
+      teacherNames.forEach((name) => {
       const option = document.createElement("option");
       option.value = name;
       option.textContent = name;

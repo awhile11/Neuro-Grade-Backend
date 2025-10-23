@@ -9,10 +9,8 @@ import { auth, db } from "../services/firebase-init.js";
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { setDoc, doc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-<<<<<<< HEAD
-=======
 //  Validate form fields
->>>>>>> 52fb1474f1a9a875b8303fa978b593f28c41fa8f
+
 document.addEventListener("DOMContentLoaded", () => {
   initTeacherSubjects();
   const form = document.getElementById("registrationForm");
@@ -37,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (subjects.length === 0) {
       showErrorModal("Please add at least one subject before registering.");
       return;
-    }
+    }// might be absolete because subjects are added via 
 
     try {
       // 1. Create teacher in Auth

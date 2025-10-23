@@ -1,6 +1,6 @@
-import { getCurrentTeacher,saveSubject } from "./auth-service.js";
+import { getCurrentTeacher,saveSubject } from "../auth-service.js";
 import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-import {app, auth, db} from "./firebase-init.js";
+import {app, auth, db} from "../firebase-init.js";
 import { showErrorModal } from "./teacher-services.js";
 
 // Mobile menu toggle functionality

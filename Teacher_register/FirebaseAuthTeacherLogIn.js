@@ -1,7 +1,7 @@
 // FirebaseAuthTeacherLogIn.js
 import { auth, db } from "../services/firebase-init.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { showErrorModal } from "../services/teacher-services.js";
+import { showErrorModal } from "../services/teacher-services/teacher-services.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 export function getCurrentUser() {
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-
+      localStorage.setItem("teacherUID", uid);
       // Check role in Firestore
       const teacherDoc = await getDoc(doc(db, "teachers", uid));
       if (teacherDoc.exists()) {
