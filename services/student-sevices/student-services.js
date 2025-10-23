@@ -1,6 +1,6 @@
 // student-services.js
 import { getDocs, collection } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-import { db } from "./firebase-init.js";
+import { db } from "../firebase-init.js";
 // Shared subjects array
 export let subjects = [];
 
