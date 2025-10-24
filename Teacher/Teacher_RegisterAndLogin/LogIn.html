@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuroGrade Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="LogIn.css">
+  <script type="module" src="FirebaseLogIn.js"></script>
+
+</head>
+<body>
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <div class="container" id="container">
+    <!-- Student Login Form -->
+    <div class="form-box student">
+      <form action="#" class="studentForm" id="studentForm">
+        <h1>Student Login</h1>
+        <div class="input-box">
+          <input type="text" placeholder="Student Number" required id="studentNumber">
+          <i class='bx bxs-user'></i>
+          <div class="error-message">Please enter a valid student number</div>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Password" required id="studentPassword">
+          <i class='bx bxs-lock-alt'></i>
+          <div class="error-message">Password is required</div>
+        </div>
+        <button type="submit" class="btn">Login</button>
+		<div class="register-links">
+          <a href="#" class="register-link">
+            <i class="fas fa-lock"></i> Forgot Password?
+          </a>
+          <a href="#" class="register-link" id="studentRegisterLink">
+            <i class="fas fa-user-plus"></i> Student Registration
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Teacher Login Form -->
+    <div class="form-box teacher">
+      <form action="#" class="teacherForm" id="teacherForm">
+        <h1>Teacher Login</h1>
+        <div class="input-box">
+          <input type="email" placeholder="Email Address" required id="teacherEmail">
+          <i class='bx bxs-envelope'></i>
+          <div class="error-message">Please enter a valid email address</div>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Password" required id="teacherPassword">
+          <i class="fas fa-eye password-toggle" id="teacherPasswordToggle"></i>
+          <div class="error-message">Password is required</div>
+        </div>
+   
+        <button type="submit" class="btn">Login</button>
+		  <div class="register-links">
+          <a href="#" class="register-link" id="forgotPasswordLink">
+            <i class="fas fa-lock"></i> Forgot Password?
+          </a>
+          <a href="Register.HTML" class="register-link" id="teacherRegisterLink">
+            <i class="fas fa-user-plus"></i> Teacher Registration
+          </a>
+      </div>
+      </form>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+          <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Reset Password</h2>
+          <input type="email" id="resetEmail" placeholder="Enter your email" />
+          <button id="resetBtn">Send Reset Link</button>
+          <p id="resetMessage" style="color: green; display: none;">Check your email for reset instructions.</p>
+          <p id="resetError" style="color: red; display: none;"></p>
+          </div>
+    </div>
+
+    <!-- Toggle Animation Background -->
+    <div class="toggle-box"></div>
+    
+    <!-- Toggle Panels -->
+    <div class="toggle-panel toggle-left">
+      <h2>Welcome to NeuroGrade</h2>
+      <p>Are you a teacher?</p>
+      <button class="btn teacher-btn">Teacher Login</button>
+      
+      <!-- Floating circles for student panel -->
+      <div class="floating-circle circle-1"></div>
+      <div class="floating-circle circle-2"></div>
+      <div class="floating-circle circle-3"></div>
+    </div>
+    <div class="toggle-panel toggle-right">
+      <h2>Welcome to NeuroGrade</h2>
+      <p>Are you a student?</p>
+      <button class="btn student-btn">Student Login</button>
+      
+      <!-- Floating circles for teacher panel -->
+      <div class="floating-circle circle-1"></div>
+      <div class="floating-circle circle-2"></div>
+      <div class="floating-circle circle-3"></div>
+    </div>
+  </div>
+
+</body>
+</html>
+
