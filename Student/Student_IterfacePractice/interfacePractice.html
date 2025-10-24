@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neuro Grade Practice Tasks</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="interfacePractice.css">
+</head>
+<body>
+
+  <!-- Top left logo -->
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <!-- Mobile menu toggle -->
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <button><i class="fas fa-home"></i> Home</button>
+      <button><i class="fas fa-file-alt"></i> Tests</button>
+      <button><i class="fas fa-tasks"></i> Assignments</button>
+      <button class="active"><i class="fas fa-book-open"></i> Practice</button>
+      <button><i class="fas fa-comment-dots"></i> Feedback</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <div class="top-user">
+        <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzMzMyIvPjxwYXRoIGQ=" alt="User Profile" />
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>Practice Tasks</span>
+      <span class="view-all">View All</span>
+    </div>
+    
+    <!-- Individual blue cards for each practice task -->
+    <div class="cards-container" id="courses-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <span>Loading courses...</span>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span id="course-title">Select a Course</span>
+      <span class="view-all">See All</span>
+    </div>
+    
+    <div class="task-grid" id="task-container">
+      <div class="no-course-selected">
+        <p>Please select a course to view its practice details</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Global variables to store data
+  let coursesData = [];
+  let tasksData = {};
+
+  // Mobile menu toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    menuToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('active');
+    });
+    
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+      const isClickInsideSidebar = sidebar.contains(event.target);
+      const isClickInsideMenuToggle = menuToggle.contains(event.target);
+      
+      if (!isClickInsideSidebar && !isClickInsideMenuToggle && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+      }
+    });
+    
+    // Load initial data
+    loadCourses();
+  });
+  
+  // ==============================================
+  // DATABASE INTEGRATION FUNCTIONS
+  // ==============================================
+  
+  // Function to load courses from database
+  async function loadCourses() {
+    try {
+      // Show loading state
+      document.getElementById('courses-container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <span>Loading courses...</span>
+        </div>
+      `;
+      
+      // Replace this with your actual API call to get courses
+      coursesData = await fetchCoursesFromDatabase();
+      
+      // Render courses
+      renderCourses(coursesData);
+    } catch (error) {
+      console.error('Error loading courses:', error);
+      document.getElementById('courses-container').innerHTML = `
+        <div class="error-message">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Failed to load courses. Please try again.</p>
+        </div>
+      `;
+    }
+  }
+  
+  // Function to load tasks for a specific course
+  async function loadCourseTasks(courseId) {
+    try {
+      // Show loading state
+      document.getElementById('task-container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <span>Loading tasks...</span>
+        </div>
+      `;
+      
+      // Replace this with your actual API call to get tasks for a course
+      const tasks = await fetchTasksFromDatabase(courseId);
+      
+      // Store tasks data
+      tasksData[courseId] = tasks;
+      
+      // Render tasks
+      displayCourseTasks(courseId, tasks);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      document.getElementById('task-container').innerHTML = `
+        <div class="error-message">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Failed to load tasks. Please try again.</p>
+        </div>
+      `;
+    }
+  }
+  
+  // ==============================================
+  // DATABASE API CALLS - REPLACE THESE WITH YOUR ACTUAL API CALLS
+  // ==============================================
+  
+  // Example function to fetch courses from your database
+  async function fetchCoursesFromDatabase() {
+    // Replace this with your actual API endpoint
+    /*
+    const response = await fetch('/api/courses');
+    if (!response.ok) {
+      throw new Error('Failed to fetch courses');
+    }
+    return await response.json();
+    */
+    
+    // Mock data - replace with your actual data structure
+    return [
+      { id: "MATH511", name: "MATH511", progress: 78 },
+      { id: "PRO712", name: "PRO712", progress: 45 },
+      { id: "AI745", name: "AI745", progress: 32 },
+      { id: "HCI721", name: "HCI721", progress: 67 }
+    ];
+  }
+  
+  // Example function to fetch tasks for a course from your database
+  async function fetchTasksFromDatabase(courseId) {
+    // Replace this with your actual API endpoint
+    /*
+    const response = await fetch(`/api/courses/${courseId}/tasks`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tasks');
+    }
+    return await response.json();
+    */
+    
+    // Mock data - replace with your actual data structure
+    const mockData = {
+      "MATH511": [
+        { title: "JUNE EXAM 2019", date: "Completed on 15 Aug 2023", score: "78%", completed: true },
+        { title: "NOVEMBER EXAM 2019", date: "Not attempted yet", score: "", completed: false },
+        { title: "JUNE EXAM 2020", date: "Completed on 22 Sep 2023", score: "89%", completed: true },
+        { title: "NOVEMBER EXAM 2020", date: "Not attempted yet", score: "", completed: false }
+      ],
+      "PRO712": [
+        { title: "MODULE 1 TEST", date: "Completed on 10 Jul 2023", score: "92%", completed: true },
+        { title: "MODULE 2 TEST", date: "Completed on 25 Jul 2023", score: "85%", completed: true },
+        { title: "FINAL PROJECT", date: "Not attempted yet", score: "", completed: false },
+        { title: "PRACTICE EXAM", date: "Not attempted yet", score: "", completed: false }
+      ],
+      "AI745": [
+        { title: "NEURAL NETWORKS QUIZ", date: "Completed on 5 Aug 2023", score: "76%", completed: true },
+        { title: "MACHINE LEARNING TEST", date: "Not attempted yet", score: "", completed: false },
+        { title: "AI ETHICS ASSIGNMENT", date: "Completed on 18 Aug 2023", score: "88%", completed: true },
+        { title: "FINAL EXAM", date: "Not attempted yet", score: "", completed: false }
+      ],
+      "HCI721": [
+        { title: "USABILITY TEST", date: "Completed on 12 Sep 2023", score: "94%", completed: true },
+        { title: "UI DESIGN PROJECT", date: "Completed on 28 Sep 2023", score: "91%", completed: true },
+        { title: "USER RESEARCH REPORT", date: "Not attempted yet", score: "", completed: false },
+        { title: "FINAL PRESENTATION", date: "Not attempted yet", score: "", completed: false }
+      ]
+    };
+    
+    return mockData[courseId] || [];
+  }
+  
+  // ==============================================
+  // RENDER FUNCTIONS
+  // ==============================================
+  
+  // Function to render courses
+  function renderCourses(courses) {
+    const coursesContainer = document.getElementById('courses-container');
+    
+    if (!courses || courses.length === 0) {
+      coursesContainer.innerHTML = `
+        <div class="no-courses">
+          <i class="fas fa-book-open" style="font-size: 48px; color: #3a86ff; margin-bottom: 16px;"></i>
+          <h3 style="color: #333; margin-bottom: 12px;">No Courses Available</h3>
+          <p style="color: #666;">There are no courses available at this time.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let coursesHTML = '';
+    
+    courses.forEach(course => {
+      coursesHTML += `
+        <div class="blue-card" data-course="${course.id}">
+          <div class="blue-card-content">
+            <h3>${course.name}</h3>
+            <div class="progress">
+              <div class="progress-bar" style="width: ${course.progress}%"></div>
+            </div>
+            <div class="progress-text">${course.progress}% Complete</div>
+          </div>
+        </div>
+      `;
+    });
+    
+    coursesContainer.innerHTML = coursesHTML;
+    
+    // Add click event listeners to course cards
+    const courseCards = document.querySelectorAll('.blue-card');
+    courseCards.forEach(card => {
+      card.addEventListener('click', function() {
+        // Remove active class from all cards
+        courseCards.forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked card
+        this.classList.add('active');
+        
+        // Get the course code from data attribute
+        const courseId = this.getAttribute('data-course');
+        
+        // Update the course title
+        document.getElementById('course-title').textContent = `${courseId} Practice Details`;
+        
+        // Load and display the tasks for this course
+        loadCourseTasks(courseId);
+      });
+    });
+  }
+  
+  // Function to display tasks for a course
+  function displayCourseTasks(courseId, tasks) {
+    const taskContainer = document.getElementById('task-container');
+    
+    if (!tasks || tasks.length === 0) {
+      taskContainer.innerHTML = `
+        <div class="no-tasks" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+          <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #ff6b6b; margin-bottom: 16px;"></i>
+          <h3 style="color: #333; margin-bottom: 12px;">No Practice Tasks Available</h3>
+          <p style="color: #666;">There are no practice tasks available for ${courseId} at this time.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let tasksHTML = '';
+    
+    tasks.forEach(task => {
+      tasksHTML += `
+        <div class="task-card ${task.completed ? 'completed' : ''}">
+          <h4>${task.title}</h4>
+          <div class="date">${task.date}</div>
+          <button class="btn ${task.completed ? 'retry' : 'start'}">${task.completed ? 'Retry Attempt' : 'Start Attempt'}</button>
+          ${task.completed ? `<span class="score">${task.score}</span>` : ''}
+        </div>
+      `;
+    });
+    
+    taskContainer.innerHTML = tasksHTML;
+  }
+  
+  // Function to display initial message
+  function displayNoCourseSelected() {
+    const taskContainer = document.getElementById('task-container');
+    taskContainer.innerHTML = `
+      <div class="no-course-selected" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <i class="fas fa-book-open" style="font-size: 48px; color: #3a86ff; margin-bottom: 16px;"></i>
+        <h3 style="color: #333; margin-bottom: 12px;">Select a Course</h3>
+        <p style="color: #666;">Click on a course card to view its practice details</p>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>

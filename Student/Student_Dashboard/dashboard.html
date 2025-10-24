@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroGrade - Student Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="dashboard.css">
+  
+</head>
+<body>
+  <!-- Student Dashboard Page -->
+  <div class="page-container active" id="studentDashboard">
+    <!-- Top left logo -->
+    <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+    <!-- Mobile menu toggle -->
+    <button class="menu-toggle" id="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="nav">
+        <button class="active" data-page="home"><i class="fas fa-home"></i> Home</button>
+        <button data-page="tests"><i class="fas fa-file-alt"></i> Tests</button>
+        <button data-page="assignments"><i class="fas fa-book"></i> Assignments</button>
+        <button data-page="practice"><i class="fas fa-book-open"></i> Practice</button>
+        <button data-page="feedback"><i class="fas fa-comment-dots"></i> Feedback</button>
+        <button class="logout-btn" id="studentLogoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <!-- Top bar -->
+      <div class="top-bar">
+        <a href="#" class="icon-link" id="mail-icon">
+          <i class="fas fa-envelope"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <a href="#" class="icon-link" id="notification-icon">
+          <i class="fas fa-bell"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <div class="top-user">
+          <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User">
+        </div>
+      </div>
+
+      <!-- Welcome -->
+      <div class="welcome-box">
+        <h1>WELCOME BACK, BAT-MAN!</h1>
+        <p>Here is a quick overview of your academic progress</p>
+      </div>
+
+      <!-- Dashboard content -->
+      <div class="dashboard">
+        <!-- Left column -->
+        <div class="left-col">
+          <div class="average-card">
+            <h2>Your Average Score</h2>
+            <p class="average" id="student-average">73.4%</p>
+            <p class="change"><i class="fas fa-arrow-up"></i> increased by 2.1% from last week</p>
+          </div>
+
+          <div class="subjects-card">
+            <div class="subjects-header">
+              <h2>Your Subjects</h2>
+            </div>
+            
+            <div id="subjects-container">
+              <div class="subject-item">
+                <div class="subject-info">
+                  <h3>Math 511</h3>
+                  <p>1st Year</p>
+                </div>
+                <div class="subject-actions">
+                  <button><i class="fas fa-eye"></i> View</button>
+                </div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-info">
+                  <h3>Pro 741</h3>
+                  <p>2nd Year</p>
+                </div>
+                <div class="subject-actions">
+                  <button><i class="fas fa-eye"></i> View</button>
+                </div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-info">
+                  <h3>AI 700</h3>
+                  <p>3rd Year</p>
+                </div>
+                <div class="subject-actions">
+                  <button><i class="fas fa-eye"></i> View</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="right-col">
+          <h2>Academic Overview</h2>
+          <p>Your performance over time</p>
+          <div class="graph-container">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignments section -->
+      <div class="assignments-section">
+        <div class="assignments-header">
+          <h2>Upcoming Assignments</h2>
+        </div>
+        
+        <div id="assignments-container">
+          <div class="assignment-item">
+            <div class="assignment-info">
+              <h3>Math 511 Assignment</h3>
+              <p>Due: 30 July</p>
+            </div>
+            <div class="assignment-actions">
+              <button><i class="fas fa-eye"></i> View</button>
+            </div>
+          </div>
+          <div class="assignment-item">
+            <div class="assignment-info">
+              <h3>Pro 741 Project</h3>
+              <p>Due: 25 Aug</p>
+            </div>
+            <div class="assignment-actions">
+              <button><i class="fas fa-eye"></i> View</button>
+            </div>
+          </div>
+          <div class="assignment-item">
+            <div class="assignment-info">
+              <h3>AI 700 Quiz</h3>
+              <p>Due: 21 July</p>
+            </div>
+            <div class="assignment-actions">
+              <button><i class="fas fa-eye"></i> View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback section -->
+      <div class="feedback-section">
+        <div class="feedback-header">
+          <h2>Feedback Highlights</h2>
+        </div>
+        
+        <div id="feedback-container">
+          <div class="feedback-item">
+            <h3>HCI 653 CA test 04-06</h3>
+            <p>Focus more on the characteristics of good design</p>
+          </div>
+          <div class="feedback-item">
+            <h3>PRO 741 CA test 12-06</h3>
+            <p>Remember to comment your code for better readability</p>
+          </div>
+          <div class="feedback-item">
+            <h3>AI 700 Exam 03-07</h3>
+            <p>Learn how to properly draw truth tables</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments Page -->
+  <div class="page-container" id="assignmentsPage">
+    <!-- Integrity Confirmation Popup -->
+    <div class="popup-overlay" id="integrity-popup-overlay">
+      <div class="integrity-popup">
+        <div class="popup-header">
+          <h2>Confirm Academic Integrity</h2>
+        </div>
+        <div class="popup-content">
+          <div class="uploaded-file-card">
+            <i class="fas fa-file-pdf file-icon-large"></i>
+            <div class="file-details-large">
+              <div class="file-name-large" id="popup-file-name">AI745_Assignment.pdf</div>
+              <div class="file-info-large" id="popup-file-info">PDF Document • 2.4 MB</div>
+            </div>
+          </div>
+          
+          <div class="integrity-section">
+            <h3><i class="fas fa-shield-alt"></i> Academic Integrity Statement</h3>
+            <p>By submitting this work, I confirm that it is my own original work and that I have not engaged in cheating, plagiarism, or any unauthorized assistance.</p>
+            
+            <div class="checkbox-container">
+              <input type="checkbox" id="integrity-checkbox">
+              <label for="integrity-checkbox">I agree to the terms of the academic integrity statement</label>
+            </div>
+          </div>
+          
+          <div class="popup-buttons">
+            <button class="popup-button cancel-button" id="cancel-button">Cancel</button>
+            <button class="popup-button submit-button" id="final-submit-button" disabled>Submit Assignment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+    <button class="menu-toggle" id="menu-toggle-assignments">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar-assignments">
+      <div class="nav">
+        <button data-page="home"><i class="fas fa-home"></i> Home</button>
+        <button data-page="tests"><i class="fas fa-file-alt"></i> Tests</button>
+        <button class="active" data-page="assignments"><i class="fas fa-book"></i> Assignments</button>
+        <button data-page="practice"><i class="fas fa-book-open"></i> Practice</button>
+        <button data-page="feedback"><i class="fas fa-comment-dots"></i> Feedback</button>
+        <button class="logout-btn" id="assignmentsLogoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="top-bar">
+        <a href="#" class="icon-link" id="mail-icon-assignments">
+          <i class="fas fa-envelope"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <a href="#" class="icon-link" id="notification-icon-assignments">
+          <i class="fas fa-bell"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <div class="top-user">
+          <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+          <img src="https://ui-avatars.com/api/?name=BAT-MAN&background=3a86ff&color=fff&size=35" alt="User Profile" />
+        </div>
+      </div>
+
+      <div class="content-container">
+        <div class="left-column">
+          <div class="assignment-section">
+            <div class="section-title">
+              <span>POSTED ASSIGNMENTS</span>
+              <span class="view-all" id="view-all-btn">
+                <i class="fas fa-list"></i> View All
+              </span>
+            </div>
+            <div class="cards-container" id="courses-container">
+              <div class="blue-card">
+                <div class="blue-card-content">
+                  <h3>Human-Computer Interaction Essay</h3>
+                  <span class="assignment-code">HCI1671</span>
+                  <div class="assignment-due">
+                    <i class="far fa-calendar-alt"></i> Due: 12/05/2025
+                  </div>
+                  <div class="card-buttons">
+                    <button class="card-button view-button">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="card-button download-button">
+                      <i class="fas fa-download"></i> Download
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="blue-card">
+                <div class="blue-card-content">
+                  <h3>Software Security Research</h3>
+                  <span class="assignment-code">SS711</span>
+                  <div class="assignment-due">
+                    <i class="far fa-calendar-alt"></i> Due: 21/07/2025
+                  </div>
+                  <div class="card-buttons">
+                    <button class="card-button view-button">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="card-button download-button">
+                      <i class="fas fa-download"></i> Download
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="blue-card">
+                <div class="blue-card-content">
+                  <h3>Artificial Intelligence Project</h3>
+                  <span class="assignment-code">AI745</span>
+                  <div class="assignment-due">
+                    <i class="far fa-calendar-alt"></i> Due: 01/07/2025
+                  </div>
+                  <div class="card-buttons">
+                    <button class="card-button view-button">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="card-button download-button">
+                      <i class="fas fa-download"></i> Download
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="blue-card">
+                <div class="blue-card-content">
+                  <h3>Database Design Assignment</h3>
+                  <span class="assignment-code">DB502</span>
+                  <div class="assignment-due">
+                    <i class="far fa-calendar-alt"></i> Due: 15/06/2025
+                  </div>
+                  <div class="card-buttons">
+                    <button class="card-button view-button">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="card-button download-button">
+                      <i class="fas fa-download"></i> Download
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-files">
+            <h3>RECENTLY UPLOADED FILES</h3>
+            <table class="file-table">
+              <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Date Uploaded</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>HCI1671_Assignment1.pdf</td>
+                  <td>12/05/2025</td>
+                  <td><span style="color: #4caf50;">Graded</span></td>
+                  <td><i class="fas fa-download file-action"></i></td>
+                </tr>
+                <tr>
+                  <td>SS711_ResearchPaper.docx</td>
+                  <td>21/07/2025</td>
+                  <td><span style="color: #ff9800;">Pending</span></td>
+                  <td><i class="fas fa-download file-action"></i></td>
+                </tr>
+                <tr>
+                  <td>AI745_Project.zip</td>
+                  <td>01/07/2025</td>
+                  <td><span style="color: #f44336;">Late</span></td>
+                  <td><i class="fas fa-download file-action"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="right-column">
+          <div class="upload-section">
+            <h3>ASSIGNMENT UPLOAD</h3>
+            <div class="upload-area" id="drop-zone">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="upload-text">Drag and drop your file here</div>
+              <div class="upload-subtext">or click to browse files (Max: 10MB)</div>
+            </div>
+            
+            <div class="file-preview" id="file-preview">
+              <div class="file-info">
+                <i class="fas fa-file-pdf file-icon"></i>
+                <div class="file-details">
+                  <div class="file-name" id="file-name">No file selected</div>
+                  <div class="file-size" id="file-size">0 KB</div>
+                </div>
+                <i class="fas fa-times remove-file" id="remove-file"></i>
+              </div>
+            </div>
+            
+            <div class="upload-progress" id="upload-progress">
+              <div class="progress-container">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+              <div class="progress-text" id="progress-text">Uploading... 0%</div>
+            </div>
+            
+            <div class="upload-success" id="upload-success">
+              <i class="fas fa-check-circle"></i> File uploaded successfully!
+            </div>
+            
+            <input type="file" id="file-input" style="display: none;">
+            <button class="upload-button" id="upload-button" disabled>Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tests Page -->
+  <div class="page-container" id="testsPage">
+    <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+    <button class="menu-toggle" id="menu-toggle-tests">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar-tests">
+      <div class="nav">
+        <button data-page="home"><i class="fas fa-home"></i> Home</button>
+        <button class="active" data-page="tests"><i class="fas fa-file-alt"></i> Tests</button>
+        <button data-page="assignments"><i class="fas fa-tasks"></i> Assignments</button>
+        <button data-page="practice"><i class="fas fa-book-open"></i> Practice</button>
+        <button data-page="feedback"><i class="fas fa-comment-dots"></i> Feedback</button>
+        <button class="logout-btn" id="testsLogoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="top-bar">
+        <a href="#" class="icon-link" id="mail-icon-tests">
+          <i class="fas fa-envelope"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <a href="#" class="icon-link" id="notification-icon-tests">
+          <i class="fas fa-bell"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <div class="top-user">
+          <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User Profile" />
+        </div>
+      </div>
+
+      <div class="page-header">
+        <h1 class="page-title">Tests</h1>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="two-column-layout">
+        <!-- Previous Tests Section (Left Column) -->
+        <div class="column">
+          <section class="content-section">
+            <div class="section-header">
+              <h2 class="section-title">PREVIOUS TEST</h2>
+              <div class="section-action">View All</div>
+            </div>
+            <div class="test-list">
+              <div class="test-item" data-test="PRO741">
+                <div class="test-info">
+                  <div class="test-title">PRO741 CA Test June 2024</div>
+                  <div class="test-details">
+                    <span>Duration 2hr</span>
+                    <span>78/100</span>
+                  </div>
+                </div>
+              </div>
+              <div class="test-item" data-test="AI700">
+                <div class="test-info">
+                  <div class="test-title">AI700 CA TEST June 2024</div>
+                  <div class="test-details">
+                    <span>Duration 2hr</span>
+                    <span>78/100</span>
+                  </div>
+                </div>
+              </div>
+              <div class="test-item" data-test="HIT500">
+                <div class="test-info">
+                  <div class="test-title">HIT500 EXAM Nov 2024</div>
+                  <div class="test-details">
+                    <span>Duration 3hr</span>
+                    <span>85/100</span>
+                  </div>
+                </div>
+              </div>
+              <div class="test-item" data-test="MATH451">
+                <div class="test-info">
+                  <div class="test-title">MATH451 EXAM June 2023</div>
+                  <div class="test-details">
+                    <span>Duration 2.5hr</span>
+                    <span>92/100</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- New Test Section (Right Column) -->
+        <div class="column">
+          <section class="content-section">
+            <div class="section-header">
+              <h2 class="section-title">NEW TEST</h2>
+            </div>
+            <div class="test-list">
+              <div class="test-item" data-test="HIT500-NEW">
+                <div class="test-info">
+                  <div class="test-title">HIT500 EXAM Nov 2025</div>
+                  <div class="test-details">
+                    <span>Duration 3hr</span>
+                  </div>
+                </div>
+              </div>
+              <div class="test-item" data-test="AI701">
+                <div class="test-info">
+                  <div class="test-title">AI701 CA Test July 2024</div>
+                  <div class="test-details">
+                    <span>Duration 2hr</span>
+                  </div>
+                </div>
+              </div>
+              <div class="test-item" data-test="PRO742">
+                <div class="test-info">
+                  <div class="test-title">PRO742 EXAM Dec 2024</div>
+                  <div class="test-details">
+                    <span>Duration 2.5hr</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Test details panel (appears when a test is selected) -->
+          <div class="test-details-panel" id="testDetails">
+            <div class="details-header">
+              <h3 class="details-title" id="selectedTestTitle">Test Details</h3>
+              <button class="close-btn" id="closeDetails">&times;</button>
+            </div>
+            <div class="details-content">
+              <div class="detail-item">
+                <span class="detail-label">Course Code</span>
+                <span class="detail-value" id="detailCode">-</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Duration</span>
+                <span class="detail-value" id="detailDuration">-</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Score</span>
+                <span class="detail-value" id="detailScore">-</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Status</span>
+                <span class="detail-value" id="detailStatus">-</span>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="action-btn primary-btn" id="primaryAction">View Details</button>
+              <button class="action-btn secondary-btn">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Practice Page -->
+  <div class="page-container" id="practicePage">
+    <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+    <button class="menu-toggle" id="menu-toggle-practice">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar-practice">
+      <div class="nav">
+        <button data-page="home"><i class="fas fa-home"></i> Home</button>
+        <button data-page="tests"><i class="fas fa-file-alt"></i> Tests</button>
+        <button data-page="assignments"><i class="fas fa-tasks"></i> Assignments</button>
+        <button class="active" data-page="practice"><i class="fas fa-book-open"></i> Practice</button>
+        <button data-page="feedback"><i class="fas fa-comment-dots"></i> Feedback</button>
+        <button class="logout-btn" id="practiceLogoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="top-bar">
+        <a href="#" class="icon-link" id="mail-icon-practice">
+          <i class="fas fa-envelope"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <a href="#" class="icon-link" id="notification-icon-practice">
+          <i class="fas fa-bell"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <div class="top-user">
+          <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzMzMyIvPjxwYXRoIGQ=" alt="User Profile" />
+        </div>
+      </div>
+
+      <div class="section-title">
+        <span>Practice Tasks</span>
+        <span class="view-all">View All</span>
+      </div>
+      
+      <!-- Individual blue cards for each practice task -->
+      <div class="cards-container" id="courses-container">
+        <div class="loading">
+          <div class="spinner"></div>
+          <span>Loading courses...</span>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <span id="course-title">Select a Course</span>
+        <span class="view-all">See All</span>
+      </div>
+      
+      <div class="task-grid" id="task-container">
+        <div class="no-course-selected">
+          <p>Please select a course to view its practice details</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Page -->
+  <div class="page-container" id="feedbackPage">
+    <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+    <button class="menu-toggle" id="menu-toggle-feedback">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar-feedback">
+      <div class="nav">
+        <button data-page="home"><i class="fas fa-home"></i> Home</button>
+        <button data-page="tests"><i class="fas fa-file-alt"></i> Exams</button>
+        <button data-page="assignments"><i class="fas fa-book"></i> Assignments</button>
+        <button data-page="practice"><i class="fas fa-book-open"></i> Practice</button>
+        <button class="active" data-page="feedback"><i class="fas fa-comment-dots"></i> Feedback</button>
+        <button class="logout-btn" id="feedbackLogoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="top-bar">
+        <a href="#" class="icon-link" id="mail-icon-feedback">
+          <i class="fas fa-envelope"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <a href="#" class="icon-link" id="notification-icon-feedback">
+          <i class="fas fa-bell"></i>
+          <span class="icon-badge">0</span>
+        </a>
+        <div class="top-user">
+          <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k=" alt="User Profile" />
+        </div>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div class="dashboard-container" id="dashboard">
+        <!-- Academic Overview Card -->
+        <div class="card">
+          <h2 class="card-title">ACADEMIC OVERVIEW</h2>
+          <div class="overview-grid">
+            <div class="overview-item" id="exams-overview">
+              <h3>Exams</h3>
+              <div class="score-display">67%</div>
+              <p>Average score</p>
+            </div>
+            
+            <div class="overview-item" id="assignments-overview">
+              <h3>Assignments</h3>
+              <div class="score-display">89%</div>
+              <p>Average score</p>
+            </div>
+            
+            <div class="grade-average-container">
+              <div class="circular-progress">
+                <span class="progress-value">65%</span>
+              </div>
+              <div class="grade-text">Grade Average</div>
+              <div class="grade-subtext">Based on all assessments</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Areas of Improvement Card -->
+        <div class="card">
+          <h2 class="card-title">AREAS OF IMPROVEMENT</h2>
+          <ul class="improvement-list">
+            <li class="improvement-item">
+              <div class="course-code">Math511</div>
+              <div class="topics">Topic 2 and Topic 3</div>
+            </li>
+            
+            <li class="improvement-item">
+              <div class="course-code">SS453</div>
+              <div class="topics">Topic 6</div>
+            </li>
+            
+            <li class="improvement-item">
+              <div class="course-code">AI745</div>
+              <div class="topics">Topic 2</div>
+            </li>
+            
+            <li class="improvement-item">
+              <div class="course-code">PRO712</div>
+              <div class="topics">Topic 1 & Topic 3</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Exam Details -->
+      <div class="subject-details" id="exam-details">
+        <div class="subject-header">
+          <h2 class="card-title">Exam Results</h2>
+          <button class="back-button" id="back-from-exams">
+            <i class="fas fa-arrow-left"></i> Back to Overview
+          </button>
+        </div>
+        
+        <div class="subject-grid" id="exam-subjects">
+          <div class="loading">Loading exam data...</div>
+        </div>
+      </div>
+
+      <!-- Assignment Details -->
+      <div class="subject-details" id="assignment-details">
+        <div class="subject-header">
+          <h2 class="card-title">Assignment Results</h2>
+          <button class="back-button" id="back-from-assignments">
+            <i class="fas fa-arrow-left"></i> Back to Overview
+          </button>
+        </div>
+        
+        <div class="subject-grid" id="assignment-subjects">
+          <div class="loading">Loading assignment data...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Page Navigation
+    const studentDashboard = document.getElementById('studentDashboard');
+    const assignmentsPage = document.getElementById('assignmentsPage');
+    const testsPage = document.getElementById('testsPage');
+    const practicePage = document.getElementById('practicePage');
+    const feedbackPage = document.getElementById('feedbackPage');
+    
+    // Navigation buttons
+    const navButtons = document.querySelectorAll(".nav button");
+    const logoutButtons = document.querySelectorAll(".logout-btn");
+    
+    // Show a specific page and hide others
+    function showPage(page) {
+      // Hide all pages
+      studentDashboard.classList.remove('active');
+      assignmentsPage.classList.remove('active');
+      testsPage.classList.remove('active');
+      practicePage.classList.remove('active');
+      feedbackPage.classList.remove('active');
+      
+      // Show the requested page
+      page.classList.add('active');
+    }
+    
+    // Navigation functionality
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Get the page name from data attribute
+        const page = btn.getAttribute('data-page');
+        
+        // Navigate to the appropriate page
+        if (page === 'home') {
+          showPage(studentDashboard);
+        } else if (page === 'assignments') {
+          showPage(assignmentsPage);
+        } else if (page === 'tests') {
+          showPage(testsPage);
+        } else if (page === 'practice') {
+          showPage(practicePage);
+        } else if (page === 'feedback') {
+          showPage(feedbackPage);
+        }
+        
+        // Update active button
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Close sidebar on mobile after selection
+        if (window.innerWidth <= 992) {
+          document.querySelectorAll('.sidebar').forEach(sidebar => {
+            sidebar.classList.remove('active');
+          });
+        }
+      });
+    });
+    
+    // Logout functionality
+    logoutButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // In a real application, this would redirect to login page
+        alert('You have been logged out');
+      });
+    });
+    
+    // Menu interactivity
+    const menuToggles = document.querySelectorAll('.menu-toggle');
+    const sidebars = document.querySelectorAll('.sidebar');
+    
+    // Toggle sidebar on mobile
+    menuToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const sidebarId = toggle.id.replace('menu-toggle-', 'sidebar');
+        const sidebar = document.getElementById(sidebarId === 'menu-toggle' ? 'sidebar' : sidebarId);
+        sidebar.classList.toggle('active');
+      });
+    });
+    
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+      if (window.innerWidth <= 992) {
+        let isClickInsideSidebar = false;
+        let isClickInsideMenuToggle = false;
+        
+        sidebars.forEach(sidebar => {
+          if (sidebar.contains(event.target)) {
+            isClickInsideSidebar = true;
+          }
+        });
+        
+        menuToggles.forEach(toggle => {
+          if (toggle.contains(event.target)) {
+            isClickInsideMenuToggle = true;
+          }
+        });
+        
+        if (!isClickInsideSidebar && !isClickInsideMenuToggle) {
+          sidebars.forEach(sidebar => {
+            sidebar.classList.remove('active');
+          });
+        }
+      }
+    });
+    
+    // Chart.js Line Chart for Dashboard
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+          label: 'Performance',
+          data: [50, 65, 70, 55, 60, 80, 95],
+          borderColor: '#3a86ff',
+          backgroundColor: 'rgba(58, 134, 255, 0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#3a86ff'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            titleFont: { size: 14 },
+            bodyFont: { size: 14 },
+            padding: 10
+          }
+        },
+        scales: { 
+          y: { 
+            beginAtZero: true, 
+            max: 100,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          },
+          x: {
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          }
+        }
+      }
+    });
+    
+    // Add hover effects to cards
+    document.querySelectorAll('.average-card, .subjects-card, .right-col').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-5px)';
+        card.style.boxShadow = '0 8px 16px rgba(0,0,0,0.1)';
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+      });
+    });
+    
+    // Add click functionality to buttons
+    document.querySelectorAll('.subject-actions button, .assignment-actions button').forEach(button => {
+      button.addEventListener('click', () => {
+        // Add your navigation logic here
+        alert('This would navigate to the detailed view');
+      });
+    });
+    
+    // Initialize the dashboard with data
+    document.addEventListener('DOMContentLoaded', () => {
+      // You can add initialization logic here
+      console.log('Student portal loaded');
+      
+      // Add some sample notifications
+      setTimeout(() => {
+        document.querySelectorAll('.icon-badge').forEach(badge => {
+          badge.textContent = '3';
+        });
+      }, 1000);
+    });
+    
+    // Assignments Page Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const viewAllBtn = document.getElementById('view-all-btn');
+      const integrityPopup = document.getElementById('integrity-popup-overlay');
+      const integrityCheckbox = document.getElementById('integrity-checkbox');
+      const finalSubmitButton = document.getElementById('final-submit-button');
+      const cancelButton = document.getElementById('cancel-button');
+      const popupFileName = document.getElementById('popup-file-name');
+      const popupFileInfo = document.getElementById('popup-file-info');
+      
+      // View All button functionality
+      if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', function() {
+          alert('View All Assignments functionality would show all assignments in a dedicated page.');
+        });
+      }
+      
+      // Integrity checkbox change
+      if (integrityCheckbox) {
+        integrityCheckbox.addEventListener('change', function() {
+          finalSubmitButton.disabled = !this.checked;
+        });
+      }
+      
+      // Cancel button in popup
+      if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+          integrityPopup.classList.remove('active');
+        });
+      }
+      
+      // Final submit button
+      if (finalSubmitButton) {
+        finalSubmitButton.addEventListener('click', function() {
+          // Show loading state
+          finalSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+          finalSubmitButton.disabled = true;
+          
+          // Simulate submission process
+          setTimeout(() => {
+            alert('Assignment submitted successfully!');
+            integrityPopup.classList.remove('active');
+            finalSubmitButton.innerHTML = 'Submit Assignment';
+            finalSubmitButton.disabled = false;
+            integrityCheckbox.checked = false;
+          }, 2000);
+        });
+      }
+      
+      // File upload functionality
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+      const filePreview = document.getElementById('file-preview');
+      const fileName = document.getElementById('file-name');
+      const fileSize = document.getElementById('file-size');
+      const removeFile = document.getElementById('remove-file');
+      const uploadButton = document.getElementById('upload-button');
+      const uploadProgress = document.getElementById('upload-progress');
+      const progressFill = document.getElementById('progress-fill');
+      const progressText = document.getElementById('progress-text');
+      const uploadSuccess = document.getElementById('upload-success');
+      
+      let selectedFile = null;
+      
+      // Format file size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      // Get file icon based on type
+      function getFileIcon(type) {
+        if (type.includes('pdf')) return 'fa-file-pdf';
+        if (type.includes('word') || type.includes('document')) return 'fa-file-word';
+        if (type.includes('zip') || type.includes('compressed')) return 'fa-file-archive';
+        if (type.includes('image')) return 'fa-file-image';
+        return 'fa-file';
+      }
+      
+      // Handle file selection
+      function handleFileSelect(file) {
+        if (file) {
+          // Check file size (max 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            alert('File size exceeds 10MB limit. Please choose a smaller file.');
+            return;
+          }
+          
+          selectedFile = file;
+          const fileIcon = getFileIcon(file.type);
+          
+          // Update preview
+          fileName.textContent = file.name;
+          fileSize.textContent = formatFileSize(file.size);
+          document.querySelector('.file-icon').className = `fas ${fileIcon} file-icon`;
+          filePreview.classList.add('active');
+          uploadButton.disabled = false;
+          
+          // Reset progress and success messages
+          uploadProgress.classList.remove('active');
+          uploadSuccess.classList.remove('active');
+        }
+      }
+      
+      // Click to select file
+      if (dropZone) {
+        dropZone.addEventListener('click', () => {
+          fileInput.click();
+        });
+        
+        // Drag and drop events
+        dropZone.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.classList.remove('dragover');
+          
+          if (e.dataTransfer.files.length) {
+            handleFileSelect(e.dataTransfer.files[0]);
+          }
+        });
+      }
+      
+      // File input change
+      if (fileInput) {
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files.length) {
+            handleFileSelect(fileInput.files[0]);
+          }
+        });
+      }
+      
+      // Remove selected file
+      if (removeFile) {
+        removeFile.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedFile = null;
+          filePreview.classList.remove('active');
+          uploadButton.disabled = true;
+          fileInput.value = '';
+        });
+      }
+      
+      // Upload button click
+      if (uploadButton) {
+        uploadButton.addEventListener('click', () => {
+          if (!selectedFile) return;
+          
+          // Simulate upload process
+          uploadButton.disabled = true;
+          uploadProgress.classList.add('active');
+          
+          let progress = 0;
+          const interval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress >= 100) {
+              progress = 100;
+              clearInterval(interval);
+              
+              // Show success message
+              setTimeout(() => {
+                uploadProgress.classList.remove('active');
+                uploadSuccess.classList.add('active');
+                
+                // Show integrity popup after upload
+                setTimeout(() => {
+                  // Update popup with file info
+                  popupFileName.textContent = selectedFile.name;
+                  popupFileInfo.textContent = 'PDF Document • ' + formatFileSize(selectedFile.size);
+                  
+                  // Show the popup
+                  integrityPopup.classList.add('active');
+                }, 1000);
+              }, 500);
+            }
+            
+            // Update progress bar
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+          }, 200);
+        });
+      }
+      
+      // Add button functionality for assignment cards
+      const viewButtons = document.querySelectorAll('.view-button');
+      const downloadButtons = document.querySelectorAll('.download-button');
+      
+      viewButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const assignmentTitle = button.closest('.blue-card').querySelector('h3').textContent;
+          alert(`View functionality would open: ${assignmentTitle}`);
+        });
+      });
+      
+      downloadButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const assignmentTitle = button.closest('.blue-card').querySelector('h3').textContent;
+          alert(`Download functionality would start for: ${assignmentTitle}`);
+        });
+      });
+    });
+    
+    // Tests Page Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Test selection functionality
+      const testItems = document.querySelectorAll('.test-item');
+      const testDetailsPanel = document.getElementById('testDetails');
+      const selectedTestTitle = document.getElementById('selectedTestTitle');
+      const detailCode = document.getElementById('detailCode');
+      const detailDuration = document.getElementById('detailDuration');
+      const detailScore = document.getElementById('detailScore');
+      const detailStatus = document.getElementById('detailStatus');
+      const primaryAction = document.getElementById('primaryAction');
+      const closeDetails = document.getElementById('closeDetails');
+      
+      // Test data (in a real app, this would come from a database)
+      const testData = {
+        'PRO741': {
+          title: 'PRO741 CA Test June 2024',
+          code: 'PRO741',
+          duration: '2 hours',
+          score: '78/100',
+          status: 'Completed',
+          isNew: false
+        },
+        'AI700': {
+          title: 'AI700 CA TEST June 2024',
+          code: 'AI700',
+          duration: '2 hours',
+          score: '78/100',
+          status: 'Completed',
+          isNew: false
+        },
+        'HIT500': {
+          title: 'HIT500 EXAM Nov 2024',
+          code: 'HIT500',
+          duration: '3 hours',
+          score: '85/100',
+          status: 'Completed',
+          isNew: false
+        },
+        'MATH451': {
+          title: 'MATH451 EXAM June 2023',
+          code: 'MATH451',
+          duration: '2.5 hours',
+          score: '92/100',
+          status: 'Completed',
+          isNew: false
+        },
+        'HIT500-NEW': {
+          title: 'HIT500 EXAM Nov 2025',
+          code: 'HIT500',
+          duration: '3 hours',
+          score: 'Not attempted',
+          status: 'Available',
+          isNew: true
+        },
+        'AI701': {
+          title: 'AI701 CA Test July 2024',
+          code: 'AI701',
+          duration: '2 hours',
+          score: 'Not attempted',
+          status: 'Available',
+          isNew: true
+        },
+        'PRO742': {
+          title: 'PRO742 EXAM Dec 2024',
+          code: 'PRO742',
+          duration: '2.5 hours',
+          score: 'Not attempted',
+          status: 'Upcoming',
+          isNew: true
+        }
+      };
+      
+      // Add click event to all test items
+      testItems.forEach(item => {
+        item.addEventListener('click', function() {
+          // Remove selected class from all items
+          testItems.forEach(test => test.classList.remove('selected'));
+          
+          // Add selected class to clicked item
+          this.classList.add('selected');
+          
+          // Get test data
+          const testId = this.getAttribute('data-test');
+          const test = testData[testId];
+          
+          // Update details panel
+          selectedTestTitle.textContent = test.title;
+          detailCode.textContent = test.code;
+          detailDuration.textContent = test.duration;
+          detailScore.textContent = test.score;
+          detailStatus.textContent = test.status;
+          
+          // Update primary button text based on test type
+          primaryAction.textContent = test.isNew ? 'Start Attempt' : 'View Results';
+          
+          // Show details panel
+          testDetailsPanel.classList.add('visible');
+        });
+      });
+      
+      // Close details panel
+      if (closeDetails) {
+        closeDetails.addEventListener('click', function() {
+          testDetailsPanel.classList.remove('visible');
+          
+          // Remove selection from all test items
+          testItems.forEach(test => test.classList.remove('selected'));
+        });
+      }
+      
+      // Primary action button
+      if (primaryAction) {
+        primaryAction.addEventListener('click', function() {
+          const selectedTest = document.querySelector('.test-item.selected');
+          if (selectedTest) {
+            const testId = selectedTest.getAttribute('data-test');
+            const test = testData[testId];
+            
+            alert(`Action triggered for: ${test.title}\n${test.isNew ? 'Starting test...' : 'Showing results...'}`);
+          }
+        });
+      }
+    });
+    
+    // Practice Page Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Global variables to store data
+      let coursesData = [];
+      let tasksData = {};
+      
+      // Load initial data
+      loadCourses();
+      
+      // Function to load courses from database
+      async function loadCourses() {
+        try {
+          // Show loading state
+          const coursesContainer = document.getElementById('courses-container');
+          if (coursesContainer) {
+            coursesContainer.innerHTML = `
+              <div class="loading">
+                <div class="spinner"></div>
+                <span>Loading courses...</span>
+              </div>
+            `;
+            
+            // Replace this with your actual API call to get courses
+            coursesData = await fetchCoursesFromDatabase();
+            
+            // Render courses
+            renderCourses(coursesData);
+          }
+        } catch (error) {
+          console.error('Error loading courses:', error);
+          const coursesContainer = document.getElementById('courses-container');
+          if (coursesContainer) {
+            coursesContainer.innerHTML = `
+              <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load courses. Please try again.</p>
+              </div>
+            `;
+          }
+        }
+      }
+      
+      // Function to load tasks for a specific course
+      async function loadCourseTasks(courseId) {
+        try {
+          // Show loading state
+          const taskContainer = document.getElementById('task-container');
+          if (taskContainer) {
+            taskContainer.innerHTML = `
+              <div class="loading">
+                <div class="spinner"></div>
+                <span>Loading tasks...</span>
+              </div>
+            `;
+            
+            // Replace this with your actual API call to get tasks for a course
+            const tasks = await fetchTasksFromDatabase(courseId);
+            
+            // Store tasks data
+            tasksData[courseId] = tasks;
+            
+            // Render tasks
+            displayCourseTasks(courseId, tasks);
+          }
+        } catch (error) {
+          console.error('Error loading tasks:', error);
+          const taskContainer = document.getElementById('task-container');
+          if (taskContainer) {
+            taskContainer.innerHTML = `
+              <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load tasks. Please try again.</p>
+              </div>
+            `;
+          }
+        }
+      }
+      
+      // Example function to fetch courses from your database
+      async function fetchCoursesFromDatabase() {
+        // Mock data - replace with your actual data structure
+        return [
+          { id: "MATH511", name: "MATH511", progress: 78 },
+          { id: "PRO712", name: "PRO712", progress: 45 },
+          { id: "AI745", name: "AI745", progress: 32 },
+          { id: "HCI721", name: "HCI721", progress: 67 }
+        ];
+      }
+      
+      // Example function to fetch tasks for a course from your database
+      async function fetchTasksFromDatabase(courseId) {
+        // Mock data - replace with your actual data structure
+        const mockData = {
+          "MATH511": [
+            { title: "JUNE EXAM 2019", date: "Completed on 15 Aug 2023", score: "78%", completed: true },
+            { title: "NOVEMBER EXAM 2019", date: "Not attempted yet", score: "", completed: false },
+            { title: "JUNE EXAM 2020", date: "Completed on 22 Sep 2023", score: "89%", completed: true },
+            { title: "NOVEMBER EXAM 2020", date: "Not attempted yet", score: "", completed: false }
+          ],
+          "PRO712": [
+            { title: "MODULE 1 TEST", date: "Completed on 10 Jul 2023", score: "92%", completed: true },
+            { title: "MODULE 2 TEST", date: "Completed on 25 Jul 2023", score: "85%", completed: true },
+            { title: "FINAL PROJECT", date: "Not attempted yet", score: "", completed: false },
+            { title: "PRACTICE EXAM", date: "Not attempted yet", score: "", completed: false }
+          ],
+          "AI745": [
+            { title: "NEURAL NETWORKS QUIZ", date: "Completed on 5 Aug 2023", score: "76%", completed: true },
+            { title: "MACHINE LEARNING TEST", date: "Not attempted yet", score: "", completed: false },
+            { title: "AI ETHICS ASSIGNMENT", date: "Completed on 18 Aug 2023", score: "88%", completed: true },
+            { title: "FINAL EXAM", date: "Not attempted yet", score: "", completed: false }
+          ],
+          "HCI721": [
+            { title: "USABILITY TEST", date: "Completed on 12 Sep 2023", score: "94%", completed: true },
+            { title: "UI DESIGN PROJECT", date: "Completed on 28 Sep 2023", score: "91%", completed: true },
+            { title: "USER RESEARCH REPORT", date: "Not attempted yet", score: "", completed: false },
+            { title: "FINAL PRESENTATION", date: "Not attempted yet", score: "", completed: false }
+          ]
+        };
+        
+        return mockData[courseId] || [];
+      }
+      
+      // Function to render courses
+      function renderCourses(courses) {
+        const coursesContainer = document.getElementById('courses-container');
+        
+        if (!coursesContainer) return;
+        
+        if (!courses || courses.length === 0) {
+          coursesContainer.innerHTML = `
+            <div class="no-courses">
+              <i class="fas fa-book-open" style="font-size: 48px; color: #3a86ff; margin-bottom: 16px;"></i>
+              <h3 style="color: #333; margin-bottom: 12px;">No Courses Available</h3>
+              <p style="color: #666;">There are no courses available at this time.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        let coursesHTML = '';
+        
+        courses.forEach(course => {
+          coursesHTML += `
+            <div class="blue-card" data-course="${course.id}">
+              <div class="blue-card-content">
+                <h3>${course.name}</h3>
+                <div class="progress">
+                  <div class="progress-bar" style="width: ${course.progress}%"></div>
+                </div>
+                <div class="progress-text">${course.progress}% Complete</div>
+              </div>
+            </div>
+          `;
+        });
+        
+        coursesContainer.innerHTML = coursesHTML;
+        
+        // Add click event listeners to course cards
+        const courseCards = document.querySelectorAll('.blue-card');
+        courseCards.forEach(card => {
+          card.addEventListener('click', function() {
+            // Remove active class from all cards
+            courseCards.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked card
+            this.classList.add('active');
+            
+            // Get the course code from data attribute
+            const courseId = this.getAttribute('data-course');
+            
+            // Update the course title
+            const courseTitle = document.getElementById('course-title');
+            if (courseTitle) {
+              courseTitle.textContent = `${courseId} Practice Details`;
+            }
+            
+            // Load and display the tasks for this course
+            loadCourseTasks(courseId);
+          });
+        });
+      }
+      
+      // Function to display tasks for a course
+      function displayCourseTasks(courseId, tasks) {
+        const taskContainer = document.getElementById('task-container');
+        
+        if (!taskContainer) return;
+        
+        if (!tasks || tasks.length === 0) {
+          taskContainer.innerHTML = `
+            <div class="no-tasks" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+              <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #ff6b6b; margin-bottom: 16px;"></i>
+              <h3 style="color: #333; margin-bottom: 12px;">No Practice Tasks Available</h3>
+              <p style="color: #666;">There are no practice tasks available for ${courseId} at this time.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        let tasksHTML = '';
+        
+        tasks.forEach(task => {
+          tasksHTML += `
+            <div class="task-card ${task.completed ? 'completed' : ''}">
+              <h4>${task.title}</h4>
+              <div class="date">${task.date}</div>
+              <button class="btn ${task.completed ? 'retry' : 'start'}">${task.completed ? 'Retry Attempt' : 'Start Attempt'}</button>
+              ${task.completed ? `<span class="score">${task.score}</span>` : ''}
+            </div>
+          `;
+        });
+        
+        taskContainer.innerHTML = tasksHTML;
+      }
+    });
+    
+    // Feedback Page Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Navigation functionality for feedback page
+      const dashboard = document.getElementById('dashboard');
+      const examDetails = document.getElementById('exam-details');
+      const assignmentDetails = document.getElementById('assignment-details');
+      const examsBtn = document.getElementById('exams-overview');
+      const assignmentsBtn = document.getElementById('assignments-overview');
+      const backFromExams = document.getElementById('back-from-exams');
+      const backFromAssignments = document.getElementById('back-from-assignments');
+      const examSubjectsContainer = document.getElementById('exam-subjects');
+      const assignmentSubjectsContainer = document.getElementById('assignment-subjects');
+
+      // Simulated database data (replace with actual API calls to your database)
+      const examData = [
+        { name: "Mathematics", code: "MATH101", term: "Spring 2023", score: 72 },
+        { name: "Computer Science", code: "CS205", term: "Spring 2023", score: 85 },
+        { name: "Physics", code: "PHYS150", term: "Spring 2023", score: 68 },
+        { name: "English Literature", code: "ENGL120", term: "Spring 2023", score: 63 },
+        { name: "History", code: "HIST110", term: "Spring 2023", score: 77 },
+        { name: "Chemistry", code: "CHEM180", term: "Spring 2023", score: 59 }
+      ];
+
+      const assignmentData = [
+        { name: "Mathematics", code: "MATH101", count: 8, score: 92 },
+        { name: "Computer Science", code: "CS205", count: 12, score: 88 },
+        { name: "Physics", code: "PHYS150", count: 6, score: 79 },
+        { name: "English Literature", code: "ENGL120", count: 5, score: 95 },
+        { name: "History", code: "HIST110", count: 7, score: 86 },
+        { name: "Chemistry", code: "CHEM180", count: 9, score: 83 }
+      ];
+
+      // Function to render exam subjects
+      function renderExamSubjects() {
+        if (!examSubjectsContainer) return;
+        
+        examSubjectsContainer.innerHTML = '';
+        
+        if (examData.length === 0) {
+          examSubjectsContainer.innerHTML = '<div class="loading">No exam data available</div>';
+          return;
+        }
+        
+        examData.forEach(subject => {
+          const subjectCard = document.createElement('div');
+          subjectCard.className = 'subject-card';
+          subjectCard.innerHTML = `
+            <div class="subject-name">${subject.name}</div>
+            <div class="subject-meta">
+              <span>Code: ${subject.code}</span>
+              <span>Term: ${subject.term}</span>
+            </div>
+            <div class="subject-score">${subject.score}%</div>
+            <div class="score-bar">
+              <div class="score-progress" style="width: ${subject.score}%"></div>
+            </div>
+            <div class="score-label">
+              <span>0%</span>
+              <span>100%</span>
+            </div>
+          `;
+          examSubjectsContainer.appendChild(subjectCard);
+        });
+      }
+
+      // Function to render assignment subjects
+      function renderAssignmentSubjects() {
+        if (!assignmentSubjectsContainer) return;
+        
+        assignmentSubjectsContainer.innerHTML = '';
+        
+        if (assignmentData.length === 0) {
+          assignmentSubjectsContainer.innerHTML = '<div class="loading">No assignment data available</div>';
+          return;
+        }
+        
+        assignmentData.forEach(subject => {
+          const subjectCard = document.createElement('div');
+          subjectCard.className = 'subject-card';
+          subjectCard.innerHTML = `
+            <div class="subject-name">${subject.name}</div>
+            <div class="subject-meta">
+              <span>Code: ${subject.code}</span>
+              <span>Assignments: ${subject.count}</span>
+            </div>
+            <div class="subject-score">${subject.score}%</div>
+            <div class="score-bar">
+              <div class="score-progress" style="width: ${subject.score}%"></div>
+            </div>
+            <div class="score-label">
+              <span>0%</span>
+              <span>100%</span>
+            </div>
+          `;
+          assignmentSubjectsContainer.appendChild(subjectCard);
+        });
+      }
+
+      // Show exam details
+      function showExamDetails() {
+        if (dashboard && examDetails) {
+          dashboard.style.display = 'none';
+          examDetails.classList.add('active');
+          assignmentDetails.classList.remove('active');
+          renderExamSubjects();
+        }
+      }
+
+      // Show assignment details
+      function showAssignmentDetails() {
+        if (dashboard && assignmentDetails) {
+          dashboard.style.display = 'none';
+          assignmentDetails.classList.add('active');
+          examDetails.classList.remove('active');
+          renderAssignmentSubjects();
+        }
+      }
+
+      // Back to overview
+      function backToOverview() {
+        if (dashboard && examDetails && assignmentDetails) {
+          dashboard.style.display = 'grid';
+          examDetails.classList.remove('active');
+          assignmentDetails.classList.remove('active');
+        }
+      }
+
+      // Event listeners
+      if (examsBtn) {
+        examsBtn.addEventListener('click', showExamDetails);
+      }
+      
+      if (assignmentsBtn) {
+        assignmentsBtn.addEventListener('click', showAssignmentDetails);
+      }
+      
+      if (backFromExams) {
+        backFromExams.addEventListener('click', backToOverview);
+      }
+      
+      if (backFromAssignments) {
+        backFromAssignments.addEventListener('click', backToOverview);
+      }
+
+      // Initialize the page
+      renderExamSubjects();
+      renderAssignmentSubjects();
+    });
+  </script>
+</body>
+</html>

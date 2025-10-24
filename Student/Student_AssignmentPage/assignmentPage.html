@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neuro Grade Assignments</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="assignmentPage.css">
+
+</head>
+<body>
+
+  <!-- Integrity Confirmation Popup -->
+  <div class="popup-overlay" id="integrity-popup-overlay">
+    <div class="integrity-popup">
+      <div class="popup-header">
+        <h2>Confirm Academic Integrity</h2>
+      </div>
+      <div class="popup-content">
+        <div class="uploaded-file-card">
+          <i class="fas fa-file-pdf file-icon-large"></i>
+          <div class="file-details-large">
+            <div class="file-name-large" id="popup-file-name">AI745_Assignment.pdf</div>
+            <div class="file-info-large" id="popup-file-info">PDF Document • 2.4 MB</div>
+          </div>
+        </div>
+        
+        <div class="integrity-section">
+          <h3><i class="fas fa-shield-alt"></i> Academic Integrity Statement</h3>
+          <p>By submitting this work, I confirm that it is my own original work and that I have not engaged in cheating, plagiarism, or any unauthorized assistance.</p>
+          
+          <div class="checkbox-container">
+            <input type="checkbox" id="integrity-checkbox">
+            <label for="integrity-checkbox">I agree to the terms of the academic integrity statement</label>
+          </div>
+        </div>
+        
+        <div class="popup-buttons">
+          <button class="popup-button cancel-button" id="cancel-button">Cancel</button>
+          <button class="popup-button submit-button" id="final-submit-button" disabled>Submit Assignment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <button><i class="fas fa-home"></i> Home</button>
+      <button><i class="fas fa-file-alt"></i> Tests</button>
+      <button class="active"><i class="fas fa-tasks"></i> Assignments</button>
+      <button><i class="fas fa-book-open"></i> Practice</button>
+      <button><i class="fas fa-comment-dots"></i> Feedback</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <div class="top-user">
+        <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+        <img src="https://ui-avatars.com/api/?name=BAT-MAN&background=3a86ff&color=fff&size=35" alt="User Profile" />
+      </div>
+    </div>
+
+    <div class="content-container">
+      <div class="left-column">
+        <div class="assignment-section">
+          <div class="section-title">
+            <span>POSTED ASSIGNMENTS</span>
+            <span class="view-all" id="view-all-btn">
+              <i class="fas fa-list"></i> View All
+            </span>
+          </div>
+          <div class="cards-container" id="courses-container">
+            <div class="blue-card">
+              <div class="blue-card-content">
+                <h3>Human-Computer Interaction Essay</h3>
+                <span class="assignment-code">HCI1671</span>
+                <div class="assignment-due">
+                  <i class="far fa-calendar-alt"></i> Due: 12/05/2025
+                </div>
+                <div class="card-buttons">
+                  <button class="card-button view-button">
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                  <button class="card-button download-button">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="blue-card">
+              <div class="blue-card-content">
+                <h3>Software Security Research</h3>
+                <span class="assignment-code">SS711</span>
+                <div class="assignment-due">
+                  <i class="far fa-calendar-alt"></i> Due: 21/07/2025
+                </div>
+                <div class="card-buttons">
+                  <button class="card-button view-button">
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                  <button class="card-button download-button">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="blue-card">
+              <div class="blue-card-content">
+                <h3>Artificial Intelligence Project</h3>
+                <span class="assignment-code">AI745</span>
+                <div class="assignment-due">
+                  <i class="far fa-calendar-alt"></i> Due: 01/07/2025
+                </div>
+                <div class="card-buttons">
+                  <button class="card-button view-button">
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                  <button class="card-button download-button">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="blue-card">
+              <div class="blue-card-content">
+                <h3>Database Design Assignment</h3>
+                <span class="assignment-code">DB502</span>
+                <div class="assignment-due">
+                  <i class="far fa-calendar-alt"></i> Due: 15/06/2025
+                </div>
+                <div class="card-buttons">
+                  <button class="card-button view-button">
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                  <button class="card-button download-button">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-files">
+          <h3>RECENTLY UPLOADED FILES</h3>
+          <table class="file-table">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Date Uploaded</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>HCI1671_Assignment1.pdf</td>
+                <td>12/05/2025</td>
+                <td><span class="assignment-status status-completed">Graded</span></td>
+                <td><i class="fas fa-download file-action"></i></td>
+              </tr>
+              <tr>
+                <td>SS711_ResearchPaper.docx</td>
+                <td>21/07/2025</td>
+                <td><span class="assignment-status status-pending">Pending</span></td>
+                <td><i class="fas fa-download file-action"></i></td>
+              </tr>
+              <tr>
+                <td>AI745_Project.zip</td>
+                <td>01/07/2025</td>
+                <td><span class="assignment-status status-late">Late</span></td>
+                <td><i class="fas fa-download file-action"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="right-column">
+        <div class="upload-section">
+          <h3>ASSIGNMENT UPLOAD</h3>
+          <div class="upload-area" id="drop-zone">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">Drag and drop your file here</div>
+            <div class="upload-subtext">or click to browse files (Max: 10MB)</div>
+          </div>
+          
+          <div class="file-preview" id="file-preview">
+            <div class="file-info">
+              <i class="fas fa-file-pdf file-icon"></i>
+              <div class="file-details">
+                <div class="file-name" id="file-name">No file selected</div>
+                <div class="file-size" id="file-size">0 KB</div>
+              </div>
+              <i class="fas fa-times remove-file" id="remove-file"></i>
+            </div>
+          </div>
+          
+          <div class="upload-progress" id="upload-progress">
+            <div class="progress-container">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Uploading... 0%</div>
+          </div>
+          
+          <div class="upload-success" id="upload-success">
+            <i class="fas fa-check-circle"></i> File uploaded successfully!
+          </div>
+          
+          <input type="file" id="file-input" style="display: none;">
+          <button class="upload-button" id="upload-button" disabled>Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Mobile menu toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const viewAllBtn = document.getElementById('view-all-btn');
+    const integrityPopup = document.getElementById('integrity-popup-overlay');
+    const integrityCheckbox = document.getElementById('integrity-checkbox');
+    const finalSubmitButton = document.getElementById('final-submit-button');
+    const cancelButton = document.getElementById('cancel-button');
+    const popupFileName = document.getElementById('popup-file-name');
+    const popupFileInfo = document.getElementById('popup-file-info');
+    
+    menuToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('active');
+    });
+    
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+      const isClickInsideSidebar = sidebar.contains(event.target);
+      const isClickInsideMenuToggle = menuToggle.contains(event.target);
+      
+      if (!isClickInsideSidebar && !isClickInsideMenuToggle && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+      }
+    });
+    
+    // View All button functionality
+    viewAllBtn.addEventListener('click', function() {
+      alert('View All Assignments functionality would show all assignments in a dedicated page.');
+    });
+    
+    // Integrity checkbox change
+    integrityCheckbox.addEventListener('change', function() {
+      finalSubmitButton.disabled = !this.checked;
+    });
+    
+    // Cancel button in popup
+    cancelButton.addEventListener('click', function() {
+      integrityPopup.classList.remove('active');
+    });
+    
+    // Final submit button
+    finalSubmitButton.addEventListener('click', function() {
+      // Show loading state
+      finalSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      finalSubmitButton.disabled = true;
+      
+      // Simulate submission process
+      setTimeout(() => {
+        alert('Assignment submitted successfully!');
+        integrityPopup.classList.remove('active');
+        finalSubmitButton.innerHTML = 'Submit Assignment';
+        finalSubmitButton.disabled = false;
+        integrityCheckbox.checked = false;
+      }, 2000);
+    });
+    
+    // File upload functionality
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const filePreview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const removeFile = document.getElementById('remove-file');
+    const uploadButton = document.getElementById('upload-button');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const uploadSuccess = document.getElementById('upload-success');
+    
+    let selectedFile = null;
+    
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Get file icon based on type
+    function getFileIcon(type) {
+      if (type.includes('pdf')) return 'fa-file-pdf';
+      if (type.includes('word') || type.includes('document')) return 'fa-file-word';
+      if (type.includes('zip') || type.includes('compressed')) return 'fa-file-archive';
+      if (type.includes('image')) return 'fa-file-image';
+      return 'fa-file';
+    }
+    
+    // Handle file selection
+    function handleFileSelect(file) {
+      if (file) {
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('File size exceeds 10MB limit. Please choose a smaller file.');
+          return;
+        }
+        
+        selectedFile = file;
+        const fileIcon = getFileIcon(file.type);
+        
+        // Update preview
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        document.querySelector('.file-icon').className = `fas ${fileIcon} file-icon`;
+        filePreview.classList.add('active');
+        uploadButton.disabled = false;
+        
+        // Reset progress and success messages
+        uploadProgress.classList.remove('active');
+        uploadSuccess.classList.remove('active');
+      }
+    }
+    
+    // Click to select file
+    dropZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+    
+    // Drag and drop events
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.remove('dragover');
+      
+      if (e.dataTransfer.files.length) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) {
+        handleFileSelect(fileInput.files[0]);
+      }
+    });
+    
+    // Remove selected file
+    removeFile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedFile = null;
+      filePreview.classList.remove('active');
+      uploadButton.disabled = true;
+      fileInput.value = '';
+    });
+    
+    // Upload button click
+    uploadButton.addEventListener('click', () => {
+      if (!selectedFile) return;
+      
+      // Simulate upload process
+      uploadButton.disabled = true;
+      uploadProgress.classList.add('active');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          
+          // Show success message
+          setTimeout(() => {
+            uploadProgress.classList.remove('active');
+            uploadSuccess.classList.add('active');
+            
+            // Show integrity popup after upload
+            setTimeout(() => {
+              // Update popup with file info
+              popupFileName.textContent = selectedFile.name;
+              popupFileInfo.textContent = 'PDF Document • ' + formatFileSize(selectedFile.size);
+              
+              // Show the popup
+              integrityPopup.classList.add('active');
+            }, 1000);
+          }, 500);
+        }
+        
+        // Update progress bar
+        progressFill.style.width = `${progress}%`;
+        progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+      }, 200);
+    });
+    
+    // Add button functionality for assignment cards
+    const viewButtons = document.querySelectorAll('.view-button');
+    const downloadButtons = document.querySelectorAll('.download-button');
+    
+    viewButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const assignmentTitle = button.closest('.blue-card').querySelector('h3').textContent;
+        alert(`View functionality would open: ${assignmentTitle}`);
+      });
+    });
+    
+    downloadButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const assignmentTitle = button.closest('.blue-card').querySelector('h3').textContent;
+        alert(`Download functionality would start for: ${assignmentTitle}`);
+      });
+    });
+    
+    // Add some sample notifications
+    setTimeout(() => {
+      document.getElementById('mail-icon').querySelector('.icon-badge').textContent = '3';
+      document.getElementById('notification-icon').querySelector('.icon-badge').textContent = '5';
+    }, 1000);
+  });
+</script>
+
+</body>
+</html>

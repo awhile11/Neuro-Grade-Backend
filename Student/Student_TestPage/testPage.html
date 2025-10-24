@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroGrade - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="testPage.css">
+    
+  
+</head>
+<body>
+
+  <!-- Top left logo -->
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <!-- Mobile menu toggle -->
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <button><i class="fas fa-home"></i> Home</button>
+      <button class="active"><i class="fas fa-file-alt"></i> Tests</button>
+      <button><i class="fas fa-tasks"></i> Assignments</button>
+      <button><i class="fas fa-book-open"></i> Practice</button>
+      <button><i class="fas fa-comment-dots"></i> Feedback</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <div class="top-user">
+        <span><b>BAT-MAN</b><br><small>Bsc IT</small></span>
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User Profile" />
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h1 class="page-title">Tests</h1>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="two-column-layout">
+      <!-- Previous Tests Section (Left Column) -->
+      <div class="column">
+        <section class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">PREVIOUS TEST</h2>
+            <div class="section-action">View All</div>
+          </div>
+          <div class="test-list">
+            <div class="test-item" data-test="PRO741">
+              <div class="test-info">
+                <div class="test-title">PRO741 CA Test June 2024</div>
+                <div class="test-details">
+                  <span>Duration 2hr</span>
+                  <span>78/100</span>
+                </div>
+              </div>
+            </div>
+            <div class="test-item" data-test="AI700">
+              <div class="test-info">
+                <div class="test-title">AI700 CA TEST June 2024</div>
+                <div class="test-details">
+                  <span>Duration 2hr</span>
+                  <span>78/100</span>
+                </div>
+              </div>
+            </div>
+            <div class="test-item" data-test="HIT500">
+              <div class="test-info">
+                <div class="test-title">HIT500 EXAM Nov 2024</div>
+                <div class="test-details">
+                  <span>Duration 3hr</span>
+                  <span>85/100</span>
+                </div>
+              </div>
+            </div>
+            <div class="test-item" data-test="MATH451">
+              <div class="test-info">
+                <div class="test-title">MATH451 EXAM June 2023</div>
+                <div class="test-details">
+                  <span>Duration 2.5hr</span>
+                  <span>92/100</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- New Test Section (Right Column) -->
+      <div class="column">
+        <section class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">NEW TEST</h2>
+          </div>
+          <div class="test-list">
+            <div class="test-item" data-test="HIT500-NEW">
+              <div class="test-info">
+                <div class="test-title">HIT500 EXAM Nov 2025</div>
+                <div class="test-details">
+                  <span>Duration 3hr</span>
+                </div>
+              </div>
+            </div>
+            <div class="test-item" data-test="AI701">
+              <div class="test-info">
+                <div class="test-title">AI701 CA Test July 2024</div>
+                <div class="test-details">
+                  <span>Duration 2hr</span>
+                </div>
+              </div>
+            </div>
+            <div class="test-item" data-test="PRO742">
+              <div class="test-info">
+                <div class="test-title">PRO742 EXAM Dec 2024</div>
+                <div class="test-details">
+                  <span>Duration 2.5hr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Test details panel (appears when a test is selected) -->
+        <div class="test-details-panel" id="testDetails">
+          <div class="details-header">
+            <h3 class="details-title" id="selectedTestTitle">Test Details</h3>
+            <button class="close-btn" id="closeDetails">&times;</button>
+          </div>
+          <div class="details-content">
+            <div class="detail-item">
+              <span class="detail-label">Course Code</span>
+              <span class="detail-value" id="detailCode">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Duration</span>
+              <span class="detail-value" id="detailDuration">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Score</span>
+              <span class="detail-value" id="detailScore">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status</span>
+              <span class="detail-value" id="detailStatus">-</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn primary-btn" id="primaryAction">View Details</button>
+            <button class="action-btn secondary-btn">Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile menu toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuToggle = document.getElementById('menu-toggle');
+      const sidebar = document.getElementById('sidebar');
+      
+      menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+      });
+      
+      // Close sidebar when clicking outside
+      document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickInsideMenuToggle = menuToggle.contains(event.target);
+        
+        if (!isClickInsideSidebar && !isClickInsideMenuToggle && sidebar.classList.contains('active')) {
+          sidebar.classList.remove('active');
+        }
+      });
+    });
+
+    // Navigation active state
+    document.querySelectorAll('.nav button').forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelectorAll('.nav button').forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+        
+        // Close sidebar on mobile after selection
+        if (window.innerWidth <= 992) {
+          sidebar.classList.remove('active');
+        }
+      });
+    });
+
+    // Test selection functionality
+    const testItems = document.querySelectorAll('.test-item');
+    const testDetailsPanel = document.getElementById('testDetails');
+    const selectedTestTitle = document.getElementById('selectedTestTitle');
+    const detailCode = document.getElementById('detailCode');
+    const detailDuration = document.getElementById('detailDuration');
+    const detailScore = document.getElementById('detailScore');
+    const detailStatus = document.getElementById('detailStatus');
+    const primaryAction = document.getElementById('primaryAction');
+    const closeDetails = document.getElementById('closeDetails');
+    
+    // Test data (in a real app, this would come from a database)
+    const testData = {
+      'PRO741': {
+        title: 'PRO741 CA Test June 2024',
+        code: 'PRO741',
+        duration: '2 hours',
+        score: '78/100',
+        status: 'Completed',
+        isNew: false
+      },
+      'AI700': {
+        title: 'AI700 CA TEST June 2024',
+        code: 'AI700',
+        duration: '2 hours',
+        score: '78/100',
+        status: 'Completed',
+        isNew: false
+      },
+      'HIT500': {
+        title: 'HIT500 EXAM Nov 2024',
+        code: 'HIT500',
+        duration: '3 hours',
+        score: '85/100',
+        status: 'Completed',
+        isNew: false
+      },
+      'MATH451': {
+        title: 'MATH451 EXAM June 2023',
+        code: 'MATH451',
+        duration: '2.5 hours',
+        score: '92/100',
+        status: 'Completed',
+        isNew: false
+      },
+      'HIT500-NEW': {
+        title: 'HIT500 EXAM Nov 2025',
+        code: 'HIT500',
+        duration: '3 hours',
+        score: 'Not attempted',
+        status: 'Available',
+        isNew: true
+      },
+      'AI701': {
+        title: 'AI701 CA Test July 2024',
+        code: 'AI701',
+        duration: '2 hours',
+        score: 'Not attempted',
+        status: 'Available',
+        isNew: true
+      },
+      'PRO742': {
+        title: 'PRO742 EXAM Dec 2024',
+        code: 'PRO742',
+        duration: '2.5 hours',
+        score: 'Not attempted',
+        status: 'Upcoming',
+        isNew: true
+      }
+    };
+    
+    // Add click event to all test items
+    testItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // Remove selected class from all items
+        testItems.forEach(test => test.classList.remove('selected'));
+        
+        // Add selected class to clicked item
+        this.classList.add('selected');
+        
+        // Get test data
+        const testId = this.getAttribute('data-test');
+        const test = testData[testId];
+        
+        // Update details panel
+        selectedTestTitle.textContent = test.title;
+        detailCode.textContent = test.code;
+        detailDuration.textContent = test.duration;
+        detailScore.textContent = test.score;
+        detailStatus.textContent = test.status;
+        
+        // Update primary button text based on test type
+        primaryAction.textContent = test.isNew ? 'Start Attempt' : 'View Results';
+        
+        // Show details panel
+        testDetailsPanel.classList.add('visible');
+      });
+    });
+    
+    // Close details panel
+    closeDetails.addEventListener('click', function() {
+      testDetailsPanel.classList.remove('visible');
+      
+      // Remove selection from all test items
+      testItems.forEach(test => test.classList.remove('selected'));
+    });
+    
+    // Primary action button
+    primaryAction.addEventListener('click', function() {
+      const selectedTest = document.querySelector('.test-item.selected');
+      if (selectedTest) {
+        const testId = selectedTest.getAttribute('data-test');
+        const test = testData[testId];
+        
+        alert(`Action triggered for: ${test.title}\n${test.isNew ? 'Starting test...' : 'Showing results...'}`);
+      }
+    });
+  </script>
+</body>
+</html>
