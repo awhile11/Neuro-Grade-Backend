@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroGrade - Students</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="studentPage.css">
+<script type="module" src="studentPage_firebase-Config.js"></script>
+</head>
+<body>
+  <!-- Top left logo -->
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <!-- Mobile menu toggle -->
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <a href="#"><button><i class="fas fa-home"></i> Home</button></a>
+      <a href="#"><button><i class="fas fa-tasks"></i> Task</button></a>
+      <a href="#"><button class="active"><i class="fas fa-users"></i> Students</button></a>
+      <a href="#"><button><i class="fas fa-graduation-cap"></i> Practice</button></a>
+      <a href="#"><button><i class="fas fa-comment-dots"></i> Feedback</button></a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <div class="top-user">
+        <span><b>CAT-WOMAN</b><br><small>CATBAT12@gmail.com</small></span>
+        <img src="https://placehold.co/35x35/8e44ad/FFFFFF?text=C" alt="User">
+      </div>
+    </div>
+
+    <!-- Students Page -->
+    <div id="students">
+      <div class="students-layout">
+        <!-- Left: Student list -->
+        <div class="student-list">
+          <input type="text" placeholder="Student number" id="studentNumberSearch">
+          <input type="text" placeholder="Name" id="studentNameSearch">
+
+          <div class="students" id="studentList">
+            <!-- Student list will be populated from database -->
+            <div class="loading">
+              <i class="fas fa-spinner"></i>
+              <p>Loading students from database...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Assignments/Tests/Grades -->
+        <div class="student-details">
+          <div class="tabs">
+            <button class="tab-btn" data-tab="assignments">Assignments</button>
+            <button class="tab-btn" data-tab="tests">Tests</button>
+            <button class="tab-btn active" data-tab="grades">Grades</button>
+          </div>
+
+          <!-- Tab content -->
+          <div id="assignments" class="tab-content" style="display:none;">
+            <div class="loading">
+              <i class="fas fa-spinner"></i>
+              <p>Select a student to view assignments</p>
+            </div>
+          </div>
+
+          <div id="tests" class="tab-content" style="display:none;">
+            <div class="loading">
+              <i class="fas fa-spinner"></i>
+              <p>Select a student to view tests</p>
+            </div>
+          </div>
+
+          <div id="grades" class="tab-content">
+            <!-- Grades Tab Content -->
+            <div class="grade-layout">
+              <div class="grade-card">
+                <h4>Assignments</h4>
+                <canvas id="assignmentsChart"></canvas>
+              </div>
+              <div class="grade-card">
+                <h4>Tests</h4>
+                <canvas id="testsChart"></canvas>
+              </div>
+              <div class="grade-bottom">
+                <div class="grade-card">
+                  <h4>Overall Grade</h4>
+                  <div class="circular">
+                    <canvas id="overallGradeChart" width="160" height="160"></canvas>
+                    <span id="gradeText">0%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>

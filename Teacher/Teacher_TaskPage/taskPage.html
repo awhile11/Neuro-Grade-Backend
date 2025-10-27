@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroGrade - Upload Tests & Assignments</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="taskpage.css">
+  <script type="module" src="taskPageFirebaseConfig.js"></script>
+</head>
+<body>
+
+  <!-- Top left logo -->
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <!-- Mobile menu toggle -->
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <button onclick="showPage('home')"><i class="fas fa-home"></i> Home</button>
+      <button class="active" onclick="showPage('task')"><i class="fas fa-tasks"></i> Task</button>
+      <button onclick="showPage('students')"><i class="fas fa-users"></i> Students</button>
+      <button onclick="showPage('practice')"><i class="fas fa-graduation-cap"></i> Practice</button>
+      <button onclick="showPage('feedback')"><i class="fas fa-comment-dots"></i> Feedback</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <div class="top-user">
+        <span><b>CAT-WOMAN</b><br><small>CATBAT12@gmail.com</small></span>
+        <img src="https://placehold.co/35x35/8e44ad/FFFFFF?text=C" alt="User">
+      </div>
+    </div>
+
+    <div class="upload-layout">
+      <!-- Uploaded Tests Section -->
+      <div class="upload-section">
+        <div class="section-header">
+          <h2><i class="fas fa-file-alt"></i> Uploaded Tests</h2>
+        </div>
+        <div class="file-list">
+          <div class="file-item">
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-file-pdf"></i>
+              </div>
+              <div class="file-details">
+                <h4>MATH511 Midterm Exam</h4>
+                <span>12/04/2024</span>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="file-action-btn"><i class="fas fa-download"></i></button>
+              <button class="file-action-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          
+          <div class="file-item">
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-file-word"></i>
+              </div>
+              <div class="file-details">
+                <h4>MATH511 Final Task</h4>
+                <span>11/10/2024</span>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="file-action-btn"><i class="fas fa-download"></i></button>
+              <button class="file-action-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          
+          <div class="file-item">
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-file-excel"></i>
+              </div>
+              <div class="file-details">
+                <h4>MATH511 Student List</h4>
+                <span>22/04/2025</span>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="file-action-btn"><i class="fas fa-download"></i></button>
+              <button class="file-action-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Tests Section -->
+      <div class="upload-section">
+        <div class="section-header">
+          <h2><i class="fas fa-tasks"></i> Upload Tests</h2>
+        </div>
+        <div class="upload-box" id="test-drop-zone">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3>Drag and drop your test here</h3>
+          <p>or click to browse files</p>
+          <input type="file" id="test-file-input" style="display: none;">
+        </div>
+        <button class="upload-btn" id="test-upload-button">UPLOAD TEST</button>
+        
+        <!-- Reference materials for tests -->
+        <div class="reference-section">
+          <h3><i class="fas fa-book"></i> Reference Materials for AI Marking</h3>
+          <div class="upload-box" id="test-reference-drop-zone">
+            <i class="fas fa-file-upload"></i>
+            <h3>Upload rubric, study guide, or reference material</h3>
+            <p>AI will use this as reference when marking tests</p>
+            <input type="file" id="test-reference-file-input" style="display: none;">
+          </div>
+          <button class="upload-btn" id="test-reference-upload-button">UPLOAD REFERENCE</button>
+        </div>
+      </div>
+
+      <!-- Uploaded Assignments Section -->
+      <div class="upload-section">
+        <div class="section-header">
+          <h2><i class="fas fa-clipboard-list"></i> Uploaded Assignments</h2>
+        </div>
+        <div class="file-list">
+          <div class="file-item">
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-file-pdf"></i>
+              </div>
+              <div class="file-details">
+                <h4>MATH511 Assignment 1</h4>
+                <span>12/04/2024</span>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="file-action-btn"><i class="fas fa-download"></i></button>
+              <button class="file-action-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          
+          <div class="file-item">
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-file-word"></i>
+              </div>
+              <div class="file-details">
+                <h4>MATH511 Research Paper</h4>
+                <span>12/04/2024</span>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="file-action-btn"><i class="fas fa-download"></i></button>
+              <button class="file-action-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          
+          <div class="file-item">
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-file-excel"></i>
+              </div>
+              <div class="file-details">
+                <h4>MATH511 Grade Sheet</h4>
+                <span>12/04/2024</span>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="file-action-btn"><i class="fas fa-download"></i></button>
+              <button class="file-action-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Assignments Section -->
+      <div class="upload-section">
+        <div class="section-header">
+          <h2><i class="fas fa-tasks"></i> Upload Assignments</h2>
+        </div>
+        <div class="upload-box" id="assignment-drop-zone">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3>Drag and drop your assignment here</h3>
+          <p>or click to browse files</p>
+          <input type="file" id="assignment-file-input" style="display: none;">
+        </div>
+        <button class="upload-btn" id="assignment-upload-button">UPLOAD ASSIGNMENT</button>
+        
+        <!-- Reference materials for assignments -->
+        <div class="reference-section">
+          <h3><i class="fas fa-book"></i> Reference Materials for AI Marking</h3>
+          <div class="upload-box" id="assignment-reference-drop-zone">
+            <i class="fas fa-file-upload"></i>
+            <h3>Upload rubric, study guide, or reference material</h3>
+            <p>AI will use this as reference when marking assignments</p>
+            <input type="file" id="assignment-reference-file-input" style="display: none;">
+          </div>
+          <button class="upload-btn" id="assignment-reference-upload-button">UPLOAD REFERENCE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+</body>
+</html>

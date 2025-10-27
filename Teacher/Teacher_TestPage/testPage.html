@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Test Interface</title>
+  <link rel="stylesheet" href="testPage.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1 id="test-title">Loading Test...</h1>
+    
+    <div class="test-info">
+      <div><strong>Subject:</strong> <span id="test-subject">Loading...</span></div>
+      <div><strong>Time Allowed:</strong> <span id="test-time">Loading...</span></div>
+      <div><strong>Total Marks:</strong> <span id="test-marks">Loading...</span></div>
+    </div>
+    
+    <div class="timer" id="timer">Time Remaining: --:--</div>
+    
+    <div class="instructions" id="instructions">
+      <p><strong>Instructions:</strong></p>
+      <div id="instructions-content">Loading instructions...</div>
+    </div>
+
+    <div class="page-indicator" id="page-indicator">Page 1 of 1</div>
+
+    <div class="question-nav" id="question-nav"></div>
+
+    <form id="test-form">
+      <div id="questions-container">
+        <!-- Questions will be dynamically inserted here -->
+        <div class="loading">Loading questions...</div>
+      </div>
+
+      <div class="navigation">
+        <button type="button" class="nav-btn" id="prev-btn">Previous Page</button>
+        <button type="button" class="nav-btn primary" id="next-btn">Next Page</button>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Test</button>
+    </form>
+  </div>
+
+  <script type="module" src="testPageFirebaseConfig.js"></script>
+</body>
+</html>
