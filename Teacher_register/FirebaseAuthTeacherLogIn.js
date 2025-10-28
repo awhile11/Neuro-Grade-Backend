@@ -5,14 +5,13 @@ import { showErrorModal } from "../services/teacher-services/teacher-services.js
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 export function getCurrentUser() {
-  const auth = getAuth();
   return auth.currentUser; 
 }
 
 
 document.addEventListener("DOMContentLoaded", () => {
   const teacherForm = document.getElementById("teacherForm");
-
+  const errorModal = document.getElementById("errorModal");
   teacherForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const errorOkBtn = document.getElementById("errorOkBtn")

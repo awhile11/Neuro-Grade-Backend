@@ -1,64 +1,51 @@
 import { getCurrentTeacher,saveSubject } from "../auth-service.js";
 import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import {app, auth, db,functions} from "../firebase-init.js";
-import { showErrorModal } from "./teacher-services.js";
+import { displayTeacherProfile,showErrorModal,sendMessage,fetchSubjects  } from "./teacher-services.js";
 
-
+//
 document.addEventListener("DOMContentLoaded", async () => {
-  try {
+    await displayTeacherProfile();
     const teacher = await getCurrentTeacher();
-
-     // Update top user info
-    document.querySelector(".top-user span").innerHTML = `<b>${teacher.firstName}</b><br><small>${teacher.email}</small>`;
-    if (teacher.profilePic) {
-      document.querySelector(".top-user img").src = teacher.profilePic;
-    }
-
-    // Update welcome box
-    document.querySelector(".welcome-box h1").textContent = `WELCOME BACK, ${teacher.firstName.toUpperCase()} ${teacher.lastName.toUpperCase()}!`;
-
-
-  
-
-    // Load subjects for this teacher
-const container = document.getElementById("subjects-container");
-container.innerHTML = "";
-
-if (!teacher.subjects || teacher.subjects.length === 0) {
-  container.innerHTML = `
-    <div class="empty-state">
-      <i class="fas fa-book-open"></i>
-      <p>No subjects yet</p>
-      <p>Subjects will be loaded from your database</p>
-    </div>
-  `;
-} else {
-  teacher.subjects.forEach(subj => {
-    const div = document.createElement("div");
-    div.className = "subject-item";
-    div.innerHTML = `
-      <div class="subject-info">
-        <h3>${subj}</h3>
-        <p>--</p>
-      </div>
-      <div class="subject-actions">
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn">Delete</button>
-      </div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-    // TODO: load students, messages, notifications (teacher-based collections)
-
-  } catch (err) {
-    console.log("Something went wrong:",err);
-    showErrorModal(err);
+    const students = await fetchStudentData();
     
-    window.location.href = "../Neuro-Grade-Frontend/login.html"; 
+    document.getElementById('class-average').textContent = 'Loading...';
+    document.getElementById('students-count').textContent = 'Fetching data from database...';
+    const teacherUID = localStorage.getItem("teacherUID"); // Get teacher UID from localStorage
+    const subjects = await fetchSubjects(teacher.uid);
+    console.log("Teacher data:", teacher);
+            if (!teacherUID) return alert("Teacher not logged in!");
+    // Update the display with the fetched data
+    updateClassAverage(students, null);
+    renderSubjects(subjects);
+// Listen for messages
+if (teacher) {
+    // Initialize notifications
+    const unsubscribeNotifications = listenAndRenderNotifications(teacher.uid);
+    
+    // Initialize messaging (you might want to trigger this when opening a chat)
+    // const unsubscribeMessages = listenMessages(teacher.uid, otherUserId, (messages) => {
+    //   renderMessages(messages, teacher.uid);
+    // });
+    
+    // Store unsubscribe functions for cleanup
+    window.appUnsubscribers = {
+      notifications: unsubscribeNotifications,
+      // messages: unsubscribeMessages
+    };
   }
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (window.appUnsubscribers) {
+      Object.values(window.appUnsubscribers).forEach(unsubscribe => {
+        if (typeof unsubscribe === 'function') unsubscribe();
+      });
+    }
+  });
+
 });
+// Example: 
  // Function to update the class average display
   function updateClassAverage(students, previousAverage) {
     const average = calculateClassAverage(students);
@@ -116,73 +103,47 @@ if (!teacher.subjects || teacher.subjects.length === 0) {
     }
   }
 
-  // Function to fetch subjects from your database
-  async function fetchSubjects() {
-    try {
-      // REPLACE THIS WITH YOUR DATABASE CONNECTION CODE
-      // Example using fetch API:
-      /*
-      const response = await fetch('/api/subjects');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const subjects = await response.json();
-      return subjects;
-      */
-      
-      // For demonstration, return sample data
-      return [
-        { id: 1, name: "Math 511", year: "1st year" },
-        { id: 2, name: "Pro 741", year: "2nd year" },
-        { id: 3, name: "AI 700", year: "3rd year" }
-      ];
-      
-    } catch (error) {
-      console.error('Error fetching subjects:', error);
-      return [];
-    }
-  }
-
   // Function to render subjects in the UI
   function renderSubjects(subjects) {
-    const container = document.getElementById('subjects-container');
-    
-    if (subjects.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-book-open"></i>
-          <p>No subjects yet</p>
-          <p>Click "Add Subject" to create your first subject</p>
-        </div>
-      `;
-      return;
-    }
-    
-    // container.innerHTML = subjects.map(subject => 
-    //     `<div class="subject-item" data-id="${subject.id}">
-    //     <div class="subject-info">
-    //       <h3>${subject.name}</h3>
-    //       <p>${subject.year</p>
-    //     </div>
-    //     <div class="subject-actions">
-    //       <button class="edit-btn" data-id="${subject.id}">
-    //         <i class="fas fa-edit"></i> Edit
-    //       </button>
-    //       <button data-id="${subject.id}">
-    //         <i class="fas fa-eye"></i> View
-    //       </button>
-    //     </div>
-    //   </div>`).join('');
-    
-    // Add event listeners to edit buttons
-    document.querySelectorAll('.edit-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const subjectId = e.currentTarget.getAttribute('data-id');
-        const subject = subjects.find(s => s.id == subjectId);
-        openSubjectPopup(subject);
-      });
-    });
+  const container = document.getElementById('subjects-container');
+  
+  if (!subjects || subjects.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <p>No subjects yet</p>
+        <p>Click "Add Subject" to create your first subject</p>
+      </div>
+    `;
+    return;
   }
+  
+  container.innerHTML = subjects.map(subject => `
+    <div class="subject-item" data-id="${subject.id}">
+      <div class="subject-info">
+        <h3>${subject.name}</h3>
+        <p>${subject.year}</p>
+      </div>
+      <div class="subject-actions">
+        <button class="edit-btn" data-id="${subject.id}">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="view-btn" data-id="${subject.id}">
+          <i class="fas fa-eye"></i> View
+        </button>
+      </div>
+    </div>
+  `).join('');
+  
+  // Add event listeners
+  container.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const subjectId = e.target.closest('.edit-btn').dataset.id;
+      const subject = subjects.find(s => s.id == subjectId);
+      if (subject) openSubjectPopup(subject);
+    });
+  });
+}
 
   // Function to open subject popup for adding/editing
   function openSubjectPopup(subject = null) {
@@ -291,10 +252,6 @@ saveBtn.addEventListener('click', async () => {
       // Get the current average before updating
       const currentAverage = parseFloat(document.getElementById('class-average').textContent);
       
-      // Fetch new data from database
-      const students = await fetchStudentData();
-      const subjects = await fetchSubjects();
-      
       // Update the display with new data
       const newAverage = updateClassAverage(students, isNaN(currentAverage) ? null : currentAverage);
       renderSubjects(subjects);
@@ -382,7 +339,28 @@ saveBtn.addEventListener('click', async () => {
     overlay.style.display = 'none';
     document.body.style.overflow = 'auto';
   }
+function renderMessages(messages, currentUserId) {
+  const container = document.getElementById('messages-container');
+  if (!container) return;
+  
+  container.innerHTML = messages.map(message => `
+    <div class="message-item ${message.senderId === currentUserId ? 'message-sent' : 'message-received'}">
+      ${message.senderId !== currentUserId ? 
+        `<div class="message-sender">${getUserName(message.senderId)}</div>` : ''}
+      <p class="message-text">${message.text}</p>
+      <div class="message-time">${formatTimeAgo(message.timestamp)}</div>
+    </div>
+  `).join('');
+  
+  // Scroll to bottom
+  container.scrollTop = container.scrollHeight;
+}
 
+// Helper function to get user name (you'll need to implement this based on your user structure)
+async function getUserName(userId) {
+  // Implement based on your user data structure
+  return 'User';
+}
   mailIcon.addEventListener('click', (e) => {
     e.preventDefault();
     showPopup(mailPopup);
@@ -420,7 +398,7 @@ saveBtn.addEventListener('click', async () => {
       alert(result.message);
       hidePopups();
       // Refresh the subjects list
-      const subjects = await fetchSubjects();
+      const subjects = await fetchSubjects(teacher.docId);
       renderSubjects(subjects);
     } else {
       alert(result.message);
@@ -442,18 +420,4 @@ saveBtn.addEventListener('click', async () => {
     }
   });
 
-  // Initialize the dashboard with data from your database
-  document.addEventListener('DOMContentLoaded', async () => {
-    // Show loading state
-    document.getElementById('class-average').textContent = 'Loading...';
-    document.getElementById('students-count').textContent = 'Fetching data from database...';
-    
-    // Fetch data from your database
-    const students = await fetchStudentData();
-    const subjects = await fetchSubjects();
-    
-    // Update the display with the fetched data
-    updateClassAverage(students, null);
-    renderSubjects(subjects);
-  });
 
