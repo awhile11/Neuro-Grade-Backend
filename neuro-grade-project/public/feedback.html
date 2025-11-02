@@ -126,9 +126,9 @@
   padding: 20px;
   border-right: 1px solid #ddd;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
   box-shadow: 2px 0 8px rgba(0,0,0,0.08);
   border-radius: 0 12px 12px 0;
   transition: all 0.3s ease;
@@ -1054,6 +1054,102 @@
     overflow-y: auto;
   }
 
+  /* AI Feedback Styles */
+  .ai-feedback-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+  }
+
+  .ai-tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .ai-tab-btn.active {
+    background: #8e44ad;
+    color: white;
+    border-color: #6c3483;
+  }
+
+  .ai-tab-btn:hover:not(.active) {
+    background: #f0e6f5;
+    border-color: #8e44ad;
+  }
+
+  .ai-tab-content {
+    display: none;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .ai-tab-content.active {
+    display: block;
+  }
+
+  .ai-feedback-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 6px;
+    border-left: 3px solid #8e44ad;
+  }
+
+  .ai-feedback-item.strength {
+    border-left-color: #2e7d32;
+  }
+
+  .ai-feedback-item.improvement {
+    border-left-color: #ff6b6b;
+  }
+
+  .ai-feedback-item.recommendation {
+    border-left-color: #1976d2;
+  }
+
+  .generate-feedback-btn {
+    width: 100%;
+    padding: 10px;
+    background: #8e44ad;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+  }
+
+  .generate-feedback-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .generate-feedback-btn.loading {
+    background: #6c3483;
+  }
+
+  .generate-feedback-btn.feedback-generated {
+    background: #2e7d32 !important;
+  }
+
+  .ai-feedback-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+  }
+
   /* Menu toggle for mobile (hidden by default) */
   .menu-toggle {
     display: none;
@@ -1291,13 +1387,43 @@
           </div>
           
           <div class="panel-card">
-            <h3><i class="fas fa-robot"></i> AUTOGRADER RESULTS</h3>
+            <h3><i class="fas fa-robot"></i> AUTOGRADER RESULTS & AI FEEDBACK</h3>
             <div class="autograder-results" id="autograderResults">
               <!-- Autograder results will be populated from database -->
               <div class="loading">
                 <i class="fas fa-spinner"></i>
                 <p>Select a task to view results</p>
               </div>
+            </div>
+            
+            <!-- AI Feedback Section -->
+            <div class="ai-feedback-section" id="aiFeedbackSection" style="display: none;">
+              <h4 style="color: #8e44ad; margin-bottom: 15px;">
+                <i class="fas fa-brain"></i> AI LEARNING ANALYSIS
+              </h4>
+              
+              <div class="ai-feedback-tabs">
+                <button class="ai-tab-btn active" data-tab="summary">Summary</button>
+                <button class="ai-tab-btn" data-tab="strengths">Strengths</button>
+                <button class="ai-tab-btn" data-tab="improvements">Areas to Improve</button>
+                <button class="ai-tab-btn" data-tab="recommendations">Recommendations</button>
+              </div>
+              
+              <div class="ai-feedback-content">
+                <div id="aiFeedbackSummary" class="ai-tab-content active">
+                  <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Generating AI feedback analysis...</p>
+                  </div>
+                </div>
+                <div id="aiFeedbackStrengths" class="ai-tab-content"></div>
+                <div id="aiFeedbackImprovements" class="ai-tab-content"></div>
+                <div id="aiFeedbackRecommendations" class="ai-tab-content"></div>
+              </div>
+              
+              <button class="generate-feedback-btn" id="generateAIFeedbackBtn">
+                <i class="fas fa-robot"></i> GENERATE AI FEEDBACK
+              </button>
             </div>
           </div>
           
@@ -1521,6 +1647,9 @@
           <p>Select a task to view results</p>
         </div>
       `;
+      
+      // Hide AI feedback section
+      document.getElementById("aiFeedbackSection").style.display = "none";
     } catch (error) {
       console.error("Error loading student data:", error);
     }
@@ -1666,6 +1795,9 @@
       
       // Load autograder results
       await loadAutograderResults(currentTask);
+      
+      // Initialize AI feedback
+      await initializeAIFeedback();
     } catch (error) {
       console.error("Error loading task details:", error);
     }
@@ -1706,6 +1838,155 @@
         </div>
       `;
     }
+  }
+
+  // AI Feedback Integration Functions
+  async function initializeAIFeedback() {
+    // Check if we have a current task and student
+    if (!currentStudent || !currentTask) return;
+    
+    // Check if AI feedback already exists
+    try {
+      const existingFeedback = await window.firebaseFeedbackService.getAIFeedback(
+        currentStudent.id, 
+        currentTask.id
+      );
+      
+      if (existingFeedback) {
+        displayAIFeedback(existingFeedback.feedback);
+      } else {
+        // Show generate button
+        document.getElementById('aiFeedbackSection').style.display = 'block';
+        document.getElementById('generateAIFeedbackBtn').style.display = 'block';
+        document.getElementById('generateAIFeedbackBtn').disabled = false;
+        document.getElementById('generateAIFeedbackBtn').innerHTML = '<i class="fas fa-robot"></i> GENERATE AI FEEDBACK';
+        document.getElementById('generateAIFeedbackBtn').classList.remove('loading', 'feedback-generated');
+      }
+    } catch (error) {
+      console.error("Error checking for existing AI feedback:", error);
+      document.getElementById('aiFeedbackSection').style.display = 'block';
+    }
+  }
+
+  async function generateAIFeedback() {
+    if (!currentStudent || !currentTask) {
+      alert("Please select a student and task first.");
+      return;
+    }
+
+    const generateBtn = document.getElementById('generateAIFeedbackBtn');
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GENERATING FEEDBACK...';
+    generateBtn.classList.add('loading');
+
+    try {
+      // Get task questions and answers
+      const questions = currentTask.questions || [];
+      const answers = currentTask.answers || [];
+      const autograderResults = currentTask.autograderResults || [];
+
+      // Generate AI feedback
+      const aiFeedback = await window.aiFeedbackService.generateFeedback(
+        currentStudent,
+        currentTask,
+        questions,
+        answers,
+        autograderResults
+      );
+
+      // Save to Firebase
+      await window.firebaseFeedbackService.saveAIFeedback(
+        currentStudent.id,
+        currentTask.id,
+        currentTask.type,
+        aiFeedback
+      );
+
+      // Display the feedback
+      displayAIFeedback(aiFeedback);
+      
+      // Update button state
+      generateBtn.innerHTML = '<i class="fas fa-check"></i> FEEDBACK GENERATED';
+      generateBtn.classList.remove('loading');
+      generateBtn.classList.add('feedback-generated');
+      
+    } catch (error) {
+      console.error("Error generating AI feedback:", error);
+      alert("Error generating AI feedback: " + error.message);
+      
+      // Reset button
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<i class="fas fa-robot"></i> GENERATE AI FEEDBACK';
+      generateBtn.classList.remove('loading');
+    }
+  }
+
+  function displayAIFeedback(feedback) {
+    // Show the AI feedback section
+    document.getElementById('aiFeedbackSection').style.display = 'block';
+    
+    // Hide generate button if feedback exists
+    document.getElementById('generateAIFeedbackBtn').style.display = 'none';
+    
+    // Populate the feedback content
+    if (feedback.structured) {
+      document.getElementById('aiFeedbackSummary').innerHTML = 
+        feedback.summary ? 
+        `<div class="ai-feedback-item">${formatFeedbackText(feedback.summary)}</div>` :
+        `<div class="ai-feedback-item">${formatFeedbackText(feedback.raw)}</div>`;
+      
+      document.getElementById('aiFeedbackStrengths').innerHTML = 
+        feedback.structured.strengths ? 
+        `<div class="ai-feedback-item strength">${formatFeedbackText(feedback.structured.strengths)}</div>` :
+        '<div class="ai-feedback-item">No strengths identified.</div>';
+      
+      document.getElementById('aiFeedbackImprovements').innerHTML = 
+        feedback.structured.improvements ? 
+        `<div class="ai-feedback-item improvement">${formatFeedbackText(feedback.structured.improvements)}</div>` :
+        '<div class="ai-feedback-item">No specific improvements needed.</div>';
+      
+      document.getElementById('aiFeedbackRecommendations').innerHTML = 
+        feedback.structured.recommendations ? 
+        `<div class="ai-feedback-item recommendation">${formatFeedbackText(feedback.structured.recommendations)}</div>` :
+        '<div class="ai-feedback-item">No specific recommendations.</div>';
+    } else {
+      // Fallback to raw feedback
+      document.getElementById('aiFeedbackSummary').innerHTML = 
+        `<div class="ai-feedback-item">${formatFeedbackText(feedback.raw || feedback)}</div>`;
+    }
+    
+    // Setup tab functionality
+    setupAIFeedbackTabs();
+  }
+
+  function formatFeedbackText(text) {
+    if (!text) return '';
+    
+    // Convert markdown-like formatting to HTML
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br>')
+      .replace(/- (.*?)(?=\n|$)/g, '• $1<br>');
+  }
+
+  function setupAIFeedbackTabs() {
+    const tabBtns = document.querySelectorAll('.ai-tab-btn');
+    const tabContents = document.querySelectorAll('.ai-tab-content');
+    
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tabName = this.dataset.tab;
+        
+        // Update active tab button
+        tabBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Show corresponding content
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`aiFeedback${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+      });
+    });
   }
 
   // View student script in modal
@@ -1857,6 +2138,9 @@
     // Save feedback button
     document.getElementById("save-feedback-btn").addEventListener("click", saveFeedback);
     
+    // Generate AI feedback button
+    document.getElementById("generateAIFeedbackBtn").addEventListener("click", generateAIFeedback);
+    
     // Modal close button
     document.getElementById("close-modal").addEventListener("click", function() {
       document.getElementById("script-modal").style.display = "none";
@@ -1888,5 +2172,9 @@
     });
   }
 </script>
+
+<!-- Include the AI Feedback Services -->
+<script src="ai-feedback-service.js"></script>
+<script src="firebase-feedback-service.js"></script>
 </body>
 </html>
