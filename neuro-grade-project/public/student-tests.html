@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroGrade - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged,
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      where, 
+      getDocs,
+      doc,
+      getDoc,
+      updateDoc,
+      orderBy,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_jkCjYBpGzkwxtLmC6DKF7g0xxAAUPck",
+      authDomain: "neuro-grade-aefa0.firebaseapp.com",
+      projectId: "neuro-grade-aefa0",
+      storageBucket: "neuro-grade-aefa0.firebasestorage.app",
+      messagingSenderId: "301322876081",
+      appId: "1:301322876081:web:c3fd4b8302da63462e5e90"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    console.log("Firebase initialized successfully");
+    
+    // Make Firebase objects globally available
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.firebaseFunctions = {
+      onAuthStateChanged,
+      signOut,
+      collection,
+      query,
+      where,
+      getDocs,
+      doc,
+      getDoc,
+      updateDoc,
+      orderBy,
+      onSnapshot
+    };
+  </script>
+  <style>
+ :root {
+      --primary-color: #3a86ff;
+      --secondary-color: #8338ec;
+      --light-gray: #f8f9fa;
+      --text-dark: #212529;
+      --text-light: #6c757d;
+      --border-color: #dee2e6;
+      --selected-color: #e6f0ff;
+    }
+    
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: 'Poppins', sans-serif; 
+    }
+    
+    body { 
+      display: flex; 
+      background: #f8f9fa; 
+      height: 100vh; 
+      color: #333; 
+      overflow: hidden; 
+    }
+
+    /* Top left logo */
+    .top-left-logo {
+      position: absolute;
+      top: -35px;
+      left: -10px;
+      height: 200px;
+      z-index: 1000;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 200px;
+      height: 100vh;
+      background: #fff;
+      padding: 20px;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+      border-radius: 0 12px 12px 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .nav a {
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .nav button {
+      background: none;
+      border: 1px solid rgba(0,0,0,0.08);
+      font-size: 16px;
+      padding: 12px 15px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      color: #333;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(58, 134, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .nav button:hover::before {
+      left: 100%;
+    }
+
+    .nav button.active {
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: bold;
+      transform: translateX(5px);
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .nav button:hover {
+      background: rgba(58, 134, 255, 0.1);
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+      transform: translateX(3px);
+    }
+
+    .nav button i {
+      transition: transform 0.3s ease;
+    }
+
+    .nav button:hover i {
+      transform: scale(1.2);
+    }
+
+    .nav button.active i {
+      transform: scale(1.2);
+      color: #fff;
+    }
+
+    /* Logout button */
+    .logout-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .logout-btn:hover {
+      background: #ff5252;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .icon-link {
+      position: relative;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-size: 20px;
+      transition: transform 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(58, 134, 255, 0.1);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+    }
+
+    .icon-link:hover {
+      transform: scale(1.2) rotate(5deg);
+      color: #ff6b6b;
+      background: #ffe9e9;
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+
+    .icon-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff6b6b;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border: 1px solid #fff;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .top-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      padding: 8px 15px;
+      background: #f8f9fa;
+      border-radius: 20px;
+      border: 1px solid rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+    }
+
+    .top-user:hover {
+      background: rgba(58, 134, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .top-user img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    .top-user:hover img {
+      transform: scale(1.1);
+      border: 2px solid var(--primary-color);
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1; 
+      padding: 20px; 
+      overflow-y: auto;
+      background: #f8f9fa;
+      margin-top: 70px;
+    }
+
+    /* Page header */
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* Two-column layout */
+    .two-column-layout {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Content sections */
+    .content-section {
+      background-color: #fff; 
+      border-radius: 16px; 
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      border-left: 5px solid var(--primary-color);
+      height: 100%;
+    }
+    
+    .content-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 150px;
+      height: 150px;
+      background: rgba(58, 134, 255, 0.1);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    
+    .content-section::after {
+      content: '';
+      position: absolute;
+      bottom: -60%;
+      left: -15%;
+      width: 120px;
+      height: 120px;
+      background: rgba(131, 56, 236, 0.1);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-title { 
+      font-size: 1.1rem; 
+      font-weight: 600; 
+      color: var(--text-dark); 
+    }
+    
+    .section-action {
+      color: var(--primary-color);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 8px 16px;
+      border-radius: 6px;
+    }
+    
+    .section-action:hover {
+      background: rgba(58, 134, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Test items */
+    .test-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .test-item {
+      background-color: #f8fafc; 
+      border: 1px solid #e2e8f0;
+      border-radius: 8px; 
+      padding: 1rem; 
+      transition: all 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .test-item:hover { 
+      border-color: var(--primary-color); 
+      transform: translateY(-3px); 
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    /* Selected test style */
+    .test-item.selected {
+      background-color: var(--selected-color);
+      border: 2px solid var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(58, 134, 255, 0.2);
+    }
+    
+    .test-info { 
+      flex: 1; 
+    }
+    
+    .test-title { 
+      font-size: 1rem; 
+      font-weight: 600; 
+      color: var(--text-dark); 
+      margin-bottom: 0.25rem;
+    }
+    
+    .test-details { 
+      display: flex; 
+      gap: 1.5rem; 
+      color: var(--text-light); 
+      font-size: 0.85rem; 
+    }
+    
+    /* More indicator */
+    .more-indicator {
+      text-align: center;
+      padding: 1rem;
+      color: #9ca3af;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .more-indicator span {
+      display: inline-block;
+      letter-spacing: 2px;
+    }
+
+    /* Test details panel */
+    .test-details-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-left: 4px solid var(--primary-color);
+      display: none;
+    }
+    
+    .test-details-panel.visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .details-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
+    .details-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 0.25rem;
+    }
+    
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    .action-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .primary-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+    }
+    
+    .primary-btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+    
+    .secondary-btn {
+      background: white;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+    
+    .secondary-btn:hover {
+      background: #f0f7ff;
+      transform: translateY(-2px);
+    }
+
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1001;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      background: var(--secondary-color);
+      transform: rotate(90deg);
+    }
+
+    @media (max-width: 992px) {
+      .sidebar {
+        position: fixed;
+        left: -250px;
+        height: 100%;
+        z-index: 1000;
+        margin-top: 0;
+        border-radius: 0;
+        transition: left 0.3s ease;
+      }
+      
+      .sidebar.active {
+        left: 0;
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding-top: 20px;
+      }
+      
+      .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .two-column-layout {
+        flex-direction: column;
+      }
+      
+      .details-content {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .two-column-layout {
+        flex-direction: column;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .top-bar {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .top-user {
+        order: -1;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+    
+    /* Loading states */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+    
+    .loading i {
+      font-size: 24px;
+      margin-bottom: 10px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top left logo -->
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <!-- Mobile menu toggle -->
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <a href="student-dashboard.html">
+        <button><i class="fas fa-home"></i> Home</button>
+      </a>
+      <a href="student-tests.html">
+        <button class="active"><i class="fas fa-file-alt"></i> Tests</button>
+      </a>
+      <a href="student-assignments.html">
+        <button><i class="fas fa-tasks"></i> Assignments</button>
+      </a>
+      <a href="student-practice.html">
+        <button><i class="fas fa-book-open"></i> Practice</button>
+      </a>
+      <a href="student-feedback.html">
+        <button><i class="fas fa-comment-dots"></i> Feedback</button>
+      </a>
+    </div>
+    <button class="logout-btn" id="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge">0</span>
+      </a>
+      <div class="top-user" id="user-info">
+        <span><b id="user-name">Loading...</b><br><small id="user-course">Loading...</small></span>
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User Profile" id="user-avatar" />
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h1 class="page-title">Tests</h1>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="two-column-layout">
+      <!-- Previous Tests Section (Left Column) -->
+      <div class="column">
+        <section class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">PREVIOUS TESTS</h2>
+            <div class="section-action" id="viewAllTests">View All</div>
+          </div>
+          <div class="test-list" id="previousTestsList">
+            <div class="loading">
+              <i class="fas fa-spinner"></i>
+              <p>Loading previous tests...</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- New Test Section (Right Column) -->
+      <div class="column">
+        <section class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">NEW TESTS</h2>
+          </div>
+          <div class="test-list" id="newTestsList">
+            <div class="loading">
+              <i class="fas fa-spinner"></i>
+              <p>Loading new tests...</p>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Test details panel (appears when a test is selected) -->
+        <div class="test-details-panel" id="testDetails">
+          <div class="details-header">
+            <h3 class="details-title" id="selectedTestTitle">Test Details</h3>
+            <button class="close-btn" id="closeDetails">&times;</button>
+          </div>
+          <div class="details-content">
+            <div class="detail-item">
+              <span class="detail-label">Course Code</span>
+              <span class="detail-value" id="detailCode">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Duration</span>
+              <span class="detail-value" id="detailDuration">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Score</span>
+              <span class="detail-value" id="detailScore">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status</span>
+              <span class="detail-value" id="detailStatus">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Due Date</span>
+              <span class="detail-value" id="detailDueDate">-</span>
+            </div>
+          </div>
+          <div class="action-buttons" id="actionButtons">
+            <button class="action-btn primary-btn" id="primaryAction">View Details</button>
+            <button class="action-btn secondary-btn" id="downloadBtn">Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentStudent = null;
+    let studentTests = [];
+    let selectedTest = null;
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeAuth();
+      setupEventListeners();
+      
+      // Set current page as active in sidebar
+      setActiveNavItem();
+    });
+
+    // Set active navigation item based on current page
+    function setActiveNavItem() {
+      const currentPage = window.location.pathname.split('/').pop() || 'student-tests.html';
+      const navButtons = document.querySelectorAll('.nav button');
+      
+      navButtons.forEach(button => {
+        // Remove active class from all buttons
+        button.classList.remove('active');
+        
+        // Check if this button corresponds to current page
+        const link = button.closest('a');
+        if (link && link.href.includes(currentPage)) {
+          button.classList.add('active');
+        }
+      });
+    }
+
+    // Initialize Firebase authentication
+    function initializeAuth() {
+      window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, async (user) => {
+        if (user) {
+          currentUser = user;
+          await loadStudentData(user.uid);
+        } else {
+          // Redirect to login page if not authenticated
+          window.location.href = 'index.html';
+        }
+      });
+    }
+
+    // Load student data from Firestore
+    async function loadStudentData(uid) {
+      try {
+        const studentDoc = await window.firebaseFunctions.getDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "students", uid)
+        );
+        
+        if (studentDoc.exists()) {
+          currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+          updateUserInterface();
+          await loadStudentTests();
+        } else {
+          console.error("Student data not found");
+        }
+      } catch (error) {
+        console.error("Error loading student data:", error);
+      }
+    }
+
+    // Update UI with student data
+    function updateUserInterface() {
+      if (currentStudent) {
+        document.getElementById('user-name').textContent = `${currentStudent.firstName} ${currentStudent.lastName}`;
+        document.getElementById('user-course').textContent = currentStudent.course || 'Student';
+        document.getElementById('user-avatar').src = `https://placehold.co/35x35/3a86ff/FFFFFF?text=${currentStudent.firstName.charAt(0)}${currentStudent.lastName.charAt(0)}`;
+      }
+    }
+
+    // Load student tests from Firebase
+    async function loadStudentTests() {
+      try {
+        // Get tests for this student
+        const testsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "tests"),
+          window.firebaseFunctions.where("studentId", "==", currentStudent.id),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
+        
+        const testsSnapshot = await window.firebaseFunctions.getDocs(testsQuery);
+        studentTests = [];
+        
+        testsSnapshot.forEach(doc => {
+          studentTests.push({ id: doc.id, ...doc.data() });
+        });
+        
+        renderTests();
+      } catch (error) {
+        console.error("Error loading tests:", error);
+        showErrorState();
+      }
+    }
+
+    // Render tests in the UI
+    function renderTests() {
+      const previousTestsList = document.getElementById("previousTestsList");
+      const newTestsList = document.getElementById("newTestsList");
+      
+      if (studentTests.length === 0) {
+        previousTestsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <p>No tests available</p>
+            <p>Tests will appear here when your teacher creates them</p>
+          </div>
+        `;
+        newTestsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <p>No new tests</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Separate completed and new tests
+      const completedTests = studentTests.filter(test => test.submittedAt);
+      const newTests = studentTests.filter(test => !test.submittedAt);
+      
+      // Render completed tests
+      if (completedTests.length === 0) {
+        previousTestsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <p>No completed tests yet</p>
+          </div>
+        `;
+      } else {
+        let previousTestsHTML = "";
+        completedTests.forEach(test => {
+          const score = test.updatedGrade || test.aiGrade || 'Not graded';
+          const duration = test.duration ? `${test.duration} minutes` : 'Not specified';
+          
+          previousTestsHTML += `
+            <div class="test-item" data-test-id="${test.id}">
+              <div class="test-info">
+                <div class="test-title">${test.name || 'Unnamed Test'}</div>
+                <div class="test-details">
+                  <span>${duration}</span>
+                  <span>${score}${typeof score === 'number' ? '/100' : ''}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        previousTestsList.innerHTML = previousTestsHTML;
+      }
+      
+      // Render new tests
+      if (newTests.length === 0) {
+        newTestsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-bell"></i>
+            <p>No new tests available</p>
+          </div>
+        `;
+      } else {
+        let newTestsHTML = "";
+        newTests.forEach(test => {
+          const duration = test.duration ? `${test.duration} minutes` : 'Not specified';
+          const dueDate = test.dueDate ? test.dueDate.toDate().toLocaleDateString() : 'No due date';
+          
+          newTestsHTML += `
+            <div class="test-item" data-test-id="${test.id}">
+              <div class="test-info">
+                <div class="test-title">${test.name || 'Unnamed Test'}</div>
+                <div class="test-details">
+                  <span>${duration}</span>
+                  <span>Due: ${dueDate}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        newTestsList.innerHTML = newTestsHTML;
+      }
+      
+      // Add event listeners to test items
+      setupTestItemListeners();
+    }
+
+    // Show error state
+    function showErrorState() {
+      const previousTestsList = document.getElementById("previousTestsList");
+      const newTestsList = document.getElementById("newTestsList");
+      
+      previousTestsList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error loading tests</p>
+        </div>
+      `;
+      
+      newTestsList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error loading tests</p>
+        </div>
+      `;
+    }
+
+    // Setup event listeners for test items
+    function setupTestItemListeners() {
+      const testItems = document.querySelectorAll('.test-item');
+      const testDetailsPanel = document.getElementById('testDetails');
+      const selectedTestTitle = document.getElementById('selectedTestTitle');
+      const detailCode = document.getElementById('detailCode');
+      const detailDuration = document.getElementById('detailDuration');
+      const detailScore = document.getElementById('detailScore');
+      const detailStatus = document.getElementById('detailStatus');
+      const detailDueDate = document.getElementById('detailDueDate');
+      const primaryAction = document.getElementById('primaryAction');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const closeDetails = document.getElementById('closeDetails');
+      const actionButtons = document.getElementById('actionButtons');
+      
+      testItems.forEach(item => {
+        item.addEventListener('click', function() {
+          // Remove selected class from all items
+          testItems.forEach(test => test.classList.remove('selected'));
+          
+          // Add selected class to clicked item
+          this.classList.add('selected');
+          
+          // Get test data
+          const testId = this.getAttribute('data-test-id');
+          selectedTest = studentTests.find(test => test.id === testId);
+          
+          if (selectedTest) {
+            // Update details panel
+            selectedTestTitle.textContent = selectedTest.name || 'Unnamed Test';
+            detailCode.textContent = selectedTest.subject || 'Not specified';
+            detailDuration.textContent = selectedTest.duration ? `${selectedTest.duration} minutes` : 'Not specified';
+            
+            // Check if test is completed or new
+            const isCompleted = !!selectedTest.submittedAt;
+            
+            if (isCompleted) {
+              const score = selectedTest.updatedGrade || selectedTest.aiGrade || 'Not graded';
+              detailScore.textContent = typeof score === 'number' ? `${score}/100` : score;
+              detailStatus.textContent = 'Completed';
+              detailDueDate.textContent = selectedTest.submittedAt ? selectedTest.submittedAt.toDate().toLocaleDateString() : 'Unknown';
+              
+              // Update buttons for completed test
+              primaryAction.textContent = 'View Results';
+              primaryAction.onclick = () => viewTestResults(selectedTest.id);
+              downloadBtn.style.display = 'block';
+              downloadBtn.onclick = () => downloadTestAsPDF(selectedTest.id);
+            } else {
+              detailScore.textContent = 'Not attempted';
+              detailStatus.textContent = 'Available';
+              detailDueDate.textContent = selectedTest.dueDate ? selectedTest.dueDate.toDate().toLocaleDateString() : 'No due date';
+              
+              // Update buttons for new test
+              primaryAction.textContent = 'Start Attempt';
+              primaryAction.onclick = () => startTestAttempt(selectedTest.id);
+              downloadBtn.style.display = 'none';
+            }
+            
+            // Show details panel
+            testDetailsPanel.classList.add('visible');
+          }
+        });
+      });
+      
+      // Close details panel
+      closeDetails.addEventListener('click', function() {
+        testDetailsPanel.classList.remove('visible');
+        testItems.forEach(test => test.classList.remove('selected'));
+        selectedTest = null;
+      });
+    }
+
+    // Start test attempt
+    function startTestAttempt(testId) {
+      // Redirect to test interface page
+      window.location.href = `student-test-interface.html?testId=${testId}`;
+    }
+
+    // View test results
+    function viewTestResults(testId) {
+      // Redirect to test results page
+      window.location.href = `test-results.html?testId=${testId}`;
+    }
+
+    // Download test as PDF
+    function downloadTestAsPDF(testId) {
+      const test = studentTests.find(t => t.id === testId);
+      if (!test) return;
+      
+      // Create a simple PDF download (in a real app, this would generate a proper PDF)
+      const element = document.createElement('a');
+      const content = `
+        Test: ${test.name || 'Unnamed Test'}
+        Subject: ${test.subject || 'Not specified'}
+        Score: ${test.updatedGrade || test.aiGrade || 'Not graded'}/100
+        Submitted: ${test.submittedAt ? test.submittedAt.toDate().toLocaleDateString() : 'Unknown'}
+        
+        This would be a PDF download in a real application.
+      `;
+      
+      const file = new Blob([content], {type: 'text/plain'});
+      element.href = URL.createObjectURL(file);
+      element.download = `${test.name || 'test'}_results.txt`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      alert('In a real application, this would download a PDF file with your test results.');
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Mobile menu toggle functionality
+      const menuToggle = document.getElementById('menu-toggle');
+      const sidebar = document.getElementById('sidebar');
+      
+      menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+      });
+      
+      // Close sidebar when clicking outside
+      document.addEventListener('click', function(event) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickInsideMenuToggle = menuToggle.contains(event.target);
+        
+        if (!isClickInsideSidebar && !isClickInsideMenuToggle && sidebar.classList.contains('active')) {
+          sidebar.classList.remove('active');
+        }
+      });
+
+      // Logout button
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        try {
+          await window.firebaseFunctions.signOut(window.firebaseAuth);
+          window.location.href = 'index.html';
+        } catch (error) {
+          console.error("Error signing out:", error);
+        }
+      });
+
+      // View all tests
+      document.getElementById('viewAllTests').addEventListener('click', function() {
+        // In a real app, this would show all tests in a modal or separate page
+        alert('This would show all tests in a detailed view.');
+      });
+    }
+  </script>
+</body>
+</html>

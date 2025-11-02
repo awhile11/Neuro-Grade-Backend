@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroGrade - Feedback</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script type="module">
+  // Import Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getAuth, 
+    onAuthStateChanged,
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    query, 
+    where, 
+    getDocs,
+    doc,
+    getDoc,
+    updateDoc,
+    addDoc,
+    orderBy,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_jkCjYBpGzkwxtLmC6DKF7g0xxAAUPck",
+    authDomain: "neuro-grade-aefa0.firebaseapp.com",
+    projectId: "neuro-grade-aefa0",
+    storageBucket: "neuro-grade-aefa0.firebasestorage.app",
+    messagingSenderId: "301322876081",
+    appId: "1:301322876081:web:c3fd4b8302da63462e5e90"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  console.log("Firebase initialized successfully");
+  
+  // Make Firebase objects globally available
+  window.firebaseAuth = auth;
+  window.firebaseDb = db;
+  window.firebaseFunctions = {
+    onAuthStateChanged,
+    signOut,
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    getDoc,
+    updateDoc,
+    addDoc,
+    orderBy,
+    serverTimestamp
+  };
+</script>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  body {
+    display: flex;
+    background: #f8f9fa;
+    height: 100vh;
+    color: #333;
+    overflow: hidden;
+  }
+
+  /* Loading screen */
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #8e44ad;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: white;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Top left logo */
+  .top-left-logo {
+    position: absolute;
+    top: -35px;
+    left: -10px;
+    height: 200px;
+    z-index: 1000;
+  }
+
+  /* Sidebar */
+   .sidebar {
+  width: 200px;
+  height: 100vh;
+  background: #fff;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+  border-radius: 0 12px 12px 0;
+  transition: all 0.3s ease;
+}
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .nav a {
+    text-decoration: none;
+    width: 100%;
+  }
+
+  .nav button {
+    background: none;
+    border: 1px solid rgba(0,0,0,0.08);
+    font-size: 16px;
+    padding: 12px 15px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    color: #333;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .nav button:hover::before {
+    left: 100%;
+  }
+
+  .nav button.active {
+    background: #8e44ad;
+    color: #fff;
+    font-weight: bold;
+    border-color: #6c3483;
+    transform: translateX(5px);
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .nav button:hover {
+    background: #f0e6f5;
+    color: #8e44ad;
+    border-color: #8e44ad;
+    transform: translateX(3px);
+  }
+
+  .nav button i {
+    transition: transform 0.3s ease;
+  }
+
+  .nav button:hover i {
+    transform: scale(1.2);
+  }
+
+  .nav button.active i {
+    transform: scale(1.2);
+    color: #fff;
+  }
+
+  /* Main content */
+  .main {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    margin-top: 70px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .icon-link {
+    position: relative;
+    text-decoration: none;
+    color: #8e44ad;
+    font-size: 20px;
+    transition: transform 0.3s, color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0e6f5;
+    margin-top: -10px;
+    border: 1px solid rgba(142, 68, 173, 0.2);
+  }
+
+  .icon-link:hover {
+    transform: scale(1.2) rotate(5deg);
+    color: #ff6b6b;
+    background: #ffe9e9;
+    border-color: rgba(255, 107, 107, 0.3);
+  }
+
+  .icon-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid #fff;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .top-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    padding: 8px 15px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+  }
+
+  .top-user:hover {
+    background: #f0e6f5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .top-user img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  .top-user:hover img {
+    transform: scale(1.1);
+    border: 2px solid #8e44ad;
+  }
+
+  /* Page layout */
+  .feedback-layout {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    margin-top: 20px;
+    height: calc(100vh - 180px);
+  }
+
+  /* Left: Student list */
+  .student-list {
+    width: 300px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .student-list:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  .student-search input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s;
+    background: #f8f9fa;
+    margin-bottom: 10px;
+  }
+  
+  .student-search input:focus {
+    outline: none;
+    border-color: #8e44ad;
+    box-shadow: 0 0 8px rgba(142, 68, 173, 0.4);
+    background: #fff;
+  }
+  
+  .student-search input::placeholder {
+    color: #aaa;
+  }
+
+  .students {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 8px;
+    background: #f8f9fa;
+    padding: 10px;
+  }
+
+  .students::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .students::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+  }
+  
+  .student-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+    margin-bottom: 8px;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .student-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .student-item:hover::before {
+    left: 100%;
+  }
+
+  .student-item:hover {
+    background: #f0e6f5;
+    color: #8e44ad;
+    border-color: #8e44ad;
+    transform: translateX(3px);
+  }
+
+  .student-item.active {
+    background: #8e44ad;
+    color: white;
+    font-weight: bold;
+    border-color: #6c3483;
+    transform: translateX(5px);
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .student-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0e6f5;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+  }
+
+  .student-item:hover img {
+    transform: scale(1.1);
+    border-color: #8e44ad;
+  }
+  
+  .student-info {
+    flex: 1;
+  }
+  
+  .student-info h4 {
+    font-size: 15px;
+  }
+  
+  .student-info small {
+    display: block;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .student-item.active .student-info small {
+    color: #f0e6f5;
+  }
+
+  /* Student profile section */
+  .student-profile-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .student-profile-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+  
+  .student-profile-section img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #8e44ad;
+    transition: all 0.3s ease;
+  }
+
+  .student-profile-section:hover img {
+    transform: scale(1.1);
+    border-color: #6c3483;
+  }
+  
+  .student-profile-info {
+    line-height: 1.4;
+    flex: 1;
+  }
+  
+  .student-profile-info h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+  }
+
+  .student-profile-section:hover .student-profile-info h2 {
+    color: #8e44ad;
+  }
+  
+  .student-profile-info .student-number {
+    color: #777;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .student-profile-section:hover .student-profile-info .student-number {
+    color: #8e44ad;
+  }
+
+  /* Right panel container */
+  .right-panel-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Right panel */
+  .feedback-panel {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    gap: 20px;
+    height: 100%;
+    align-items: start;
+  }
+
+  .panel-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    border-left: 5px solid #8e44ad;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .panel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+  
+  .panel-card:nth-child(1) {
+    border-left-color: #8e44ad;
+  }
+  
+  .panel-card:nth-child(2) {
+    border-left-color: #8e44ad;
+  }
+  
+  .panel-card:nth-child(3) {
+    border-left-color: #8e44ad;
+  }
+  
+  .panel-card h3 {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .panel-card:hover h3 {
+    color: #8e44ad;
+    border-bottom-color: #8e44ad;
+  }
+  
+  .panel-card h3 i {
+    color: #8e44ad;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .panel-card:hover h3 i {
+    transform: scale(1.2);
+  }
+  
+  .panel-card:nth-child(1) h3 i {
+    color: #8e44ad;
+  }
+  
+  .panel-card:nth-child(2) h3 i {
+    color: #8e44ad;
+  }
+  
+  .panel-card:nth-child(3) h3 i {
+    color: #8e44ad;
+  }
+  
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .task-item {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .task-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .task-item:hover::before {
+    left: 100%;
+  }
+  
+  .task-item:hover {
+    background: #f0e6f5;
+    color: #8e44ad;
+    border-color: #8e44ad;
+    transform: translateX(3px);
+  }
+  
+  .task-item.active {
+    background: #8e44ad;
+    color: white;
+    border-color: #6c3483;
+    font-weight: bold;
+    transform: translateX(5px);
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .task-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .task-item-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  .task-item-grade {
+    font-weight: bold;
+    font-size: 14px;
+    color: #8e44ad;
+  }
+  
+  .task-item-type {
+    font-size: 12px;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .autograder-results {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .result-item:hover::before {
+    left: 100%;
+  }
+  
+  .result-item:hover {
+    background: #f0e6f5;
+    border-color: #8e44ad;
+    transform: translateX(3px);
+  }
+  
+  .result-item i.fa-check-circle {
+    color: #2e7d32;
+    font-size: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .result-item:hover i.fa-check-circle {
+    transform: scale(1.2);
+  }
+  
+  .result-item i.fa-xmark-circle {
+    color: #c62828;
+    font-size: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .result-item:hover i.fa-xmark-circle {
+    transform: scale(1.2);
+  }
+  
+  .result-item span {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .result-item:hover span {
+    color: #8e44ad;
+  }
+  
+  .result-item small {
+    font-size: 13px;
+    color: #777;
+    font-weight: normal;
+    transition: all 0.3s ease;
+  }
+
+  .result-item:hover small {
+    color: #8e44ad;
+  }
+  
+  .manual-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+    height: 100%;
+  }
+  
+  .feedback-textarea {
+    width: 100%;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    resize: vertical;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 10px;
+  }
+  
+  .feedback-textarea:focus {
+    outline: none;
+    border-color: #8e44ad;
+    box-shadow: 0 0 8px rgba(142, 68, 173, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .feedback-textarea::placeholder {
+    color: #aaa;
+  }
+  
+  .grade-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #f0e6f5;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #8e44ad;
+    margin-top: auto;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .grade-input-container:hover {
+    background: #e6d9f0;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(142, 68, 173, 0.2);
+  }
+  
+  .grade-input-container h4 {
+    font-size: 14px;
+    font-weight: normal;
+    color: #555;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .grade-input-container:hover h4 {
+    color: #8e44ad;
+  }
+  
+  .grade-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .grade-input {
+    width: 60px;
+    padding: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #8e44ad;
+    border-radius: 8px;
+    color: #8e44ad;
+    transition: all 0.3s ease;
+  }
+  
+  .grade-input:focus {
+    outline: none;
+    border-color: #6c3483;
+    box-shadow: 0 0 8px rgba(108, 52, 131, 0.5);
+    transform: scale(1.05);
+  }
+  
+  .grade-slash {
+    font-size: 24px;
+    font-weight: bold;
+    color: #8e44ad;
+    transition: all 0.3s ease;
+  }
+
+  .grade-input-container:hover .grade-slash {
+    transform: scale(1.1);
+  }
+  
+  .grade-total {
+    font-size: 20px;
+    font-weight: bold;
+    color: #8e44ad;
+    transition: all 0.3s ease;
+  }
+
+  .grade-input-container:hover .grade-total {
+    transform: scale(1.1);
+  }
+  
+  .save-button {
+    width: 100%;
+    padding: 12px;
+    background: #8e44ad;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .save-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .save-button:hover::before {
+    left: 100%;
+  }
+  
+  .save-button:hover {
+    background: #6c3483;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 52, 131, 0.3);
+  }
+  
+  .save-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .save-button.saved {
+    background: #2e7d32;
+  }
+
+  .save-button.saved:hover {
+    background: #1b5e20;
+  }
+  
+  .flex-spacer {
+    flex: 1;
+  }
+  
+  .feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .feedback-header b {
+    font-size: 14px;
+    color: #555;
+    transition: all 0.3s ease;
+  }
+
+  .feedback-textarea:focus + .feedback-header b {
+    color: #8e44ad;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: #8e44ad;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    transition: all 0.3s ease;
+  }
+
+  .loading:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  .loading i {
+    font-size: 24px;
+    margin-bottom: 10px;
+    animation: spin 1s linear infinite;
+    transition: all 0.3s ease;
+  }
+
+  .loading:hover i {
+    color: #8e44ad;
+    transform: scale(1.2);
+  }
+
+  @keyframes spin {
+   0% { transform: rotate(0deg); }
+   100% { transform: rotate(360deg); }
+  }
+
+  /* Modal for viewing student script */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1002;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: auto;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+  
+  .modal-header h3 {
+    color: #8e44ad;
+    font-size: 20px;
+  }
+  
+  .close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    transition: all 0.3s ease;
+  }
+  
+  .close-modal:hover {
+    color: #8e44ad;
+    transform: scale(1.2);
+  }
+  
+  .modal-body {
+    font-family: monospace;
+    white-space: pre-wrap;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* Menu toggle for mobile (hidden by default) */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #8e44ad;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+
+  .menu-toggle:hover {
+    background: #793a9c;
+    transform: rotate(90deg);
+  }
+
+  /* Logout button */
+  .logout-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+  }
+
+  .logout-btn:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
+  }
+
+  /* Responsive design */
+  @media (max-width: 1200px) {
+    .feedback-panel {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .panel-card:last-child {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .sidebar {
+      position: fixed;
+      left: -250px;
+      height: 100%;
+      z-index: 1000;
+      margin-top: 0;
+      border-radius: 0;
+      transition: left 0.3s ease;
+    }
+    
+    .sidebar.active {
+      left: 0;
+    }
+    
+    .main {
+      margin-left: 0;
+      margin-top: 20px;
+    }
+    
+    .menu-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .feedback-layout {
+      flex-direction: column;
+    }
+    
+    .student-list {
+      width: 100%;
+    }
+    
+    .feedback-panel {
+      grid-template-columns: 1fr;
+    }
+    
+    .panel-card:last-child {
+      grid-column: span 1;
+    }
+    
+    .top-left-logo {
+      top: 10px;
+      left: 10px;
+      height: 120px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .top-bar {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .top-user {
+      order: -1;
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    
+    .student-profile-section {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- Loading screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-spinner"></div>
+    <h2>Loading NeuroGrade</h2>
+    <p>Please wait while we load your data...</p>
+  </div>
+
+  <!-- Modal for viewing student script -->
+  <div class="modal" id="script-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Student Script</h3>
+        <button class="close-modal" id="close-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Script content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Top left logo -->
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+
+  <!-- Mobile menu toggle -->
+  <button class="menu-toggle" id="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav">
+      <button onclick="window.location.href='teacher-dashboard.html'">
+        <i class="fas fa-home"></i> Home
+      </button>
+      <button onclick="window.location.href='task.html'">
+        <i class="fas fa-task"></i> Tasks
+      </button>
+      <button onclick="window.location.href='students.html'">
+        <i class="fas fa-users"></i> Students
+      </button>
+      <button onclick="window.location.href='practice.html'">
+        <i class="fas fa-graduation-cap"></i> Practice
+      </button>
+      <button class="active">
+        <i class="fas fa-comment-dots"></i> Feedback
+      </button>
+    </div>
+    <button class="logout-btn" id="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a href="#" class="icon-link" id="mail-icon">
+        <i class="fas fa-envelope"></i>
+        <span class="icon-badge" id="mail-badge">0</span>
+      </a>
+      <a href="#" class="icon-link" id="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="icon-badge" id="notification-badge">0</span>
+      </a>
+      <div class="top-user" id="user-info">
+        <span><b id="user-name">Loading...</b><br><small id="user-email">Loading...</small></span>
+        <img src="https://placehold.co/35x35/8e44ad/FFFFFF?text=?" alt="User" id="user-avatar">
+      </div>
+    </div>
+
+    <div class="feedback-layout">
+      <div class="student-list">
+        <div class="student-search">
+          <input type="text" placeholder="Student number" id="studentNumberSearch">
+          <input type="text" placeholder="Name" id="studentNameSearch">
+        </div>
+        <div class="students" id="studentList">
+          <!-- Student list will be populated from database -->
+          <div class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Loading students from database...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-panel-container">
+        <!-- Student profile section - outside of the task panel -->
+        <div class="student-profile-section">
+          <img src="https://placehold.co/80x80/9b59b6/FFFFFF?text=?" alt="Student" id="student-profile-img">
+          <div class="student-profile-info">
+            <h2 id="student-name">Select a student</h2>
+            <div class="student-number" id="student-number">Student Number: </div>
+          </div>
+        </div>
+
+        <div class="feedback-panel">
+          <div class="panel-card">
+            <h3><i class="fas fa-list-ul"></i> TASK</h3>
+            <div class="task-list" id="taskList">
+              <!-- Task list will be populated from database -->
+              <div class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Select a student to view tasks</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="panel-card">
+            <h3><i class="fas fa-robot"></i> AUTOGRADER RESULTS</h3>
+            <div class="autograder-results" id="autograderResults">
+              <!-- Autograder results will be populated from database -->
+              <div class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Select a task to view results</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="panel-card">
+            <h3><i class="fas fa-pen-to-square"></i> MANUAL FEEDBACK</h3>
+            <div class="manual-feedback">
+              <div>
+                <div class="feedback-header">
+                  <b>PRIVATE FEEDBACK FOR STUDENT</b>
+                </div>
+                <textarea class="feedback-textarea" id="private-feedback-input" placeholder="Enter private feedback for this student..."></textarea>
+              </div>
+              <div>
+                <div class="feedback-header">
+                  <b>FEEDBACK FOR CLASS</b>
+                </div>
+                <textarea class="feedback-textarea" id="class-feedback-input" placeholder="Enter general feedback for the class..."></textarea>
+              </div>
+              <div class="flex-spacer"></div>
+              <div class="grade-input-container">
+                <h4>ADJUSTED GRADE</h4>
+                <div class="grade-input-wrapper">
+                  <input type="number" class="grade-input" id="adjusted-grade" min="0" max="100" value="">
+                  <span class="grade-slash">/</span>
+                  <span class="grade-total">100</span>
+                </div>
+              </div>
+              <button class="save-button" id="save-feedback-btn">SAVE FEEDBACK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay for mobile menu -->
+  <div class="overlay" id="overlay"></div>
+
+<script>
+  // Global variables
+  let currentUser = null;
+  let currentTeacher = null;
+  let teacherStudents = [];
+  let currentStudent = null;
+  let currentTask = null;
+  let studentTasks = [];
+
+  // Initialize the dashboard
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeAuth();
+    setupEventListeners();
+  });
+
+  // Initialize Firebase authentication
+  function initializeAuth() {
+    window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, async (user) => {
+      if (user) {
+        currentUser = user;
+        await loadTeacherData(user.uid);
+        // Hide loading screen after data is loaded
+        setTimeout(() => {
+          document.getElementById('loading-screen').style.display = 'none';
+        }, 1000);
+      } else {
+        // Redirect to login page if not authenticated
+        window.location.href = 'index.html';
+      }
+    });
+  }
+
+  // Load teacher data from Firestore
+  async function loadTeacherData(uid) {
+    try {
+      const teacherDoc = await window.firebaseFunctions.getDoc(
+        window.firebaseFunctions.doc(window.firebaseDb, "teachers", uid)
+      );
+      
+      if (teacherDoc.exists()) {
+        currentTeacher = teacherDoc.data();
+        updateUserInterface();
+        await loadStudentsFromDatabase();
+      } else {
+        console.error("Teacher data not found");
+      }
+    } catch (error) {
+      console.error("Error loading teacher data:", error);
+    }
+  }
+
+  // Update UI with teacher data
+  function updateUserInterface() {
+    if (currentTeacher) {
+      document.getElementById('user-name').textContent = `${currentTeacher.firstName} ${currentTeacher.lastName}`;
+      document.getElementById('user-email').textContent = currentTeacher.email;
+      document.getElementById('user-avatar').src = `https://placehold.co/35x35/8e44ad/FFFFFF?text=${currentTeacher.firstName.charAt(0)}${currentTeacher.lastName.charAt(0)}`;
+    }
+  }
+
+  // Function to load students from database
+  async function loadStudentsFromDatabase() {
+    const studentList = document.getElementById("studentList");
+    studentList.innerHTML = `
+      <div class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Loading students from database...</p>
+      </div>
+    `;
+    
+    try {
+      if (!currentTeacher) return;
+      
+      const teacherFullName = `${currentTeacher.firstName} ${currentTeacher.lastName}`;
+      
+      const studentsQuery = window.firebaseFunctions.query(
+        window.firebaseFunctions.collection(window.firebaseDb, "students"),
+        window.firebaseFunctions.where("teacherName", "==", teacherFullName)
+      );
+      
+      const querySnapshot = await window.firebaseFunctions.getDocs(studentsQuery);
+      teacherStudents = [];
+      
+      querySnapshot.forEach((doc) => {
+        teacherStudents.push({ id: doc.id, ...doc.data() });
+      });
+      
+      renderStudents(teacherStudents);
+    } catch (error) {
+      console.error("Error loading students:", error);
+      studentList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error loading students</p>
+        </div>
+      `;
+    }
+  }
+
+  // Render students in the UI
+  function renderStudents(students) {
+    const studentList = document.getElementById("studentList");
+    
+    if (students.length === 0) {
+      studentList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-users"></i>
+          <p>No students registered under your name yet</p>
+          <p>Students who register with your name will appear here</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let studentsHTML = "";
+    students.forEach((student, index) => {
+      studentsHTML += `
+        <div class="student-item ${index === 0 ? 'active' : ''}" 
+             data-student-id="${student.id}">
+          <img src="https://placehold.co/40x40/9b59b6/FFFFFF?text=${student.firstName.charAt(0)}${student.lastName.charAt(0)}" alt="${student.firstName}">
+          <div class="student-info">
+            <h4>${student.firstName} ${student.lastName}</h4>
+            <small>${student.studentNumber}</small>
+          </div>
+        </div>
+      `;
+    });
+    
+    studentList.innerHTML = studentsHTML;
+    
+    // Add event listeners to student items
+    document.querySelectorAll(".student-item").forEach(stu => {
+      stu.addEventListener("click", function() {
+        document.querySelectorAll(".student-item").forEach(s => s.classList.remove("active"));
+        this.classList.add("active");
+        
+        // Load data for the selected student
+        const studentId = this.dataset.studentId;
+        loadStudentData(studentId);
+      });
+    });
+    
+    // Load data for first student by default
+    if (students.length > 0) {
+      const firstStudent = document.querySelector(".student-item.active");
+      if (firstStudent) {
+        loadStudentData(firstStudent.dataset.studentId);
+      }
+    }
+  }
+
+  // Load student data and tasks
+  async function loadStudentData(studentId) {
+    try {
+      // Get student document
+      const studentDoc = await window.firebaseFunctions.getDoc(
+        window.firebaseFunctions.doc(window.firebaseDb, "students", studentId)
+      );
+      
+      if (!studentDoc.exists()) {
+        throw new Error("Student not found");
+      }
+      
+      currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+      
+      // Update student profile
+      document.getElementById("student-name").textContent = `${currentStudent.firstName} ${currentStudent.lastName}`;
+      document.getElementById("student-number").textContent = `Student Number: ${currentStudent.studentNumber}`;
+      document.getElementById("student-profile-img").src = `https://placehold.co/80x80/9b59b6/FFFFFF?text=${currentStudent.firstName.charAt(0)}${currentStudent.lastName.charAt(0)}`;
+      
+      // Load student tasks (assignments and tests)
+      await loadStudentTasks(studentId);
+      
+      // Reset feedback fields
+      document.getElementById("private-feedback-input").value = "";
+      document.getElementById("class-feedback-input").value = "";
+      document.getElementById("adjusted-grade").value = "";
+      
+      // Reset autograder results
+      document.getElementById("autograderResults").innerHTML = `
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Select a task to view results</p>
+        </div>
+      `;
+    } catch (error) {
+      console.error("Error loading student data:", error);
+    }
+  }
+
+  // Load student tasks (assignments and tests)
+  async function loadStudentTasks(studentId) {
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = `
+      <div class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Loading tasks from database...</p>
+      </div>
+    `;
+    
+    try {
+      // Get assignments for this student
+      const assignmentsQuery = window.firebaseFunctions.query(
+        window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
+        window.firebaseFunctions.where("studentId", "==", studentId)
+      );
+      
+      const assignmentsSnapshot = await window.firebaseFunctions.getDocs(assignmentsQuery);
+      studentTasks = [];
+      
+      assignmentsSnapshot.forEach(doc => {
+        studentTasks.push({ 
+          id: doc.id, 
+          ...doc.data(),
+          type: "assignment"
+        });
+      });
+      
+      // Get tests for this student
+      const testsQuery = window.firebaseFunctions.query(
+        window.firebaseFunctions.collection(window.firebaseDb, "tests"),
+        window.firebaseFunctions.where("studentId", "==", studentId)
+      );
+      
+      const testsSnapshot = await window.firebaseFunctions.getDocs(testsQuery);
+      
+      testsSnapshot.forEach(doc => {
+        studentTasks.push({ 
+          id: doc.id, 
+          ...doc.data(),
+          type: "test"
+        });
+      });
+      
+      renderTasks(studentTasks);
+    } catch (error) {
+      console.error("Error loading student tasks:", error);
+      taskList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error loading tasks</p>
+        </div>
+      `;
+    }
+  }
+
+  // Render tasks in the UI
+  function renderTasks(tasks) {
+    const taskList = document.getElementById("taskList");
+    
+    if (tasks.length === 0) {
+      taskList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-clipboard-list"></i>
+          <p>No tasks found for this student</p>
+          <p>Tasks will appear here when created</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let tasksHTML = "";
+    tasks.forEach((task, index) => {
+      const grade = task.updatedGrade || task.aiGrade || 0;
+      const taskType = task.type === "assignment" ? "Assignment" : "Test";
+      
+      tasksHTML += `
+        <div class="task-item ${index === 0 ? 'active' : ''}" 
+             data-task-id="${task.id}" 
+             data-task-type="${task.type}">
+          <div class="task-item-header">
+            <div class="task-item-name">${task.name || 'Unnamed Task'}</div>
+            <div class="task-item-grade">${grade}%</div>
+          </div>
+          <div class="task-item-type">${taskType}</div>
+        </div>
+      `;
+    });
+    
+    taskList.innerHTML = tasksHTML;
+    
+    // Add event listeners to task items
+    document.querySelectorAll(".task-item").forEach(task => {
+      task.addEventListener("click", function() {
+        document.querySelectorAll(".task-item").forEach(t => t.classList.remove("active"));
+        this.classList.add("active");
+        
+        // Load task details
+        const taskId = this.dataset.taskId;
+        const taskType = this.dataset.taskType;
+        loadTaskDetails(taskId, taskType);
+      });
+      
+      // Double click to view student script
+      task.addEventListener("dblclick", function() {
+        const taskId = this.dataset.taskId;
+        const taskType = this.dataset.taskType;
+        viewStudentScript(taskId, taskType);
+      });
+    });
+    
+    // Load details for first task by default
+    if (tasks.length > 0) {
+      const firstTask = document.querySelector(".task-item.active");
+      if (firstTask) {
+        const taskId = firstTask.dataset.taskId;
+        const taskType = firstTask.dataset.taskType;
+        loadTaskDetails(taskId, taskType);
+      }
+    }
+  }
+
+  // Load task details and autograder results
+  async function loadTaskDetails(taskId, taskType) {
+    try {
+      const taskDoc = await window.firebaseFunctions.getDoc(
+        window.firebaseFunctions.doc(window.firebaseDb, taskType === "assignment" ? "assignments" : "tests", taskId)
+      );
+      
+      if (!taskDoc.exists()) {
+        throw new Error("Task not found");
+      }
+      
+      currentTask = { id: taskDoc.id, ...taskDoc.data(), type: taskType };
+      
+      // Update adjusted grade field
+      document.getElementById("adjusted-grade").value = currentTask.updatedGrade || currentTask.aiGrade || "";
+      
+      // Load autograder results
+      await loadAutograderResults(currentTask);
+    } catch (error) {
+      console.error("Error loading task details:", error);
+    }
+  }
+
+  // Load autograder results
+  async function loadAutograderResults(task) {
+    const autograderResults = document.getElementById("autograderResults");
+    
+    // If we have autograder results in the task document
+    if (task.autograderResults && task.autograderResults.length > 0) {
+      let resultsHTML = "";
+      
+      task.autograderResults.forEach((result, index) => {
+        const isCorrect = result.score === result.maxScore;
+        const icon = isCorrect ? "fa-check-circle" : "fa-xmark-circle";
+        
+        resultsHTML += `
+          <div class="result-item">
+            <i class="fas ${icon}"></i>
+            <div>
+              <span>Question ${index + 1}: ${result.score}/${result.maxScore}</span>
+              <br>
+              <small>${result.feedback || "No specific feedback provided"}</small>
+            </div>
+          </div>
+        `;
+      });
+      
+      autograderResults.innerHTML = resultsHTML;
+    } else {
+      // If no autograder results are available
+      autograderResults.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-robot"></i>
+          <p>No autograder results available</p>
+          <p>Autograder results will appear here when available</p>
+        </div>
+      `;
+    }
+  }
+
+  // View student script in modal
+  async function viewStudentScript(taskId, taskType) {
+    try {
+      const taskDoc = await window.firebaseFunctions.getDoc(
+        window.firebaseFunctions.doc(window.firebaseDb, taskType === "assignment" ? "assignments" : "tests", taskId)
+      );
+      
+      if (!taskDoc.exists()) {
+        throw new Error("Task not found");
+      }
+      
+      const taskData = taskDoc.data();
+      const scriptContent = taskData.script || taskData.answer || "No script available for this task.";
+      
+      // Update modal content
+      document.getElementById("modal-title").textContent = `${taskData.name || 'Task'} - Student Script`;
+      document.getElementById("modal-body").textContent = scriptContent;
+      
+      // Show modal
+      document.getElementById("script-modal").style.display = "flex";
+    } catch (error) {
+      console.error("Error loading student script:", error);
+      alert("Error loading student script: " + error.message);
+    }
+  }
+
+  // Save feedback and adjusted grade
+  async function saveFeedback() {
+    if (!currentStudent || !currentTask) {
+      alert("Please select a student and a task first.");
+      return;
+    }
+    
+    const privateFeedback = document.getElementById("private-feedback-input").value;
+    const classFeedback = document.getElementById("class-feedback-input").value;
+    const adjustedGrade = parseInt(document.getElementById("adjusted-grade").value);
+    
+    if (isNaN(adjustedGrade) || adjustedGrade < 0 || adjustedGrade > 100) {
+      alert("Please enter a valid grade between 0 and 100.");
+      return;
+    }
+    
+    try {
+      // Update the task with the adjusted grade
+      const taskRef = window.firebaseFunctions.doc(
+        window.firebaseDb, 
+        currentTask.type === "assignment" ? "assignments" : "tests", 
+        currentTask.id
+      );
+      
+      await window.firebaseFunctions.updateDoc(taskRef, {
+        updatedGrade: adjustedGrade,
+        lastUpdated: window.firebaseFunctions.serverTimestamp()
+      });
+      
+      // Save private feedback as a notification for the student
+      if (privateFeedback.trim() !== "") {
+        await window.firebaseFunctions.addDoc(
+          window.firebaseFunctions.collection(window.firebaseDb, "notifications"),
+          {
+            studentId: currentStudent.id,
+            teacherId: currentUser.uid,
+            teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
+            message: privateFeedback,
+            type: "private_feedback",
+            taskId: currentTask.id,
+            taskName: currentTask.name || "Task",
+            createdAt: window.firebaseFunctions.serverTimestamp(),
+            read: false
+          }
+        );
+      }
+      
+      // Save class feedback if provided
+      if (classFeedback.trim() !== "") {
+        // Get all students of this teacher
+        const teacherFullName = `${currentTeacher.firstName} ${currentTeacher.lastName}`;
+        const studentsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "students"),
+          window.firebaseFunctions.where("teacherName", "==", teacherFullName)
+        );
+        
+        const studentsSnapshot = await window.firebaseFunctions.getDocs(studentsQuery);
+        
+        // Create notifications for all students
+        const notifications = [];
+        studentsSnapshot.forEach(doc => {
+          notifications.push(
+            window.firebaseFunctions.addDoc(
+              window.firebaseFunctions.collection(window.firebaseDb, "notifications"),
+              {
+                studentId: doc.id,
+                teacherId: currentUser.uid,
+                teacherName: teacherFullName,
+                message: classFeedback,
+                type: "class_feedback",
+                createdAt: window.firebaseFunctions.serverTimestamp(),
+                read: false
+              }
+            )
+          );
+        });
+        
+        // Wait for all notifications to be created
+        await Promise.all(notifications);
+      }
+      
+      // Update UI to show success
+      const saveButton = document.getElementById("save-feedback-btn");
+      saveButton.textContent = "FEEDBACK SAVED!";
+      saveButton.classList.add("saved");
+      
+      setTimeout(() => {
+        saveButton.textContent = "SAVE FEEDBACK";
+        saveButton.classList.remove("saved");
+      }, 3000);
+      
+      console.log("Feedback saved successfully");
+    } catch (error) {
+      console.error("Error saving feedback:", error);
+      alert("Error saving feedback: " + error.message);
+    }
+  }
+
+  // Search functionality
+  function filterStudents() {
+    const numberSearch = document.getElementById("studentNumberSearch").value.toLowerCase();
+    const nameSearch = document.getElementById("studentNameSearch").value.toLowerCase();
+    
+    document.querySelectorAll(".student-item").forEach(student => {
+      const studentNumber = student.querySelector("small").textContent.toLowerCase();
+      const studentName = student.querySelector("h4").textContent.toLowerCase();
+      
+      const numberMatch = studentNumber.includes(numberSearch);
+      const nameMatch = studentName.includes(nameSearch);
+      
+      student.style.display = (numberMatch && nameMatch) ? "flex" : "none";
+    });
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    // Search functionality
+    document.getElementById("studentNumberSearch").addEventListener("input", filterStudents);
+    document.getElementById("studentNameSearch").addEventListener("input", filterStudents);
+    
+    // Save feedback button
+    document.getElementById("save-feedback-btn").addEventListener("click", saveFeedback);
+    
+    // Modal close button
+    document.getElementById("close-modal").addEventListener("click", function() {
+      document.getElementById("script-modal").style.display = "none";
+    });
+    
+    // Close modal when clicking outside
+    document.getElementById("script-modal").addEventListener("click", function(e) {
+      if (e.target === this) {
+        this.style.display = "none";
+      }
+    });
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+    
+    // Logout button
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      try {
+        await window.firebaseFunctions.signOut(window.firebaseAuth);
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    });
+  }
+</script>
+</body>
+</html>
