@@ -1,36 +1,28 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import openai
-import firebase_admin
-from firebase_admin import credentials, firestore
 import os
-import json
+import logging
 from datetime import datetime
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# Initialize OpenAI
-openai.api_key = "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"
+# Configuration
+openai.api_key = os.getenv('OPENAI_API_KEY', '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')
 
-# Initialize Firebase
-try:
-    # For production, use service account key file
-    cred = credentials.Certificate("serviceAccountKey.json")
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    print("Firebase initialized successfully")
-except:
-    print("Firebase initialization failed - using mock mode")
-    db = None
-
-@app.route('/')
-def home():
-    return jsonify({"message": "NeuroGrade AI Feedback API", "status": "running"})
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
 
 @app.route('/api/generate-feedback', methods=['POST'])
 def generate_feedback():
     try:
+        start_time = datetime.now()
         data = request.get_json()
         
         if not data:
@@ -42,227 +34,221 @@ def generate_feedback():
         answers = data.get('answers', [])
         autograder_results = data.get('autograder_results', [])
         
-        # Construct prompt
-        prompt = construct_feedback_prompt(student_data, task_data, questions, answers, autograder_results)
+        logger.info(f"Generating feedback for student: {student_data.get('firstName', 'Unknown')}")
         
-        # Call OpenAI API
+        # Enhanced prompt construction
+        prompt = construct_enhanced_prompt(student_data, task_data, questions, answers, autograder_results)
+        
+        # Call OpenAI API with enhanced parameters
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert educational AI that provides detailed, constructive feedback to learners. 
-                    Your role is to identify knowledge gaps, misconceptions, and areas for improvement while being encouraging and specific.
-                    Always provide actionable recommendations and highlight strengths."""
+                    "content": """You are an expert computer science educator with 15+ years of experience teaching programming and software engineering. Your role is to provide detailed, constructive, and actionable feedback that helps students grow.
+
+KEY RESPONSIBILITIES:
+1. Identify specific technical strengths and weaknesses
+2. Analyze problem-solving approaches and algorithmic thinking
+3. Assess code quality, readability, and best practices
+4. Provide concrete recommendations with timelines
+5. Suggest specific learning resources and practice exercises
+6. Offer encouragement while being honest about improvement areas
+
+FOCUS AREAS:
+- Algorithm design and efficiency
+- Data structure selection and usage
+- Code organization and maintainability
+- Debugging and error handling strategies
+- Time and space complexity analysis
+- Software engineering best practices
+
+FORMAT REQUIREMENTS:
+- Use clear sections with headings
+- Provide specific examples from the student's work
+- Include actionable items with deadlines
+- Recommend specific resources (books, courses, practice platforms)
+- Be encouraging but honest"""
                 },
                 {
                     "role": "user",
                     "content": prompt
                 }
             ],
-            max_tokens=1500,
-            temperature=0.7
+            max_tokens=2500,
+            temperature=0.7,
+            top_p=0.9
         )
         
         feedback_text = response.choices[0].message.content
-        structured_feedback = parse_feedback_response(feedback_text)
+        structured_feedback = parse_enhanced_feedback_response(feedback_text)
         
-        # Save to Firebase if available
-        feedback_id = None
-        if db:
-            feedback_data = {
-                'student_id': student_data.get('id'),
-                'task_id': task_data.get('id'),
-                'task_type': task_data.get('type'),
-                'feedback': structured_feedback,
-                'generated_at': firestore.SERVER_TIMESTAMP,
-                'collection_key': "NmXzaV6FkkE3koeUI3Ix"
-            }
-            
-            doc_ref = db.collection('ai_feedback').add(feedback_data)
-            feedback_id = doc_ref[1].id
+        processing_time = (datetime.now() - start_time).total_seconds()
+        logger.info(f"Feedback generated successfully in {processing_time:.2f} seconds")
         
         return jsonify({
             'success': True,
-            'feedback_id': feedback_id,
-            'feedback': structured_feedback
+            'feedback': structured_feedback,
+            'processing_time': processing_time,
+            'model_used': 'gpt-4'
         })
         
-    except Exception as e:
-        print(f"Error generating feedback: {str(e)}")
+    except openai.error.OpenAIError as e:
+        logger.error(f"OpenAI API error: {str(e)}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f"OpenAI API error: {str(e)}"
         }), 500
-
-@app.route('/api/feedback/<student_id>/<task_id>', methods=['GET'])
-def get_feedback(student_id, task_id):
-    try:
-        if not db:
-            return jsonify({"success": False, "error": "Firebase not available"}), 500
-            
-        # Query for the latest feedback for this student and task
-        feedback_ref = db.collection('ai_feedback')
-        query = feedback_ref.where('student_id', '==', student_id)\
-                           .where('task_id', '==', task_id)\
-                           .order_by('generated_at', direction=firestore.Query.DESCENDING)\
-                           .limit(1)
-        
-        docs = query.stream()
-        
-        feedback_list = []
-        for doc in docs:
-            feedback_data = doc.to_dict()
-            feedback_data['id'] = doc.id
-            feedback_list.append(feedback_data)
-        
-        if feedback_list:
-            return jsonify({
-                'success': True,
-                'feedback': feedback_list[0]
-            })
-        else:
-            return jsonify({
-                'success': True,
-                'feedback': None
-            })
-            
     except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f"Internal server error: {str(e)}"
         }), 500
 
-@app.route('/api/feedback/student/<student_id>', methods=['GET'])
-def get_student_feedback(student_id):
-    try:
-        if not db:
-            return jsonify({"success": False, "error": "Firebase not available"}), 500
-            
-        feedback_ref = db.collection('ai_feedback')
-        query = feedback_ref.where('student_id', '==', student_id)\
-                           .order_by('generated_at', direction=firestore.Query.DESCENDING)
+def construct_enhanced_prompt(student_data, task_data, questions, answers, autograder_results):
+    # Build a comprehensive performance summary
+    total_score = 0
+    total_max_score = 0
+    question_analysis = []
+    
+    for i, (question, answer, result) in enumerate(zip(questions, answers, autograder_results)):
+        score = result.get('score', 0) if result else 0
+        max_score = result.get('maxScore', 1) if result else 1
+        percentage = (score / max_score * 100) if max_score > 0 else 0
         
-        docs = query.stream()
+        total_score += score
+        total_max_score += max_score
         
-        feedback_list = []
-        for doc in docs:
-            feedback_data = doc.to_dict()
-            feedback_data['id'] = doc.id
-            feedback_list.append(feedback_data)
-        
-        return jsonify({
-            'success': True,
-            'feedback': feedback_list
+        question_analysis.append({
+            'number': i + 1,
+            'score': score,
+            'max_score': max_score,
+            'percentage': percentage,
+            'question': question.get('text', question.get('question', '')),
+            'answer': answer or 'No answer provided',
+            'feedback': result.get('feedback', '') if result else ''
         })
-            
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-def construct_feedback_prompt(student_data, task_data, questions, answers, autograder_results):
+    
+    overall_percentage = (total_score / total_max_score * 100) if total_max_score > 0 else 0
+    
     prompt = f"""
-As an educational expert, analyze this student's performance and provide detailed feedback:
+COMPREHENSIVE STUDENT PERFORMANCE ANALYSIS REQUEST
 
 STUDENT INFORMATION:
 - Name: {student_data.get('firstName', '')} {student_data.get('lastName', '')}
-- Student Number: {student_data.get('studentNumber', '')}
+- Student ID: {student_data.get('studentNumber', 'N/A')}
+- Subject: {student_data.get('subject', 'Not specified')}
 
-TASK INFORMATION:
-- Task Name: {task_data.get('name', '')}
-- Task Type: {task_data.get('type', '')}
-- Overall Score: {task_data.get('aiGrade', task_data.get('updatedGrade', 0))}%
+ASSIGNMENT CONTEXT:
+- Task: {task_data.get('name', 'Unnamed Task')}
+- Type: {task_data.get('type', 'Assignment')}
+- Overall Score: {overall_percentage:.1f}% ({total_score}/{total_max_score})
+- Description: {task_data.get('description', 'No description provided')}
 
-QUESTIONS AND ANSWERS ANALYSIS:
+DETAILED QUESTION-BY-QUESTION ANALYSIS:
 """
     
-    for i in range(len(questions)):
-        question = questions[i] if i < len(questions) else {}
-        answer = answers[i] if i < len(answers) else 'No answer provided'
-        result = autograder_results[i] if i < len(autograder_results) else {}
-        
+    for qa in question_analysis:
         prompt += f"""
-QUESTION {i+1}:
-- Question: {question.get('text', question.get('question', 'No question text'))}
-- Student's Answer: {answer}
-- Autograder Result: {f"Score: {result.get('score', 0)}/{result.get('maxScore', 1)}" if result else 'No result'}
-- Autograder Feedback: {result.get('feedback', 'No specific feedback')}
+QUESTION {qa['number']} ({qa['percentage']:.1f}%):
+▸ Question: {qa['question']}
+▸ Student's Answer: {qa['answer']}
+▸ Score: {qa['score']}/{qa['max_score']}
+▸ Autograder Feedback: {qa['feedback'] or 'No specific feedback provided'}
 """
     
     prompt += """
-Please provide comprehensive feedback covering:
 
-1. STRENGTHS IDENTIFIED:
-   - What concepts did the student demonstrate understanding of?
-   - Which answers were particularly well-reasoned?
+REQUESTED ANALYSIS SECTIONS:
 
-2. AREAS FOR IMPROVEMENT:
-   - Specific knowledge gaps or misconceptions
-   - Common patterns in incorrect answers
-   - Conceptual misunderstandings
+1. EXECUTIVE SUMMARY
+   - Overall performance assessment
+   - Key strengths demonstrated
+   - Critical areas needing improvement
+   - Learning trajectory assessment
 
-3. SPECIFIC RECOMMENDATIONS:
-   - Study suggestions for each weak area
-   - Practice exercises or resources
-   - Learning strategies tailored to their performance
+2. TECHNICAL SKILLS BREAKDOWN
+   - Algorithmic thinking and problem-solving
+   - Code quality and organization
+   - Data structure proficiency
+   - Efficiency and optimization awareness
+   - Error handling and edge cases
 
-4. ENCOURAGEMENT AND NEXT STEPS:
-   - Positive reinforcement
-   - Clear action plan for improvement
+3. CONCEPTUAL UNDERSTANDING
+   - Core computer science concepts mastery
+   - Theoretical knowledge application
+   - Abstraction and modeling capabilities
+   - Pattern recognition skills
 
-Format your response in a structured way that can be easily displayed to the student.
+4. ACTIONABLE IMPROVEMENT PLAN
+   - Immediate priorities (next 7 days)
+   - Short-term goals (2-4 weeks)
+   - Medium-term development (1-2 months)
+   - Long-term growth areas (3-6 months)
+
+5. TARGETED LEARNING PATH
+   - Specific practice exercises
+   - Recommended projects
+   - Study resources (books, courses, platforms)
+   - Skill-building activities
+
+6. CAREER/PROFESSIONAL DEVELOPMENT
+   - Relevant real-world applications
+   - Industry best practices to focus on
+   - Potential specialization areas
+   - Next learning milestones
+
+Please provide detailed, specific, and actionable feedback that the student can immediately use to improve their programming skills.
 """
     
     return prompt
 
-def parse_feedback_response(response):
+def parse_enhanced_feedback_response(response):
+    # Enhanced parsing for better structure
     sections = {
-        'strengths': '',
-        'improvements': '',
-        'recommendations': '',
-        'encouragement': ''
+        'executive_summary': "",
+        'technical_skills': "",
+        'conceptual_understanding': "",
+        'improvement_plan': "",
+        'learning_path': "",
+        'career_development': ""
     }
     
-    current_section = ''
+    current_section = None
     lines = response.split('\n')
     
     for line in lines:
-        lower_line = line.lower().strip()
+        line = line.strip()
+        if not line:
+            continue
+            
+        lower_line = line.lower()
         
-        if 'strengths' in lower_line or 'strength' in lower_line or 'what went well' in lower_line:
-            current_section = 'strengths'
-        elif 'improvement' in lower_line or 'areas to improve' in lower_line or 'weakness' in lower_line:
-            current_section = 'improvements'
-        elif 'recommendation' in lower_line or 'suggestion' in lower_line or 'advice' in lower_line:
-            current_section = 'recommendations'
-        elif 'encouragement' in lower_line or 'next steps' in lower_line or 'conclusion' in lower_line:
-            current_section = 'encouragement'
-        elif current_section and line.strip() and not line.strip().startswith(('1.', '2.', '3.', '4.')):
+        # Section detection
+        if 'executive summary' in lower_line or 'overall performance' in lower_line:
+            current_section = 'executive_summary'
+        elif 'technical skills' in lower_line or 'technical breakdown' in lower_line:
+            current_section = 'technical_skills'
+        elif 'conceptual understanding' in lower_line or 'conceptual mastery' in lower_line:
+            current_section = 'conceptual_understanding'
+        elif 'improvement plan' in lower_line or 'actionable plan' in lower_line:
+            current_section = 'improvement_plan'
+        elif 'learning path' in lower_line or 'targeted learning' in lower_line:
+            current_section = 'learning_path'
+        elif 'career development' in lower_line or 'professional development' in lower_line:
+            current_section = 'career_development'
+        elif current_section and line and not line.startswith(('#', '===', '---')):
             sections[current_section] += line + '\n'
-    
-    # Generate summary
-    summary = generate_summary(sections)
     
     return {
         'raw': response,
         'structured': sections,
-        'summary': summary
+        'summary': sections.get('executive_summary', '')[:500] + '...' if sections.get('executive_summary') else 'Analysis completed. Review detailed feedback sections.',
+        'generated_at': datetime.now().isoformat(),
+        'version': '2.0'
     }
 
-def generate_summary(sections):
-    has_strengths = bool(sections['strengths'] and sections['strengths'].strip())
-    has_improvements = bool(sections['improvements'] and sections['improvements'].strip())
-    
-    if has_strengths and has_improvements:
-        return "Based on your performance, you have demonstrated solid understanding in several areas while showing opportunities for growth in others. Focus on the specific recommendations to enhance your learning outcomes."
-    elif has_strengths:
-        return "Excellent work! You've demonstrated strong understanding across all areas. Continue building on these strengths with more challenging exercises."
-    elif has_improvements:
-        return "Your performance indicates some areas needing attention. Follow the detailed recommendations to strengthen your understanding and skills."
-    else:
-        return "Comprehensive analysis of your performance reveals insights into your learning progress. Review the detailed feedback for specific guidance."
-
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
