@@ -25,7 +25,9 @@
     getDoc,
     orderBy,
     onSnapshot,
-    setDoc
+    setDoc,
+    updateDoc,
+    deleteDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { 
     getStorage, 
@@ -69,6 +71,8 @@
     orderBy,
     onSnapshot,
     setDoc,
+    updateDoc,
+    deleteDoc,
     ref,
     uploadBytes,
     getDownloadURL
@@ -465,6 +469,11 @@
     color: #666;
   }
 
+  .subject-actions {
+    display: flex;
+    gap: 10px;
+  }
+
   .material-btn {
     background: linear-gradient(135deg, #8e44ad, #b57dff);
     color: white;
@@ -490,6 +499,39 @@
   .material-btn:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(142, 68, 173, 0.3);
+  }
+
+  .view-btn {
+    background: linear-gradient(135deg, #3498db, #5dade2);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+  }
+
+  .view-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+  }
+
+  .view-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+  }
+
+  .view-btn.active {
+    background: linear-gradient(135deg, #1c5d99, #2980b9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
   }
 
   /* Right column */
@@ -606,8 +648,10 @@
     border-radius: 12px;
     box-shadow: 0 5px 25px rgba(0,0,0,0.2);
     z-index: 1000;
-    width: 400px;
+    width: 500px;
     max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
     border: 1px solid rgba(0,0,0,0.08);
     animation: popIn 0.3s ease;
   }
@@ -626,7 +670,7 @@
   }
 
   .popup-content {
-    max-height: 300px;
+    max-height: 60vh;
     overflow-y: auto;
     padding: 10px 0;
     color: #333;
@@ -885,14 +929,15 @@
 
   /* Message and notification styles */
   .message-item, .notification-item {
-    padding: 12px 0;
+    padding: 12px 15px;
     border-bottom: 1px solid #eee;
     transition: all 0.3s ease;
+    cursor: pointer;
   }
 
   .message-item:hover, .notification-item:hover {
     background: #f8f9fa;
-    padding-left: 10px;
+    padding-left: 20px;
     border-radius: 6px;
   }
 
@@ -903,7 +948,7 @@
   .message-header, .notification-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
   }
 
   .message-sender, .notification-title {
@@ -920,6 +965,15 @@
     font-size: 13px;
     color: #666;
     line-height: 1.4;
+  }
+
+  .message-unread, .notification-unread {
+    background-color: #e3f2fd;
+    border-left: 4px solid #3498db;
+  }
+
+  .message-read, .notification-read {
+    opacity: 0.8;
   }
 
   /* Logout button */
@@ -944,6 +998,83 @@
     background: #ff5252;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
+  }
+
+  /* Subject view indicator */
+  .subject-view-indicator {
+    background: #e3f2fd;
+    border-left: 4px solid #3498db;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .subject-view-indicator h3 {
+    color: #3498db;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .subject-view-indicator button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .subject-view-indicator button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  /* Message and notification popup styles */
+  .message-details, .notification-details {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 15px;
+  }
+
+  .message-actions, .notification-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+
+  .mark-read-btn, .delete-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+  }
+
+  .mark-read-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+  }
+
+  .mark-read-btn:hover {
+    background: #2980b9;
+  }
+
+  .delete-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+  }
+
+  .delete-btn:hover {
+    background: #c0392b;
   }
 
   /* Responsive design */
@@ -982,6 +1113,17 @@
       left: 10px;
       height: 120px;
     }
+    
+    .subject-actions {
+      flex-direction: column;
+      width: 100%;
+      gap: 5px;
+    }
+    
+    .material-btn, .view-btn {
+      width: 100%;
+      justify-content: center;
+    }
   }
 
   @media (max-width: 576px) {
@@ -1012,9 +1154,9 @@
       gap: 10px;
     }
     
-    .material-btn {
+    .subject-actions {
+      flex-direction: row;
       width: 100%;
-      justify-content: center;
     }
   }
 </style>
@@ -1075,6 +1217,12 @@
         <span><b id="user-name">Loading...</b><br><small id="user-email">Loading...</small></span>
         <img src="https://placehold.co/35x35/8e44ad/FFFFFF?text=?" alt="User" id="user-avatar">
       </div>
+    </div>
+
+    <!-- Subject View Indicator -->
+    <div class="subject-view-indicator" id="subject-view-indicator" style="display: none;">
+      <h3 id="current-subject-view">Currently viewing: <span id="subject-name"></span></h3>
+      <button id="clear-subject-view">View All Subjects</button>
     </div>
 
     <!-- Welcome -->
@@ -1155,6 +1303,58 @@
     </div>
   </div>
 
+  <!-- Messages Popup -->
+  <div class="popup" id="messages-popup">
+    <button class="popup-close">&times;</button>
+    <h3><i class="fas fa-envelope"></i> Your Messages</h3>
+    <div class="popup-content" id="messages-content">
+      <div class="empty-state">
+        <i class="fas fa-envelope-open"></i>
+        <p>No messages yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications Popup -->
+  <div class="popup" id="notifications-popup">
+    <button class="popup-close">&times;</button>
+    <h3><i class="fas fa-bell"></i> Notifications</h3>
+    <div class="popup-content" id="notifications-content">
+      <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <p>No notifications yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Detail Popup -->
+  <div class="popup" id="message-detail-popup">
+    <button class="popup-close">&times;</button>
+    <h3><i class="fas fa-envelope"></i> Message Details</h3>
+    <div class="popup-content">
+      <div id="message-detail-content">
+        <div class="loading-full">
+          <i class="fas fa-spinner"></i>
+          <p>Loading message...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Detail Popup -->
+  <div class="popup" id="notification-detail-popup">
+    <button class="popup-close">&times;</button>
+    <h3><i class="fas fa-bell"></i> Notification Details</h3>
+    <div class="popup-content">
+      <div id="notification-detail-content">
+        <div class="loading-full">
+          <i class="fas fa-spinner"></i>
+          <p>Loading notification...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
@@ -1170,6 +1370,10 @@
     const mailIcon = document.getElementById('mail-icon');
     const notificationIcon = document.getElementById('notification-icon');
     const materialPopup = document.getElementById('material-popup');
+    const messagesPopup = document.getElementById('messages-popup');
+    const notificationsPopup = document.getElementById('notifications-popup');
+    const messageDetailPopup = document.getElementById('message-detail-popup');
+    const notificationDetailPopup = document.getElementById('notification-detail-popup');
     const overlay = document.getElementById('overlay');
     const popupCloseButtons = document.querySelectorAll('.popup-close');
     const cancelMaterialBtn = document.getElementById('cancel-material');
@@ -1187,6 +1391,13 @@
     const studentsCount = document.getElementById('students-count');
     const mailBadge = document.getElementById('mail-badge');
     const notificationBadge = document.getElementById('notification-badge');
+    const subjectViewIndicator = document.getElementById('subject-view-indicator');
+    const subjectNameDisplay = document.getElementById('subject-name');
+    const clearSubjectViewBtn = document.getElementById('clear-subject-view');
+    const messagesContent = document.getElementById('messages-content');
+    const notificationsContent = document.getElementById('notifications-content');
+    const messageDetailContent = document.getElementById('message-detail-content');
+    const notificationDetailContent = document.getElementById('notification-detail-content');
 
     // Global variables
     let currentUser = null;
@@ -1194,9 +1405,9 @@
     let teacherSubjects = [];
     let teacherStudents = [];
     let selectedSubjectForMaterial = null;
-
-    // Study Material ID from Firebase
-    const STUDY_MATERIAL_ID = "352FTSqJwKayxCEVVmuD";
+    let currentSubjectView = null;
+    let messages = [];
+    let notifications = [];
 
     // Initialize the dashboard
     document.addEventListener('DOMContentLoaded', function() {
@@ -1349,6 +1560,9 @@
             <p>Subject ${index + 1}</p>
           </div>
           <div class="subject-actions">
+            <button class="view-btn ${currentSubjectView === subject ? 'active' : ''}" data-subject="${subject}">
+              <i class="fas fa-eye"></i> View
+            </button>
             <button class="material-btn" data-subject="${subject}">
               <i class="fas fa-file-upload"></i> Add Material
             </button>
@@ -1359,13 +1573,44 @@
       
       // Add event listeners to material buttons
       const materialButtons = subjectsContainer.querySelectorAll('.material-btn');
-      
       materialButtons.forEach(button => {
         button.addEventListener('click', function() {
           const subject = this.getAttribute('data-subject');
           openMaterialPopup(subject);
         });
       });
+      
+      // Add event listeners to view buttons
+      const viewButtons = subjectsContainer.querySelectorAll('.view-btn');
+      viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const subject = this.getAttribute('data-subject');
+          setSubjectView(subject);
+        });
+      });
+    }
+
+    // Set the current subject view
+    function setSubjectView(subject) {
+      currentSubjectView = subject;
+      subjectNameDisplay.textContent = subject;
+      subjectViewIndicator.style.display = 'flex';
+      
+      // Update UI to reflect the active view button
+      renderSubjects();
+      renderStudents();
+      calculateClassAverage();
+    }
+
+    // Clear the subject view
+    function clearSubjectView() {
+      currentSubjectView = null;
+      subjectViewIndicator.style.display = 'none';
+      
+      // Update UI to reflect the change
+      renderSubjects();
+      renderStudents();
+      calculateClassAverage();
     }
 
     // Load students registered under this teacher
@@ -1401,12 +1646,20 @@
 
     // Render students in the UI
     function renderStudents() {
-      if (teacherStudents.length === 0) {
+      // Filter students by current subject view if set
+      let filteredStudents = teacherStudents;
+      if (currentSubjectView) {
+        filteredStudents = teacherStudents.filter(student => 
+          student.subjects && student.subjects.includes(currentSubjectView)
+        );
+      }
+      
+      if (filteredStudents.length === 0) {
         studentsList.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-users"></i>
-            <p>No students yet</p>
-            <p>Students who register under your name will appear here</p>
+            <p>${currentSubjectView ? `No students enrolled in ${currentSubjectView}` : 'No students yet'}</p>
+            <p>${currentSubjectView ? 'Students who register for this subject will appear here' : 'Students who register under your name will appear here'}</p>
           </div>
         `;
         return;
@@ -1414,14 +1667,22 @@
       
       studentsList.innerHTML = '';
       
-      teacherStudents.forEach(student => {
+      filteredStudents.forEach(student => {
         const studentItem = document.createElement('div');
         studentItem.className = 'student-item';
+        
+        // Get subjects for display (limited to 2 for brevity)
+        const displaySubjects = student.subjects ? 
+          (student.subjects.length > 2 ? 
+            `${student.subjects.slice(0, 2).join(', ')}...` : 
+            student.subjects.join(', ')) : 
+          'No subjects';
+        
         studentItem.innerHTML = `
           <div class="student-info">
             <h3>${student.firstName} ${student.lastName}</h3>
             <p>Student #: ${student.studentNumber} | Email: ${student.email}</p>
-            <p>Subjects: ${student.subjects ? student.subjects.join(', ') : 'No subjects'}</p>
+            <p>Subjects: ${displaySubjects}</p>
           </div>
           <div class="student-actions">
             <button class="view-student" data-id="${student.id}">
@@ -1433,18 +1694,32 @@
       });
       
       // Update students count
-      studentsCount.textContent = `Based on ${teacherStudents.length} students`;
+      const totalStudents = teacherStudents.length;
+      const filteredCount = filteredStudents.length;
+      studentsCount.textContent = currentSubjectView 
+        ? `Based on ${filteredCount} of ${totalStudents} students (${currentSubjectView})` 
+        : `Based on ${totalStudents} students`;
     }
 
     // Calculate class average from real student data
     async function calculateClassAverage() {
       try {
-        const studentCount = teacherStudents.length;
+        // Filter students by current subject view if set
+        let filteredStudents = teacherStudents;
+        if (currentSubjectView) {
+          filteredStudents = teacherStudents.filter(student => 
+            student.subjects && student.subjects.includes(currentSubjectView)
+          );
+        }
+        
+        const studentCount = filteredStudents.length;
         
         if (studentCount === 0) {
           classAverage.textContent = "0%";
           averageChange.textContent = "No data available";
-          studentsCount.textContent = "No students registered yet";
+          studentsCount.textContent = currentSubjectView 
+            ? `No students enrolled in ${currentSubjectView}` 
+            : "No students registered yet";
           return;
         }
         
@@ -1452,7 +1727,7 @@
         let totalScore = 0;
         let totalAssignments = 0;
         
-        for (const student of teacherStudents) {
+        for (const student of filteredStudents) {
           // Query for student's grades
           const gradesQuery = window.firebaseFunctions.query(
             window.firebaseFunctions.collection(window.firebaseDb, "grades"),
@@ -1463,7 +1738,8 @@
           
           querySnapshot.forEach((doc) => {
             const gradeData = doc.data();
-            if (gradeData.score) {
+            // If viewing a specific subject, only include grades for that subject
+            if (gradeData.score && (!currentSubjectView || gradeData.subject === currentSubjectView)) {
               totalScore += gradeData.score;
               totalAssignments++;
             }
@@ -1474,18 +1750,110 @@
         if (totalAssignments > 0) {
           const average = (totalScore / totalAssignments).toFixed(1);
           classAverage.textContent = `${average}%`;
-          averageChange.textContent = "Based on actual student performance";
-          studentsCount.textContent = `Based on ${studentCount} students and ${totalAssignments} assignments`;
+          averageChange.textContent = currentSubjectView 
+            ? `Based on ${currentSubjectView} assignments` 
+            : "Based on actual student performance";
+          studentsCount.textContent = currentSubjectView 
+            ? `Based on ${studentCount} students and ${totalAssignments} ${currentSubjectView} assignments` 
+            : `Based on ${studentCount} students and ${totalAssignments} assignments`;
         } else {
           classAverage.textContent = "N/A";
           averageChange.textContent = "No grade data available";
-          studentsCount.textContent = `Based on ${studentCount} students`;
+          studentsCount.textContent = currentSubjectView 
+            ? `Based on ${studentCount} students (no ${currentSubjectView} grades yet)` 
+            : `Based on ${studentCount} students`;
         }
         
       } catch (error) {
         console.error("Error calculating class average:", error);
         classAverage.textContent = "Error";
         averageChange.textContent = "Unable to calculate";
+      }
+    }
+
+    // Enhanced file type validation
+    function validateFileType(file) {
+      const allowedTypes = [
+        'application/pdf',
+        'application/x-pdf',
+        'application/acrobat',
+        'applications/vnd.pdf',
+        'text/pdf',
+        'text/x-pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain'
+      ];
+      
+      // Check file extensions as well
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const allowedExtensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'];
+      
+      const isAllowedByType = allowedTypes.includes(file.type);
+      const isAllowedByExtension = allowedExtensions.includes(fileExtension);
+      
+      return isAllowedByType || isAllowedByExtension;
+    }
+
+    // Enhanced file upload function
+    async function uploadStudyMaterial(file, metadata) {
+      try {
+        // Validate file type
+        if (!validateFileType(file)) {
+          throw new Error('Invalid file type. Please upload PDF, DOC, DOCX, PPT, or PPTX files only.');
+        }
+        
+        // Validate file size (10MB limit)
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        if (file.size > maxSize) {
+          throw new Error('File size too large. Maximum size is 10MB.');
+        }
+        
+        // Create a unique filename
+        const timestamp = Date.now();
+        const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const uniqueFileName = `${timestamp}_${safeFileName}`;
+        
+        // Create storage reference
+        const storageRef = window.firebaseFunctions.ref(
+          window.firebaseStorage, 
+          `studyMaterials/${currentUser.uid}/${uniqueFileName}`
+        );
+        
+        // Upload file
+        const snapshot = await window.firebaseFunctions.uploadBytes(storageRef, file);
+        const downloadURL = await window.firebaseFunctions.getDownloadURL(snapshot.ref);
+        
+        // Save metadata to Firestore
+        const materialData = {
+          title: metadata.title,
+          description: metadata.description,
+          fileUrl: downloadURL,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+          subject: metadata.subject,
+          teacherId: currentUser.uid,
+          teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
+          uploadedAt: new Date(),
+          status: 'active',
+          lastUpdated: new Date()
+        };
+        
+        // Save to studyMaterials collection with auto-generated ID
+        const docRef = await window.firebaseFunctions.addDoc(
+          window.firebaseFunctions.collection(window.firebaseDb, "studyMaterials"),
+          materialData
+        );
+        
+        console.log("Material saved with ID:", docRef.id);
+        return { success: true, id: docRef.id };
+        
+      } catch (error) {
+        console.error("Error uploading material:", error);
+        throw error;
       }
     }
 
@@ -1501,16 +1869,72 @@
         );
         
         const querySnapshot = await window.firebaseFunctions.getDocs(messagesQuery);
-        const messages = [];
+        messages = [];
         
         querySnapshot.forEach((doc) => {
-          messages.push(doc.data());
+          messages.push({ id: doc.id, ...doc.data() });
         });
         
-        mailBadge.textContent = messages.length;
+        // Update badge count (only unread messages)
+        const unreadCount = messages.filter(msg => !msg.read).length;
+        mailBadge.textContent = unreadCount > 0 ? unreadCount : 0;
+        
+        // Render messages in the popup
+        renderMessages();
       } catch (error) {
         console.error("Error loading messages:", error);
       }
+    }
+
+    // Render messages in the popup
+    function renderMessages() {
+      if (messages.length === 0) {
+        messagesContent.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-envelope-open"></i>
+            <p>No messages yet</p>
+          </div>
+        `;
+        return;
+      }
+      
+      messagesContent.innerHTML = '';
+      
+      messages.forEach(message => {
+        const messageItem = document.createElement('div');
+        messageItem.className = `message-item ${message.read ? 'message-read' : 'message-unread'}`;
+        messageItem.setAttribute('data-id', message.id);
+        
+        // Format date
+        const messageDate = message.timestamp ? message.timestamp.toDate() : new Date();
+        const formattedDate = messageDate.toLocaleDateString() + ' ' + messageDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Truncate message content for preview
+        const previewContent = message.content ? 
+          (message.content.length > 100 ? message.content.substring(0, 100) + '...' : message.content) : 
+          'No content';
+        
+        messageItem.innerHTML = `
+          <div class="message-header">
+            <div class="message-sender">${message.senderName || 'Unknown Sender'}</div>
+            <div class="message-time">${formattedDate}</div>
+          </div>
+          <div class="message-preview">
+            <strong>${message.subject || 'No Subject'}</strong> - ${previewContent}
+          </div>
+        `;
+        
+        messagesContent.appendChild(messageItem);
+      });
+      
+      // Add click event listeners to message items
+      const messageItems = messagesContent.querySelectorAll('.message-item');
+      messageItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const messageId = this.getAttribute('data-id');
+          openMessageDetail(messageId);
+        });
+      });
     }
 
     // Load notifications from Firestore
@@ -1525,15 +1949,266 @@
         );
         
         const querySnapshot = await window.firebaseFunctions.getDocs(notificationsQuery);
-        const notifications = [];
+        notifications = [];
         
         querySnapshot.forEach((doc) => {
-          notifications.push(doc.data());
+          notifications.push({ id: doc.id, ...doc.data() });
         });
         
-        notificationBadge.textContent = notifications.length;
+        // Update badge count (only unread notifications)
+        const unreadCount = notifications.filter(notif => !notif.read).length;
+        notificationBadge.textContent = unreadCount > 0 ? unreadCount : 0;
+        
+        // Render notifications in the popup
+        renderNotifications();
       } catch (error) {
         console.error("Error loading notifications:", error);
+      }
+    }
+
+    // Render notifications in the popup
+    function renderNotifications() {
+      if (notifications.length === 0) {
+        notificationsContent.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <p>No notifications yet</p>
+          </div>
+        `;
+        return;
+      }
+      
+      notificationsContent.innerHTML = '';
+      
+      notifications.forEach(notification => {
+        const notificationItem = document.createElement('div');
+        notificationItem.className = `notification-item ${notification.read ? 'notification-read' : 'notification-unread'}`;
+        notificationItem.setAttribute('data-id', notification.id);
+        
+        // Format date
+        const notificationDate = notification.timestamp ? notification.timestamp.toDate() : new Date();
+        const formattedDate = notificationDate.toLocaleDateString() + ' ' + notificationDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Truncate notification content for preview
+        const previewContent = notification.message ? 
+          (notification.message.length > 100 ? notification.message.substring(0, 100) + '...' : notification.message) : 
+          'No content';
+        
+        notificationItem.innerHTML = `
+          <div class="notification-header">
+            <div class="notification-title">${notification.title || 'Notification'}</div>
+            <div class="notification-time">${formattedDate}</div>
+          </div>
+          <div class="notification-preview">
+            ${previewContent}
+          </div>
+        `;
+        
+        notificationsContent.appendChild(notificationItem);
+      });
+      
+      // Add click event listeners to notification items
+      const notificationItems = notificationsContent.querySelectorAll('.notification-item');
+      notificationItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const notificationId = this.getAttribute('data-id');
+          openNotificationDetail(notificationId);
+        });
+      });
+    }
+
+    // Open message detail popup
+    async function openMessageDetail(messageId) {
+      const message = messages.find(msg => msg.id === messageId);
+      
+      if (!message) {
+        alert('Message not found');
+        return;
+      }
+      
+      // Format date
+      const messageDate = message.timestamp ? message.timestamp.toDate() : new Date();
+      const formattedDate = messageDate.toLocaleDateString() + ' at ' + messageDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      messageDetailContent.innerHTML = `
+        <div class="message-details">
+          <div class="message-header">
+            <div class="message-sender">From: ${message.senderName || 'Unknown Sender'}</div>
+            <div class="message-time">${formattedDate}</div>
+          </div>
+          <h4>${message.subject || 'No Subject'}</h4>
+          <p>${message.content || 'No content'}</p>
+          <div class="message-actions">
+            <button class="mark-read-btn" id="mark-message-read">
+              <i class="fas fa-check"></i> ${message.read ? 'Mark as Unread' : 'Mark as Read'}
+            </button>
+            <button class="delete-btn" id="delete-message">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      `;
+      
+      // Add event listeners for message actions
+      document.getElementById('mark-message-read').addEventListener('click', () => {
+        toggleMessageReadStatus(messageId, !message.read);
+      });
+      
+      document.getElementById('delete-message').addEventListener('click', () => {
+        deleteMessage(messageId);
+      });
+      
+      // Mark as read if not already read
+      if (!message.read) {
+        await toggleMessageReadStatus(messageId, true);
+      }
+      
+      messageDetailPopup.style.display = 'block';
+      overlay.style.display = 'block';
+    }
+
+    // Open notification detail popup
+    async function openNotificationDetail(notificationId) {
+      const notification = notifications.find(notif => notif.id === notificationId);
+      
+      if (!notification) {
+        alert('Notification not found');
+        return;
+      }
+      
+      // Format date
+      const notificationDate = notification.timestamp ? notification.timestamp.toDate() : new Date();
+      const formattedDate = notificationDate.toLocaleDateString() + ' at ' + notificationDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      notificationDetailContent.innerHTML = `
+        <div class="notification-details">
+          <div class="notification-header">
+            <div class="notification-title">${notification.title || 'Notification'}</div>
+            <div class="notification-time">${formattedDate}</div>
+          </div>
+          <p>${notification.message || 'No content'}</p>
+          <div class="notification-actions">
+            <button class="mark-read-btn" id="mark-notification-read">
+              <i class="fas fa-check"></i> ${notification.read ? 'Mark as Unread' : 'Mark as Read'}
+            </button>
+            <button class="delete-btn" id="delete-notification">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      `;
+      
+      // Add event listeners for notification actions
+      document.getElementById('mark-notification-read').addEventListener('click', () => {
+        toggleNotificationReadStatus(notificationId, !notification.read);
+      });
+      
+      document.getElementById('delete-notification').addEventListener('click', () => {
+        deleteNotification(notificationId);
+      });
+      
+      // Mark as read if not already read
+      if (!notification.read) {
+        await toggleNotificationReadStatus(notificationId, true);
+      }
+      
+      notificationDetailPopup.style.display = 'block';
+      overlay.style.display = 'block';
+    }
+
+    // Toggle message read status
+    async function toggleMessageReadStatus(messageId, readStatus) {
+      try {
+        await window.firebaseFunctions.updateDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId),
+          { read: readStatus }
+        );
+        
+        // Reload messages to reflect the change
+        await loadMessages();
+        
+        // If message detail is open, update it
+        if (messageDetailPopup.style.display === 'block') {
+          const currentMessage = messages.find(msg => msg.id === messageId);
+          if (currentMessage) {
+            openMessageDetail(messageId);
+          }
+        }
+      } catch (error) {
+        console.error("Error updating message status:", error);
+        alert('Failed to update message status');
+      }
+    }
+
+    // Toggle notification read status
+    async function toggleNotificationReadStatus(notificationId, readStatus) {
+      try {
+        await window.firebaseFunctions.updateDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId),
+          { read: readStatus }
+        );
+        
+        // Reload notifications to reflect the change
+        await loadNotifications();
+        
+        // If notification detail is open, update it
+        if (notificationDetailPopup.style.display === 'block') {
+          const currentNotification = notifications.find(notif => notif.id === notificationId);
+          if (currentNotification) {
+            openNotificationDetail(notificationId);
+          }
+        }
+      } catch (error) {
+        console.error("Error updating notification status:", error);
+        alert('Failed to update notification status');
+      }
+    }
+
+    // Delete a message
+    async function deleteMessage(messageId) {
+      if (!confirm('Are you sure you want to delete this message?')) {
+        return;
+      }
+      
+      try {
+        await window.firebaseFunctions.deleteDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId)
+        );
+        
+        // Reload messages to reflect the change
+        await loadMessages();
+        
+        // Close the message detail popup
+        closePopup(messageDetailPopup);
+        
+        alert('Message deleted successfully');
+      } catch (error) {
+        console.error("Error deleting message:", error);
+        alert('Failed to delete message');
+      }
+    }
+
+    // Delete a notification
+    async function deleteNotification(notificationId) {
+      if (!confirm('Are you sure you want to delete this notification?')) {
+        return;
+      }
+      
+      try {
+        await window.firebaseFunctions.deleteDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId)
+        );
+        
+        // Reload notifications to reflect the change
+        await loadNotifications();
+        
+        // Close the notification detail popup
+        closePopup(notificationDetailPopup);
+        
+        alert('Notification deleted successfully');
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+        alert('Failed to delete notification');
       }
     }
 
@@ -1548,7 +2223,7 @@
       overlay.style.display = 'block';
     }
 
-    // Save material to Firestore and Storage using the specific study material ID
+    // Updated saveMaterial function
     async function saveMaterial() {
       const title = materialTitleInput.value.trim();
       const description = materialDescriptionInput.value.trim();
@@ -1564,104 +2239,36 @@
         return;
       }
       
-      console.log("File details:", {
-        name: file.name,
-        type: file.type,
-        size: file.size
-      });
-      
-      // Enhanced file type checking for PDFs and other documents
-      const allowedTypes = [
-        'application/pdf',
-        'application/x-pdf',
-        'application/acrobat',
-        'applications/vnd.pdf',
-        'text/pdf',
-        'text/x-pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'text/plain'
-      ];
-      
-      // Also check file extension as fallback
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-      const allowedExtensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'];
-      const isAllowedByExtension = allowedExtensions.includes(fileExtension);
-      const isAllowedByType = allowedTypes.includes(file.type);
-      
-      if (!isAllowedByType && !isAllowedByExtension) {
-        alert('Please select a PDF, DOC, DOCX, PPT, or PPTX file. Selected file type: ' + file.type);
-        return;
-      }
-      
       try {
         saveMaterialBtn.disabled = true;
         saveMaterialBtn.innerHTML = '<div class="loading"></div> Uploading...';
         
-        // Create a unique filename with timestamp
-        const timestamp = Date.now();
-        const uniqueFileName = `${timestamp}_${file.name.replace(/\s+/g, '_')}`;
-        
-        console.log("Uploading file:", uniqueFileName);
-        
-        // Upload file to Firebase Storage using the study material ID in the path
-        const storageRef = window.firebaseFunctions.ref(
-          window.firebaseStorage, 
-          `studyMaterials/${STUDY_MATERIAL_ID}/${uniqueFileName}`
-        );
-        
-        console.log("Storage reference created");
-        
-        const snapshot = await window.firebaseFunctions.uploadBytes(storageRef, file);
-        console.log("File uploaded to storage:", snapshot);
-        
-        const downloadURL = await window.firebaseFunctions.getDownloadURL(snapshot.ref);
-        console.log("Download URL obtained:", downloadURL);
-        
-        // Save material metadata to Firestore using the study material ID
-        const materialData = {
-          id: STUDY_MATERIAL_ID,
+        const metadata = {
           title: title,
           description: description,
-          fileUrl: downloadURL,
-          fileName: file.name,
-          fileType: file.type,
-          fileSize: file.size,
-          subject: selectedSubjectForMaterial,
-          teacherId: currentUser.uid,
-          teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-          createdAt: new Date(),
-          status: 'active',
-          lastUpdated: new Date()
+          subject: selectedSubjectForMaterial
         };
         
-        console.log("Saving to Firestore:", materialData);
-        
-        // Save to the studyMaterials collection with the specific ID
-        const docRef = await window.firebaseFunctions.setDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, "studyMaterials", STUDY_MATERIAL_ID),
-          materialData,
-          { merge: true } // This will update if exists, or create if doesn't
-        );
-        
-        console.log("Material saved with ID:", STUDY_MATERIAL_ID);
+        const result = await uploadStudyMaterial(file, metadata);
         
         closePopup(materialPopup);
         alert('Material uploaded successfully!');
         
+        // Reset form
+        materialTitleInput.value = '';
+        materialDescriptionInput.value = '';
+        materialFileInput.value = '';
+        fileNameDisplay.textContent = 'No file chosen';
+        
       } catch (error) {
         console.error("Error uploading material:", error);
-        console.error("Error details:", {
-          code: error.code,
-          message: error.message,
-          stack: error.stack
-        });
         
         let errorMessage = 'Failed to upload material. ';
-        
-        if (error.code === 'storage/unauthorized') {
+        if (error.message.includes('Invalid file type')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('File size too large')) {
+          errorMessage = error.message;
+        } else if (error.code === 'storage/unauthorized') {
           errorMessage += 'Storage permission denied.';
         } else if (error.code === 'storage/unknown') {
           errorMessage += 'Unknown storage error.';
@@ -1738,13 +2345,18 @@
       // Mail and notification icons
       mailIcon.addEventListener('click', (e) => {
         e.preventDefault();
-        alert('Messages feature will be implemented soon');
+        messagesPopup.style.display = 'block';
+        overlay.style.display = 'block';
       });
 
       notificationIcon.addEventListener('click', (e) => {
         e.preventDefault();
-        alert('Notifications feature will be implemented soon');
+        notificationsPopup.style.display = 'block';
+        overlay.style.display = 'block';
       });
+
+      // Clear subject view button
+      clearSubjectViewBtn.addEventListener('click', clearSubjectView);
     }
 
     // Close a specific popup
