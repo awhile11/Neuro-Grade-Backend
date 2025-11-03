@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeuroGrade - Feedback</title>
+<title>NeuroGrade - Enhanced Feedback</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script type="module">
@@ -25,7 +25,8 @@
     updateDoc,
     addDoc,
     orderBy,
-    serverTimestamp
+    serverTimestamp,
+    onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   // Firebase configuration
@@ -60,7 +61,8 @@
     updateDoc,
     addDoc,
     orderBy,
-    serverTimestamp
+    serverTimestamp,
+    onSnapshot
   };
 </script>
 <style>
@@ -119,20 +121,20 @@
   }
 
   /* Sidebar */
-   .sidebar {
-  width: 200px;
-  height: 100vh;
-  background: #fff;
-  padding: 20px;
-  border-right: 1px solid #ddd;
-  display: flex;
+  .sidebar {
+    width: 200px;
+    height: 100vh;
+    background: #fff;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
-  border-radius: 0 12px 12px 0;
-  transition: all 0.3s ease;
-}
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+    border-radius: 0 12px 12px 0;
+    transition: all 0.3s ease;
+  }
 
   .nav {
     display: flex;
@@ -342,6 +344,12 @@
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   }
 
+  .student-search {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .student-search input {
     width: 100%;
     padding: 12px 15px;
@@ -350,7 +358,6 @@
     border-radius: 8px;
     transition: all 0.3s;
     background: #f8f9fa;
-    margin-bottom: 10px;
   }
   
   .student-search input:focus {
@@ -362,6 +369,28 @@
   
   .student-search input::placeholder {
     color: #aaa;
+  }
+
+  .subject-filter {
+    margin-bottom: 10px;
+  }
+
+  .subject-filter select {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s;
+    background: #f8f9fa;
+    cursor: pointer;
+  }
+
+  .subject-filter select:focus {
+    outline: none;
+    border-color: #8e44ad;
+    box-shadow: 0 0 8px rgba(142, 68, 173, 0.4);
+    background: #fff;
   }
 
   .students {
@@ -518,6 +547,16 @@
   }
 
   .student-profile-section:hover .student-profile-info .student-number {
+    color: #8e44ad;
+  }
+
+  .student-profile-info .student-subject {
+    color: #777;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .student-profile-section:hover .student-profile-info .student-subject {
     color: #8e44ad;
   }
 
@@ -1198,6 +1237,250 @@
     box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
   }
 
+  /* Notifications Modal */
+  .notifications-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1003;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .notifications-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: auto;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .notifications-header h3 {
+    color: #8e44ad;
+    font-size: 20px;
+  }
+
+  .close-notifications {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    transition: all 0.3s ease;
+  }
+
+  .close-notifications:hover {
+    color: #8e44ad;
+    transform: scale(1.2);
+  }
+
+  .notifications-list {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #8e44ad;
+    transition: all 0.3s ease;
+  }
+
+  .notification-item.unread {
+    background: #f0e6f5;
+    border-left-color: #6c3483;
+  }
+
+  .notification-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .notification-title {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .notification-time {
+    font-size: 12px;
+    color: #777;
+  }
+
+  .notification-message {
+    color: #555;
+    line-height: 1.4;
+  }
+
+  .notification-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .mark-read-btn {
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mark-read-btn:hover {
+    background: #6c3483;
+  }
+
+  .empty-notifications {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+  }
+
+  .empty-notifications i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #ddd;
+  }
+
+  /* Messages Modal */
+  .messages-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1003;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .messages-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow: auto;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .messages-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .messages-header h3 {
+    color: #8e44ad;
+    font-size: 20px;
+  }
+
+  .close-messages {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    transition: all 0.3s ease;
+  }
+
+  .close-messages:hover {
+    color: #8e44ad;
+    transform: scale(1.2);
+  }
+
+  .messages-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+
+  .message-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #8e44ad;
+    transition: all 0.3s ease;
+  }
+
+  .message-item.unread {
+    background: #f0e6f5;
+    border-left-color: #6c3483;
+  }
+
+  .message-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .message-sender {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .message-time {
+    font-size: 12px;
+    color: #777;
+  }
+
+  .message-content {
+    color: #555;
+    line-height: 1.4;
+  }
+
+  .empty-messages {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+  }
+
+  .empty-messages i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #ddd;
+  }
+
   /* Responsive design */
   @media (max-width: 1200px) {
     .feedback-panel {
@@ -1299,6 +1582,32 @@
     </div>
   </div>
 
+  <!-- Notifications Modal -->
+  <div class="notifications-modal" id="notifications-modal">
+    <div class="notifications-content">
+      <div class="notifications-header">
+        <h3><i class="fas fa-bell"></i> Notifications</h3>
+        <button class="close-notifications" id="close-notifications">&times;</button>
+      </div>
+      <div class="notifications-list" id="notifications-list">
+        <!-- Notifications will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Modal -->
+  <div class="messages-modal" id="messages-modal">
+    <div class="messages-content">
+      <div class="messages-header">
+        <h3><i class="fas fa-envelope"></i> Messages</h3>
+        <button class="close-messages" id="close-messages">&times;</button>
+      </div>
+      <div class="messages-list" id="messages-list">
+        <!-- Messages will be loaded here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Top left logo -->
   <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
 
@@ -1354,6 +1663,12 @@
         <div class="student-search">
           <input type="text" placeholder="Student number" id="studentNumberSearch">
           <input type="text" placeholder="Name" id="studentNameSearch">
+          <div class="subject-filter">
+            <select id="subjectFilter">
+              <option value="all">All Subjects</option>
+              <!-- Subjects will be populated from database -->
+            </select>
+          </div>
         </div>
         <div class="students" id="studentList">
           <!-- Student list will be populated from database -->
@@ -1371,6 +1686,7 @@
           <div class="student-profile-info">
             <h2 id="student-name">Select a student</h2>
             <div class="student-number" id="student-number">Student Number: </div>
+            <div class="student-subject" id="student-subject">Subject: </div>
           </div>
         </div>
 
@@ -1470,6 +1786,9 @@
   let currentStudent = null;
   let currentTask = null;
   let studentTasks = [];
+  let teacherSubjects = [];
+  let notifications = [];
+  let messages = [];
 
   // Initialize the dashboard
   document.addEventListener('DOMContentLoaded', function() {
@@ -1504,7 +1823,9 @@
       if (teacherDoc.exists()) {
         currentTeacher = teacherDoc.data();
         updateUserInterface();
+        await loadTeacherSubjects();
         await loadStudentsFromDatabase();
+        await setupRealTimeListeners();
       } else {
         console.error("Teacher data not found");
       }
@@ -1513,12 +1834,226 @@
     }
   }
 
+  // Setup real-time listeners for notifications and messages
+  async function setupRealTimeListeners() {
+    if (!currentUser) return;
+
+    // Listen for notifications
+    const notificationsQuery = window.firebaseFunctions.query(
+      window.firebaseFunctions.collection(window.firebaseDb, "notifications"),
+      window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
+      window.firebaseFunctions.orderBy("createdAt", "desc")
+    );
+
+    window.firebaseFunctions.onSnapshot(notificationsQuery, (snapshot) => {
+      notifications = [];
+      snapshot.forEach((doc) => {
+        notifications.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      updateNotificationsBadge();
+    });
+
+    // Listen for messages
+    const messagesQuery = window.firebaseFunctions.query(
+      window.firebaseFunctions.collection(window.firebaseDb, "messages"),
+      window.firebaseFunctions.where("recipientId", "==", currentUser.uid),
+      window.firebaseFunctions.orderBy("createdAt", "desc")
+    );
+
+    window.firebaseFunctions.onSnapshot(messagesQuery, (snapshot) => {
+      messages = [];
+      snapshot.forEach((doc) => {
+        messages.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      updateMessagesBadge();
+    });
+  }
+
+  // Update notifications badge count
+  function updateNotificationsBadge() {
+    const unreadCount = notifications.filter(notification => !notification.read).length;
+    document.getElementById('notification-badge').textContent = unreadCount;
+  }
+
+  // Update messages badge count
+  function updateMessagesBadge() {
+    const unreadCount = messages.filter(message => !message.read).length;
+    document.getElementById('mail-badge').textContent = unreadCount;
+  }
+
+  // Load teacher's subjects
+  async function loadTeacherSubjects() {
+    try {
+      if (!currentTeacher) return;
+      
+      // Get subjects from teacher data or from a separate subjects collection
+      teacherSubjects = currentTeacher.subjects || [];
+      
+      // If no subjects in teacher data, try to get from subjects collection
+      if (teacherSubjects.length === 0) {
+        const subjectsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "subjects"),
+          window.firebaseFunctions.where("teacherId", "==", currentUser.uid)
+        );
+        
+        const querySnapshot = await window.firebaseFunctions.getDocs(subjectsQuery);
+        teacherSubjects = [];
+        
+        querySnapshot.forEach((doc) => {
+          teacherSubjects.push({ id: doc.id, ...doc.data() });
+        });
+      }
+      
+      populateSubjectFilter();
+    } catch (error) {
+      console.error("Error loading teacher subjects:", error);
+    }
+  }
+
+  // Populate subject filter dropdown
+  function populateSubjectFilter() {
+    const subjectFilter = document.getElementById("subjectFilter");
+    
+    // Clear existing options except "All Subjects"
+    while (subjectFilter.options.length > 1) {
+      subjectFilter.remove(1);
+    }
+    
+    // Add subjects to dropdown
+    teacherSubjects.forEach(subject => {
+      const option = document.createElement("option");
+      option.value = subject.id;
+      option.textContent = subject.name || subject.subjectName || "Unnamed Subject";
+      subjectFilter.appendChild(option);
+    });
+  }
+
   // Update UI with teacher data
   function updateUserInterface() {
     if (currentTeacher) {
       document.getElementById('user-name').textContent = `${currentTeacher.firstName} ${currentTeacher.lastName}`;
       document.getElementById('user-email').textContent = currentTeacher.email;
       document.getElementById('user-avatar').src = `https://placehold.co/35x35/8e44ad/FFFFFF?text=${currentTeacher.firstName.charAt(0)}${currentTeacher.lastName.charAt(0)}`;
+    }
+  }
+
+  // Show notifications modal
+  function showNotifications() {
+    const modal = document.getElementById('notifications-modal');
+    const list = document.getElementById('notifications-list');
+    
+    if (notifications.length === 0) {
+      list.innerHTML = `
+        <div class="empty-notifications">
+          <i class="fas fa-bell-slash"></i>
+          <h3>No Notifications</h3>
+          <p>You don't have any notifications yet.</p>
+        </div>
+      `;
+    } else {
+      let notificationsHTML = '';
+      notifications.forEach(notification => {
+        const time = notification.createdAt ? new Date(notification.createdAt.toDate()).toLocaleString() : 'Just now';
+        const isUnread = !notification.read;
+        
+        notificationsHTML += `
+          <div class="notification-item ${isUnread ? 'unread' : ''}">
+            <div class="notification-header">
+              <div class="notification-title">
+                ${notification.type === 'private_feedback' ? '📝 Private Feedback' : 
+                  notification.type === 'class_feedback' ? '👥 Class Feedback' : 
+                  notification.type === 'system' ? '⚙️ System' : '📢 Notification'}
+              </div>
+              <div class="notification-time">${time}</div>
+            </div>
+            <div class="notification-message">${notification.message}</div>
+            ${isUnread ? `
+              <div class="notification-actions">
+                <button class="mark-read-btn" onclick="markNotificationAsRead('${notification.id}')">
+                  Mark as Read
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+      list.innerHTML = notificationsHTML;
+    }
+    
+    modal.style.display = 'flex';
+  }
+
+  // Show messages modal
+  function showMessages() {
+    const modal = document.getElementById('messages-modal');
+    const list = document.getElementById('messages-list');
+    
+    if (messages.length === 0) {
+      list.innerHTML = `
+        <div class="empty-messages">
+          <i class="fas fa-envelope-open"></i>
+          <h3>No Messages</h3>
+          <p>You don't have any messages yet.</p>
+        </div>
+      `;
+    } else {
+      let messagesHTML = '';
+      messages.forEach(message => {
+        const time = message.createdAt ? new Date(message.createdAt.toDate()).toLocaleString() : 'Just now';
+        const isUnread = !message.read;
+        
+        messagesHTML += `
+          <div class="message-item ${isUnread ? 'unread' : ''}">
+            <div class="message-header">
+              <div class="message-sender">From: ${message.senderName || 'Unknown'}</div>
+              <div class="message-time">${time}</div>
+            </div>
+            <div class="message-content">${message.content}</div>
+            ${isUnread ? `
+              <div class="notification-actions">
+                <button class="mark-read-btn" onclick="markMessageAsRead('${message.id}')">
+                  Mark as Read
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+      list.innerHTML = messagesHTML;
+    }
+    
+    modal.style.display = 'flex';
+  }
+
+  // Mark notification as read
+  async function markNotificationAsRead(notificationId) {
+    try {
+      const notificationRef = window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId);
+      await window.firebaseFunctions.updateDoc(notificationRef, {
+        read: true,
+        readAt: window.firebaseFunctions.serverTimestamp()
+      });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  }
+
+  // Mark message as read
+  async function markMessageAsRead(messageId) {
+    try {
+      const messageRef = window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId);
+      await window.firebaseFunctions.updateDoc(messageRef, {
+        read: true,
+        readAt: window.firebaseFunctions.serverTimestamp()
+      });
+    } catch (error) {
+      console.error("Error marking message as read:", error);
     }
   }
 
@@ -1585,6 +2120,7 @@
           <div class="student-info">
             <h4>${student.firstName} ${student.lastName}</h4>
             <small>${student.studentNumber}</small>
+            <small>${student.subject || 'No subject assigned'}</small>
           </div>
         </div>
       `;
@@ -1630,6 +2166,7 @@
       // Update student profile
       document.getElementById("student-name").textContent = `${currentStudent.firstName} ${currentStudent.lastName}`;
       document.getElementById("student-number").textContent = `Student Number: ${currentStudent.studentNumber}`;
+      document.getElementById("student-subject").textContent = `Subject: ${currentStudent.subject || 'Not assigned'}`;
       document.getElementById("student-profile-img").src = `https://placehold.co/80x80/9b59b6/FFFFFF?text=${currentStudent.firstName.charAt(0)}${currentStudent.lastName.charAt(0)}`;
       
       // Load student tasks (assignments and tests)
@@ -1885,8 +2422,8 @@
       const answers = currentTask.answers || [];
       const autograderResults = currentTask.autograderResults || [];
 
-      // Generate AI feedback
-      const aiFeedback = await window.aiFeedbackService.generateFeedback(
+      // Generate AI feedback using the Python backend
+      const aiFeedback = await generateAIFeedbackWithBackend(
         currentStudent,
         currentTask,
         questions,
@@ -1918,6 +2455,39 @@
       generateBtn.disabled = false;
       generateBtn.innerHTML = '<i class="fas fa-robot"></i> GENERATE AI FEEDBACK';
       generateBtn.classList.remove('loading');
+    }
+  }
+
+  // Function to call Python backend for AI feedback
+  async function generateAIFeedbackWithBackend(studentData, taskData, questions, answers, autograderResults) {
+    try {
+      const response = await fetch('http://localhost:5000/api/generate-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          student_data: studentData,
+          task_data: taskData,
+          questions: questions,
+          answers: answers,
+          autograder_results: autograderResults
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        return data.feedback;
+      } else {
+        throw new Error(data.error || 'Failed to generate feedback');
+      }
+    } catch (error) {
+      console.error('Error calling AI feedback API:', error);
+      // Fallback to frontend mock implementation
+      return await window.aiFeedbackService.generateFeedback(
+        studentData, taskData, questions, answers, autograderResults
+      );
     }
   }
 
@@ -2064,12 +2634,27 @@
       
       // Save class feedback if provided
       if (classFeedback.trim() !== "") {
+        // Get selected subject
+        const selectedSubjectId = document.getElementById("subjectFilter").value;
+        
         // Get all students of this teacher
         const teacherFullName = `${currentTeacher.firstName} ${currentTeacher.lastName}`;
-        const studentsQuery = window.firebaseFunctions.query(
-          window.firebaseFunctions.collection(window.firebaseDb, "students"),
-          window.firebaseFunctions.where("teacherName", "==", teacherFullName)
-        );
+        let studentsQuery;
+        
+        if (selectedSubjectId !== "all") {
+          // Filter by subject
+          studentsQuery = window.firebaseFunctions.query(
+            window.firebaseFunctions.collection(window.firebaseDb, "students"),
+            window.firebaseFunctions.where("teacherName", "==", teacherFullName),
+            window.firebaseFunctions.where("subjectId", "==", selectedSubjectId)
+          );
+        } else {
+          // All students
+          studentsQuery = window.firebaseFunctions.query(
+            window.firebaseFunctions.collection(window.firebaseDb, "students"),
+            window.firebaseFunctions.where("teacherName", "==", teacherFullName)
+          );
+        }
         
         const studentsSnapshot = await window.firebaseFunctions.getDocs(studentsQuery);
         
@@ -2117,15 +2702,19 @@
   function filterStudents() {
     const numberSearch = document.getElementById("studentNumberSearch").value.toLowerCase();
     const nameSearch = document.getElementById("studentNameSearch").value.toLowerCase();
+    const subjectFilter = document.getElementById("subjectFilter").value;
     
     document.querySelectorAll(".student-item").forEach(student => {
       const studentNumber = student.querySelector("small").textContent.toLowerCase();
       const studentName = student.querySelector("h4").textContent.toLowerCase();
+      const studentSubject = student.querySelectorAll("small")[1]?.textContent.toLowerCase() || "";
       
       const numberMatch = studentNumber.includes(numberSearch);
       const nameMatch = studentName.includes(nameSearch);
+      const subjectMatch = subjectFilter === "all" || 
+                          (currentStudent && currentStudent.subjectId === subjectFilter);
       
-      student.style.display = (numberMatch && nameMatch) ? "flex" : "none";
+      student.style.display = (numberMatch && nameMatch && subjectMatch) ? "flex" : "none";
     });
   }
 
@@ -2134,6 +2723,7 @@
     // Search functionality
     document.getElementById("studentNumberSearch").addEventListener("input", filterStudents);
     document.getElementById("studentNameSearch").addEventListener("input", filterStudents);
+    document.getElementById("subjectFilter").addEventListener("change", filterStudents);
     
     // Save feedback button
     document.getElementById("save-feedback-btn").addEventListener("click", saveFeedback);
@@ -2141,17 +2731,41 @@
     // Generate AI feedback button
     document.getElementById("generateAIFeedbackBtn").addEventListener("click", generateAIFeedback);
     
-    // Modal close button
+    // Modal close buttons
     document.getElementById("close-modal").addEventListener("click", function() {
       document.getElementById("script-modal").style.display = "none";
     });
     
-    // Close modal when clicking outside
+    document.getElementById("close-notifications").addEventListener("click", function() {
+      document.getElementById("notifications-modal").style.display = "none";
+    });
+    
+    document.getElementById("close-messages").addEventListener("click", function() {
+      document.getElementById("messages-modal").style.display = "none";
+    });
+    
+    // Close modals when clicking outside
     document.getElementById("script-modal").addEventListener("click", function(e) {
       if (e.target === this) {
         this.style.display = "none";
       }
     });
+    
+    document.getElementById("notifications-modal").addEventListener("click", function(e) {
+      if (e.target === this) {
+        this.style.display = "none";
+      }
+    });
+    
+    document.getElementById("messages-modal").addEventListener("click", function(e) {
+      if (e.target === this) {
+        this.style.display = "none";
+      }
+    });
+    
+    // Notification and message icons
+    document.getElementById("notification-icon").addEventListener("click", showNotifications);
+    document.getElementById("mail-icon").addEventListener("click", showMessages);
     
     // Mobile menu toggle
     const menuToggle = document.getElementById('menu-toggle');
