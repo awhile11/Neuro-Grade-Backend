@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuroGrade - Upload Tests & Assignments</title>
+  <title>NeuroGrade - Create Tests</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script type="module">
     // Import Firebase modules
@@ -370,41 +370,189 @@
       color: #8e44ad;
     }
 
-    /* Upload box */
-    .upload-box {
-      border: 2px dashed #8e44ad;
-      border-radius: 12px;
-      padding: 40px 20px;
-      text-align: center;
-      background: #f8f9fa;
-      margin-bottom: 20px;
-      transition: all 0.3s ease;
-      cursor: pointer;
+    /* Test creation form */
+    .test-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    .upload-box:hover {
-      background: #f0e6f5;
-      transform: translateY(-3px);
-    }
-
-    .upload-box i {
-      font-size: 48px;
-      color: #8e44ad;
+    .form-group {
       margin-bottom: 15px;
     }
 
-    .upload-box h3 {
-      font-size: 18px;
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
       color: #555;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #8e44ad;
+      box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.2);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Question type selector */
+    .question-type-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 10px;
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .type-btn:hover {
+      background: #f0e6f5;
+      border-color: #8e44ad;
+    }
+
+    .type-btn.active {
+      background: #8e44ad;
+      color: white;
+      border-color: #6c3483;
+    }
+
+    /* Question item */
+    .question-item {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+
+    .question-item:hover {
+      background: #f0e6f5;
+      border-color: #8e44ad;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
     }
 
-    .upload-box p {
-      color: #777;
-      font-size: 14px;
+    .question-number {
+      font-weight: bold;
+      color: #8e44ad;
     }
 
-    .upload-btn {
+    .question-type {
+      font-size: 12px;
+      background: #8e44ad;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    .question-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: #8e44ad;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      color: #6c3483;
+      transform: scale(1.2);
+    }
+
+    .action-btn.delete {
+      color: #ff6b6b;
+    }
+
+    .action-btn.delete:hover {
+      color: #ff5252;
+    }
+
+    /* Options list */
+    .options-list {
+      margin-top: 10px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .option-item input[type="radio"] {
+      width: auto;
+    }
+
+    .option-item input[type="text"] {
+      flex: 1;
+    }
+
+    /* Answer field for short and long questions */
+    .answer-field {
+      margin-top: 10px;
+    }
+
+    .answer-field textarea {
+      min-height: 80px;
+    }
+
+    /* Add question button */
+    .add-question-btn {
+      background: #8e44ad;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .add-question-btn:hover {
+      background: #6c3483;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(108, 52, 131, 0.3);
+    }
+
+    /* Create test button */
+    .create-test-btn {
       padding: 12px 25px;
       background: #8e44ad;
       color: white;
@@ -419,7 +567,7 @@
       overflow: hidden;
     }
 
-    .upload-btn::before {
+    .create-test-btn::before {
       content: '';
       position: absolute;
       top: 0;
@@ -430,11 +578,11 @@
       transition: left 0.5s ease;
     }
 
-    .upload-btn:hover::before {
+    .create-test-btn:hover::before {
       left: 100%;
     }
 
-    .upload-btn:hover {
+    .create-test-btn:hover {
       background: #6c3483;
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(108, 52, 131, 0.3);
@@ -513,33 +661,6 @@
       transform: scale(1.2);
     }
 
-    /* Form styles */
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: #555;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #8e44ad;
-      box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.2);
-    }
-
     /* Popup styles */
     .popup {
       display: none;
@@ -552,7 +673,7 @@
       border-radius: 12px;
       box-shadow: 0 5px 25px rgba(0,0,0,0.2);
       z-index: 1000;
-      width: 400px;
+      width: 500px;
       max-width: 90%;
       border: 1px solid rgba(0,0,0,0.08);
       animation: popIn 0.3s ease;
@@ -572,7 +693,7 @@
     }
 
     .popup-content {
-      max-height: 300px;
+      max-height: 400px;
       overflow-y: auto;
       padding: 10px 0;
       color: #333;
@@ -646,38 +767,6 @@
       background: rgba(0,0,0,0.5);
       z-index: 999;
       animation: fadeIn 0.3s ease;
-    }
-
-    /* File input styles */
-    .file-input-container {
-      position: relative;
-      margin-bottom: 15px;
-    }
-
-    .file-input-label {
-      display: block;
-      padding: 10px;
-      border: 2px dashed #8e44ad;
-      border-radius: 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background: #f8f9fa;
-    }
-
-    .file-input-label:hover {
-      background: #f0e6f5;
-      border-color: #793a9c;
-    }
-
-    .file-input {
-      display: none;
-    }
-
-    .file-name {
-      margin-top: 5px;
-      font-size: 12px;
-      color: #666;
     }
 
     /* Empty state */
@@ -802,8 +891,11 @@
       .file-actions {
         align-self: flex-end;
       }
+      
+      .question-type-selector {
+        flex-direction: column;
+      }
     }
-  </style>
   </style>
 </head>
 <body>
@@ -865,138 +957,55 @@
     </div>
 
     <div class="upload-layout">
+      <!-- Create Test Section -->
+      <div class="upload-section">
+        <div class="section-header">
+          <h2><i class="fas fa-plus-circle"></i> Create Test</h2>
+        </div>
+        <div class="test-form" id="test-form">
+          <div class="form-group">
+            <label for="test-title">Test Title</label>
+            <input type="text" id="test-title" placeholder="Enter test title">
+          </div>
+          <div class="form-group">
+            <label for="test-subject">Subject</label>
+            <select id="test-subject">
+              <option value="">Select subject</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="test-description">Test Description</label>
+            <textarea id="test-description" placeholder="Enter test description (optional)"></textarea>
+          </div>
+          
+          <div class="questions-container" id="questions-container">
+            <h3>Questions</h3>
+            <div class="question-type-selector">
+              <button type="button" class="type-btn active" data-type="multiple">Multiple Choice</button>
+              <button type="button" class="type-btn" data-type="short">Short Answer</button>
+              <button type="button" class="type-btn" data-type="long">Long Answer</button>
+            </div>
+            <button type="button" class="add-question-btn" id="add-question-btn">
+              <i class="fas fa-plus"></i> Add Question
+            </button>
+            <!-- Questions will be added here dynamically -->
+          </div>
+          
+          <button class="create-test-btn" id="create-test-btn">CREATE TEST</button>
+        </div>
+      </div>
+
       <!-- Uploaded Tests Section -->
       <div class="upload-section">
         <div class="section-header">
-          <h2><i class="fas fa-file-alt"></i> Uploaded Tests</h2>
+          <h2><i class="fas fa-file-alt"></i> Created Tests</h2>
         </div>
         <div class="file-list" id="tests-list">
           <div class="empty-state">
             <i class="fas fa-file-alt"></i>
-            <p>No tests uploaded yet</p>
-            <p>Uploaded tests will appear here</p>
+            <p>No tests created yet</p>
+            <p>Created tests will appear here</p>
           </div>
-        </div>
-      </div>
-
-      <!-- Upload Tests Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-upload"></i> Upload Tests</h2>
-        </div>
-        <div class="form-group">
-          <label for="test-title">Test Title</label>
-          <input type="text" id="test-title" placeholder="Enter test title">
-        </div>
-        <div class="form-group">
-          <label for="test-subject">Subject</label>
-          <select id="test-subject">
-            <option value="">Select subject</option>
-          </select>
-        </div>
-        <div class="file-input-container">
-          <label for="test-file" class="file-input-label">
-            <i class="fas fa-cloud-upload-alt"></i> Choose PDF file
-          </label>
-          <input type="file" id="test-file" class="file-input" accept=".pdf">
-          <div class="file-name" id="test-file-name">No file chosen</div>
-        </div>
-        <button class="upload-btn" id="upload-test-btn">UPLOAD TEST</button>
-        <div id="test-upload-progress" style="display: none; margin-top: 10px;">
-          <div style="background: #f0f0f0; border-radius: 10px; height: 10px;">
-            <div id="test-progress-bar" style="background: #8e44ad; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
-          </div>
-          <div id="test-progress-text" style="text-align: center; font-size: 12px; margin-top: 5px;">0%</div>
-        </div>
-      </div>
-
-      <!-- Uploaded Assignments Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-clipboard-list"></i> Uploaded Assignments</h2>
-        </div>
-        <div class="file-list" id="assignments-list">
-          <div class="empty-state">
-            <i class="fas fa-clipboard-list"></i>
-            <p>No assignments uploaded yet</p>
-            <p>Uploaded assignments will appear here</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Upload Assignments Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-tasks"></i> Upload Assignments</h2>
-        </div>
-        <div class="form-group">
-          <label for="assignment-title">Assignment Title</label>
-          <input type="text" id="assignment-title" placeholder="Enter assignment title">
-        </div>
-        <div class="form-group">
-          <label for="assignment-subject">Subject</label>
-          <select id="assignment-subject">
-            <option value="">Select subject</option>
-          </select>
-        </div>
-        <div class="file-input-container">
-          <label for="assignment-file" class="file-input-label">
-            <i class="fas fa-cloud-upload-alt"></i> Choose PDF file
-          </label>
-          <input type="file" id="assignment-file" class="file-input" accept=".pdf">
-          <div class="file-name" id="assignment-file-name">No file chosen</div>
-        </div>
-        <button class="upload-btn" id="upload-assignment-btn">UPLOAD ASSIGNMENT</button>
-        <div id="assignment-upload-progress" style="display: none; margin-top: 10px;">
-          <div style="background: #f0f0f0; border-radius: 10px; height: 10px;">
-            <div id="assignment-progress-bar" style="background: #8e44ad; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
-          </div>
-          <div id="assignment-progress-text" style="text-align: center; font-size: 12px; margin-top: 5px;">0%</div>
-        </div>
-      </div>
-
-      <!-- Uploaded Rubrics Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-list-check"></i> Uploaded Rubrics</h2>
-        </div>
-        <div class="file-list" id="rubrics-list">
-          <div class="empty-state">
-            <i class="fas fa-list-check"></i>
-            <p>No rubrics uploaded yet</p>
-            <p>Uploaded rubrics will appear here</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Upload Rubrics Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-file-contract"></i> Upload Rubrics</h2>
-        </div>
-        <div class="form-group">
-          <label for="rubric-title">Rubric Title</label>
-          <input type="text" id="rubric-title" placeholder="Enter rubric title">
-        </div>
-        <div class="form-group">
-          <label for="rubric-subject">Subject</label>
-          <select id="rubric-subject">
-            <option value="">Select subject</option>
-          </select>
-        </div>
-        <div class="file-input-container">
-          <label for="rubric-file" class="file-input-label">
-            <i class="fas fa-cloud-upload-alt"></i> Choose PDF file
-          </label>
-          <input type="file" id="rubric-file" class="file-input" accept=".pdf">
-          <div class="file-name" id="rubric-file-name">No file chosen</div>
-        </div>
-        <button class="upload-btn" id="upload-rubric-btn">UPLOAD RUBRIC</button>
-        <div id="rubric-upload-progress" style="display: none; margin-top: 10px;">
-          <div style="background: #f0f0f0; border-radius: 10px; height: 10px;">
-            <div id="rubric-progress-bar" style="background: #8e44ad; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
-          </div>
-          <div id="rubric-progress-text" style="text-align: center; font-size: 12px; margin-top: 5px;">0%</div>
         </div>
       </div>
     </div>
@@ -1007,7 +1016,7 @@
     <button class="popup-close">&times;</button>
     <h3><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h3>
     <div class="popup-content">
-      <p>Are you sure you want to delete this file? This action cannot be undone.</p>
+      <p>Are you sure you want to delete this test? This action cannot be undone.</p>
     </div>
     <div class="form-actions">
       <button class="btn-secondary" id="cancel-delete">Cancel</button>
@@ -1029,38 +1038,18 @@
     const userEmail = document.getElementById('user-email');
     const userAvatar = document.getElementById('user-avatar');
     
-    // File lists
-    const testsList = document.getElementById('tests-list');
-    const assignmentsList = document.getElementById('assignments-list');
-    const rubricsList = document.getElementById('rubrics-list');
-    
-    // Upload forms
+    // Test creation elements
+    const testForm = document.getElementById('test-form');
     const testTitleInput = document.getElementById('test-title');
     const testSubjectSelect = document.getElementById('test-subject');
-    const testFileInput = document.getElementById('test-file');
-    const testFileName = document.getElementById('test-file-name');
-    const uploadTestBtn = document.getElementById('upload-test-btn');
-    const testUploadProgress = document.getElementById('test-upload-progress');
-    const testProgressBar = document.getElementById('test-progress-bar');
-    const testProgressText = document.getElementById('test-progress-text');
+    const testDescriptionInput = document.getElementById('test-description');
+    const questionsContainer = document.getElementById('questions-container');
+    const addQuestionBtn = document.getElementById('add-question-btn');
+    const createTestBtn = document.getElementById('create-test-btn');
+    const typeButtons = document.querySelectorAll('.type-btn');
     
-    const assignmentTitleInput = document.getElementById('assignment-title');
-    const assignmentSubjectSelect = document.getElementById('assignment-subject');
-    const assignmentFileInput = document.getElementById('assignment-file');
-    const assignmentFileName = document.getElementById('assignment-file-name');
-    const uploadAssignmentBtn = document.getElementById('upload-assignment-btn');
-    const assignmentUploadProgress = document.getElementById('assignment-upload-progress');
-    const assignmentProgressBar = document.getElementById('assignment-progress-bar');
-    const assignmentProgressText = document.getElementById('assignment-progress-text');
-    
-    const rubricTitleInput = document.getElementById('rubric-title');
-    const rubricSubjectSelect = document.getElementById('rubric-subject');
-    const rubricFileInput = document.getElementById('rubric-file');
-    const rubricFileName = document.getElementById('rubric-file-name');
-    const uploadRubricBtn = document.getElementById('upload-rubric-btn');
-    const rubricUploadProgress = document.getElementById('rubric-upload-progress');
-    const rubricProgressBar = document.getElementById('rubric-progress-bar');
-    const rubricProgressText = document.getElementById('rubric-progress-text');
+    // File lists
+    const testsList = document.getElementById('tests-list');
     
     // Popup elements
     const confirmPopup = document.getElementById('confirm-popup');
@@ -1073,7 +1062,9 @@
     let currentUser = null;
     let currentTeacher = null;
     let teacherSubjects = [];
-    let fileToDelete = null;
+    let questionCounter = 0;
+    let testToDelete = null;
+    let currentQuestionType = 'multiple';
 
     // Initialize the dashboard
     document.addEventListener('DOMContentLoaded', function() {
@@ -1134,33 +1125,23 @@
 
     // Populate subject dropdowns
     function populateSubjectSelects() {
-      const subjectSelects = [
-        testSubjectSelect,
-        assignmentSubjectSelect,
-        rubricSubjectSelect
-      ];
+      // Clear existing options except the first one
+      while (testSubjectSelect.options.length > 1) {
+        testSubjectSelect.remove(1);
+      }
       
-      subjectSelects.forEach(select => {
-        // Clear existing options except the first one
-        while (select.options.length > 1) {
-          select.remove(1);
-        }
-        
-        // Add teacher's subjects
-        teacherSubjects.forEach(subject => {
-          const option = document.createElement('option');
-          option.value = subject;
-          option.textContent = subject;
-          select.appendChild(option);
-        });
+      // Add teacher's subjects
+      teacherSubjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject;
+        option.textContent = subject;
+        testSubjectSelect.appendChild(option);
       });
     }
 
     // Load dashboard data
     async function loadDashboardData() {
       await loadTests();
-      await loadAssignments();
-      await loadRubrics();
     }
 
     // Load tests from Firestore
@@ -1193,8 +1174,8 @@
         testsList.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-file-alt"></i>
-            <p>No tests uploaded yet</p>
-            <p>Uploaded tests will appear here</p>
+            <p>No tests created yet</p>
+            <p>Created tests will appear here</p>
           </div>
         `;
         return;
@@ -1206,21 +1187,40 @@
         const test = doc.data();
         const testItem = document.createElement('div');
         testItem.className = 'file-item';
+        
+        // Count question types
+        let multipleCount = 0;
+        let shortCount = 0;
+        let longCount = 0;
+        
+        if (test.questions && test.questions.length > 0) {
+          test.questions.forEach(question => {
+            if (question.type === 'multiple') multipleCount++;
+            else if (question.type === 'short') shortCount++;
+            else if (question.type === 'long') longCount++;
+          });
+        }
+        
         testItem.innerHTML = `
           <div class="file-info">
             <div class="file-icon">
-              <i class="fas fa-file-pdf"></i>
+              <i class="fas fa-file-alt"></i>
             </div>
             <div class="file-details">
               <h4>${test.title}</h4>
               <span>${test.subject} • ${formatDate(test.createdAt)}</span>
+              <div>
+                ${multipleCount > 0 ? `${multipleCount} MC` : ''} 
+                ${shortCount > 0 ? `${shortCount} Short` : ''} 
+                ${longCount > 0 ? `${longCount} Long` : ''}
+              </div>
             </div>
           </div>
           <div class="file-actions">
-            <button class="file-action-btn download-btn" data-url="${test.fileUrl}" data-name="${test.title}">
-              <i class="fas fa-download"></i>
+            <button class="file-action-btn view-btn" data-id="${doc.id}">
+              <i class="fas fa-eye"></i>
             </button>
-            <button class="file-action-btn delete-btn" data-id="${doc.id}" data-path="${test.filePath}">
+            <button class="file-action-btn delete-btn" data-id="${doc.id}">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -1229,203 +1229,179 @@
       });
       
       // Add event listeners to action buttons
-      const downloadButtons = testsList.querySelectorAll('.download-btn');
+      const viewButtons = testsList.querySelectorAll('.view-btn');
       const deleteButtons = testsList.querySelectorAll('.delete-btn');
       
-      downloadButtons.forEach(button => {
+      viewButtons.forEach(button => {
         button.addEventListener('click', function() {
-          const fileUrl = this.getAttribute('data-url');
-          const fileName = this.getAttribute('data-name');
-          downloadFile(fileUrl, fileName);
+          const testId = this.getAttribute('data-id');
+          viewTest(testId);
         });
       });
       
       deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
-          const fileId = this.getAttribute('data-id');
-          const filePath = this.getAttribute('data-path');
-          confirmDelete(fileId, filePath, 'test');
+          const testId = this.getAttribute('data-id');
+          confirmDelete(testId);
         });
       });
     }
 
-    // Load assignments from Firestore
-    async function loadAssignments() {
-      try {
-        if (!currentUser) return;
-        
-        const assignmentsQuery = window.firebaseFunctions.query(
-          window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
-          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-          window.firebaseFunctions.orderBy("createdAt", "desc")
-        );
-        
-        const querySnapshot = await window.firebaseFunctions.getDocs(assignmentsQuery);
-        renderAssignments(querySnapshot);
-      } catch (error) {
-        console.error("Error loading assignments:", error);
-        assignmentsList.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>Error loading assignments</p>
+    // Add a new question to the form
+    function addQuestion() {
+      questionCounter++;
+      const questionId = `question-${questionCounter}`;
+      
+      let questionHtml = '';
+      
+      if (currentQuestionType === 'multiple') {
+        questionHtml = `
+          <div class="question-header">
+            <span class="question-number">Question ${questionCounter}</span>
+            <span class="question-type">Multiple Choice</span>
+            <div class="question-actions">
+              <button type="button" class="action-btn add-option" title="Add Option">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button type="button" class="action-btn delete delete-question" title="Delete Question">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="${questionId}-text">Question Text</label>
+            <textarea id="${questionId}-text" placeholder="Enter the question text"></textarea>
+          </div>
+          <div class="options-list" id="${questionId}-options">
+            <div class="option-item">
+              <input type="radio" name="${questionId}-correct" value="0" checked>
+              <input type="text" placeholder="Option 1">
+            </div>
+            <div class="option-item">
+              <input type="radio" name="${questionId}-correct" value="1">
+              <input type="text" placeholder="Option 2">
+            </div>
+          </div>
+        `;
+      } else if (currentQuestionType === 'short') {
+        questionHtml = `
+          <div class="question-header">
+            <span class="question-number">Question ${questionCounter}</span>
+            <span class="question-type">Short Answer</span>
+            <div class="question-actions">
+              <button type="button" class="action-btn delete delete-question" title="Delete Question">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="${questionId}-text">Question Text</label>
+            <textarea id="${questionId}-text" placeholder="Enter the question text"></textarea>
+          </div>
+          <div class="answer-field">
+            <label for="${questionId}-answer">Expected Answer</label>
+            <textarea id="${questionId}-answer" placeholder="Enter the expected answer"></textarea>
+          </div>
+        `;
+      } else if (currentQuestionType === 'long') {
+        questionHtml = `
+          <div class="question-header">
+            <span class="question-number">Question ${questionCounter}</span>
+            <span class="question-type">Long Answer</span>
+            <div class="question-actions">
+              <button type="button" class="action-btn delete delete-question" title="Delete Question">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="${questionId}-text">Question Text</label>
+            <textarea id="${questionId}-text" placeholder="Enter the question text"></textarea>
+          </div>
+          <div class="answer-field">
+            <label for="${questionId}-answer">Expected Answer (Optional)</label>
+            <textarea id="${questionId}-answer" placeholder="Enter the expected answer (optional)"></textarea>
           </div>
         `;
       }
-    }
-
-    // Render assignments in the UI
-    function renderAssignments(querySnapshot) {
-      if (querySnapshot.empty) {
-        assignmentsList.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-clipboard-list"></i>
-            <p>No assignments uploaded yet</p>
-            <p>Uploaded assignments will appear here</p>
-          </div>
-        `;
-        return;
+      
+      const questionItem = document.createElement('div');
+      questionItem.className = 'question-item';
+      questionItem.id = questionId;
+      questionItem.innerHTML = questionHtml;
+      
+      // Insert before the "Add Question" button
+      questionsContainer.insertBefore(questionItem, addQuestionBtn);
+      
+      // Add event listeners for the new question
+      const deleteQuestionBtn = questionItem.querySelector('.delete-question');
+      
+      if (currentQuestionType === 'multiple') {
+        const addOptionBtn = questionItem.querySelector('.add-option');
+        addOptionBtn.addEventListener('click', function() {
+          addOption(questionId);
+        });
       }
       
-      assignmentsList.innerHTML = '';
-      
-      querySnapshot.forEach((doc) => {
-        const assignment = doc.data();
-        const assignmentItem = document.createElement('div');
-        assignmentItem.className = 'file-item';
-        assignmentItem.innerHTML = `
-          <div class="file-info">
-            <div class="file-icon">
-              <i class="fas fa-file-pdf"></i>
-            </div>
-            <div class="file-details">
-              <h4>${assignment.title}</h4>
-              <span>${assignment.subject} • ${formatDate(assignment.createdAt)}</span>
-            </div>
-          </div>
-          <div class="file-actions">
-            <button class="file-action-btn download-btn" data-url="${assignment.fileUrl}" data-name="${assignment.title}">
-              <i class="fas fa-download"></i>
-            </button>
-            <button class="file-action-btn delete-btn" data-id="${doc.id}" data-path="${assignment.filePath}">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        `;
-        assignmentsList.appendChild(assignmentItem);
-      });
-      
-      // Add event listeners to action buttons
-      const downloadButtons = assignmentsList.querySelectorAll('.download-btn');
-      const deleteButtons = assignmentsList.querySelectorAll('.delete-btn');
-      
-      downloadButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const fileUrl = this.getAttribute('data-url');
-          const fileName = this.getAttribute('data-name');
-          downloadFile(fileUrl, fileName);
-        });
-      });
-      
-      deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const fileId = this.getAttribute('data-id');
-          const filePath = this.getAttribute('data-path');
-          confirmDelete(fileId, filePath, 'assignment');
-        });
+      deleteQuestionBtn.addEventListener('click', function() {
+        questionItem.remove();
+        updateQuestionNumbers();
       });
     }
 
-    // Load rubrics from Firestore
-    async function loadRubrics() {
-      try {
-        if (!currentUser) return;
-        
-        const rubricsQuery = window.firebaseFunctions.query(
-          window.firebaseFunctions.collection(window.firebaseDb, "rubrics"),
-          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-          window.firebaseFunctions.orderBy("createdAt", "desc")
-        );
-        
-        const querySnapshot = await window.firebaseFunctions.getDocs(rubricsQuery);
-        renderRubrics(querySnapshot);
-      } catch (error) {
-        console.error("Error loading rubrics:", error);
-        rubricsList.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>Error loading rubrics</p>
-          </div>
-        `;
-      }
-    }
-
-    // Render rubrics in the UI
-    function renderRubrics(querySnapshot) {
-      if (querySnapshot.empty) {
-        rubricsList.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-list-check"></i>
-            <p>No rubrics uploaded yet</p>
-            <p>Uploaded rubrics will appear here</p>
-          </div>
-        `;
-        return;
-      }
+    // Add an option to a multiple choice question
+    function addOption(questionId) {
+      const optionsList = document.getElementById(`${questionId}-options`);
+      const optionCount = optionsList.children.length;
       
-      rubricsList.innerHTML = '';
+      const optionItem = document.createElement('div');
+      optionItem.className = 'option-item';
+      optionItem.innerHTML = `
+        <input type="radio" name="${questionId}-correct" value="${optionCount}">
+        <input type="text" placeholder="Option ${optionCount + 1}">
+        <button type="button" class="action-btn delete delete-option" title="Delete Option">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
       
-      querySnapshot.forEach((doc) => {
-        const rubric = doc.data();
-        const rubricItem = document.createElement('div');
-        rubricItem.className = 'file-item';
-        rubricItem.innerHTML = `
-          <div class="file-info">
-            <div class="file-icon">
-              <i class="fas fa-file-pdf"></i>
-            </div>
-            <div class="file-details">
-              <h4>${rubric.title}</h4>
-              <span>${rubric.subject} • ${formatDate(rubric.createdAt)}</span>
-            </div>
-          </div>
-          <div class="file-actions">
-            <button class="file-action-btn download-btn" data-url="${rubric.fileUrl}" data-name="${rubric.title}">
-              <i class="fas fa-download"></i>
-            </button>
-            <button class="file-action-btn delete-btn" data-id="${doc.id}" data-path="${rubric.filePath}">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        `;
-        rubricsList.appendChild(rubricItem);
-      });
+      optionsList.appendChild(optionItem);
       
-      // Add event listeners to action buttons
-      const downloadButtons = rubricsList.querySelectorAll('.download-btn');
-      const deleteButtons = rubricsList.querySelectorAll('.delete-btn');
-      
-      downloadButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const fileUrl = this.getAttribute('data-url');
-          const fileName = this.getAttribute('data-name');
-          downloadFile(fileUrl, fileName);
-        });
-      });
-      
-      deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const fileId = this.getAttribute('data-id');
-          const filePath = this.getAttribute('data-path');
-          confirmDelete(fileId, filePath, 'rubric');
-        });
+      // Add event listener for delete option button
+      const deleteOptionBtn = optionItem.querySelector('.delete-option');
+      deleteOptionBtn.addEventListener('click', function() {
+        optionItem.remove();
+        updateOptionValues(questionId);
       });
     }
 
-    // Upload test to Firestore and Storage
-    async function uploadTest() {
+    // Update question numbers after deletion
+    function updateQuestionNumbers() {
+      const questionItems = questionsContainer.querySelectorAll('.question-item');
+      questionCounter = 0;
+      
+      questionItems.forEach((item, index) => {
+        questionCounter++;
+        const questionNumber = item.querySelector('.question-number');
+        questionNumber.textContent = `Question ${questionCounter}`;
+      });
+    }
+
+    // Update option values after deletion
+    function updateOptionValues(questionId) {
+      const optionsList = document.getElementById(`${questionId}-options`);
+      const optionItems = optionsList.querySelectorAll('.option-item');
+      
+      optionItems.forEach((item, index) => {
+        const radioInput = item.querySelector('input[type="radio"]');
+        radioInput.value = index;
+      });
+    }
+
+    // Create a new test
+    async function createTest() {
       const title = testTitleInput.value.trim();
       const subject = testSubjectSelect.value;
-      const file = testFileInput.files[0];
+      const description = testDescriptionInput.value.trim();
       
       if (!title) {
         alert('Please enter a test title');
@@ -1437,408 +1413,273 @@
         return;
       }
       
-      if (!file) {
-        alert('Please select a PDF file');
+      const questionItems = questionsContainer.querySelectorAll('.question-item');
+      
+      if (questionItems.length === 0) {
+        alert('Please add at least one question to the test');
         return;
       }
       
-      if (file.type !== 'application/pdf') {
-        alert('Please select a PDF file');
-        return;
-      }
+      // Collect questions and options
+      const questions = [];
       
-      try {
-        uploadTestBtn.disabled = true;
-        uploadTestBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        testUploadProgress.style.display = 'block';
+      questionItems.forEach((item, index) => {
+        const questionText = item.querySelector('textarea').value.trim();
         
-        // Create a unique filename
-        const timestamp = Date.now();
-        const fileName = `test_${timestamp}_${file.name}`;
-        
-        // Create storage reference
-        const storageRef = window.firebaseFunctions.ref(
-          window.firebaseStorage, 
-          `tests/${currentUser.uid}/${fileName}`
-        );
-        
-        console.log("Starting upload to:", storageRef.fullPath);
-        
-        // Upload file to Firebase Storage with progress tracking
-        const uploadTask = window.firebaseFunctions.uploadBytesResumable(storageRef, file);
-        
-        // Track upload progress
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            // Progress monitoring
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            testProgressBar.style.width = progress + '%';
-            testProgressText.textContent = Math.round(progress) + '%';
-            console.log('Upload progress:', progress + '%');
-          },
-          (error) => {
-            // Handle unsuccessful uploads
-            console.error("Upload error:", error);
-            alert('Upload failed: ' + error.message);
-            resetUploadForm('test');
-          },
-          async () => {
-            // Handle successful uploads
-            try {
-              console.log("Upload completed, getting download URL...");
-              const downloadURL = await window.firebaseFunctions.getDownloadURL(uploadTask.snapshot.ref);
-              console.log("Download URL:", downloadURL);
-              
-              // Save test metadata to Firestore
-              const docRef = await window.firebaseFunctions.addDoc(
-                window.firebaseFunctions.collection(window.firebaseDb, "tests"),
-                {
-                  title: title,
-                  subject: subject,
-                  fileUrl: downloadURL,
-                  fileName: file.name,
-                  filePath: uploadTask.snapshot.ref.fullPath,
-                  teacherId: currentUser.uid,
-                  teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-                  createdAt: new Date()
-                }
-              );
-              
-              console.log("Test saved to Firestore with ID:", docRef.id);
-              
-              // Reset form
-              resetUploadForm('test');
-              
-              // Reload tests
-              await loadTests();
-              
-              alert('Test uploaded successfully!');
-            } catch (error) {
-              console.error("Error saving to Firestore:", error);
-              alert('Failed to save test metadata. Please try again.');
-              resetUploadForm('test');
-            }
-          }
-        );
-        
-      } catch (error) {
-        console.error("Error in upload process:", error);
-        alert('Upload failed: ' + error.message);
-        resetUploadForm('test');
-      }
-    }
-
-    // Upload assignment to Firestore and Storage
-    async function uploadAssignment() {
-      const title = assignmentTitleInput.value.trim();
-      const subject = assignmentSubjectSelect.value;
-      const file = assignmentFileInput.files[0];
-      
-      if (!title) {
-        alert('Please enter an assignment title');
-        return;
-      }
-      
-      if (!subject) {
-        alert('Please select a subject');
-        return;
-      }
-      
-      if (!file) {
-        alert('Please select a PDF file');
-        return;
-      }
-      
-      if (file.type !== 'application/pdf') {
-        alert('Please select a PDF file');
-        return;
-      }
-      
-      try {
-        uploadAssignmentBtn.disabled = true;
-        uploadAssignmentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        assignmentUploadProgress.style.display = 'block';
-        
-        // Create a unique filename
-        const timestamp = Date.now();
-        const fileName = `assignment_${timestamp}_${file.name}`;
-        
-        // Create storage reference
-        const storageRef = window.firebaseFunctions.ref(
-          window.firebaseStorage, 
-          `assignments/${currentUser.uid}/${fileName}`
-        );
-        
-        // Upload file to Firebase Storage with progress tracking
-        const uploadTask = window.firebaseFunctions.uploadBytesResumable(storageRef, file);
-        
-        // Track upload progress
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            assignmentProgressBar.style.width = progress + '%';
-            assignmentProgressText.textContent = Math.round(progress) + '%';
-          },
-          (error) => {
-            console.error("Upload error:", error);
-            alert('Upload failed: ' + error.message);
-            resetUploadForm('assignment');
-          },
-          async () => {
-            try {
-              const downloadURL = await window.firebaseFunctions.getDownloadURL(uploadTask.snapshot.ref);
-              
-              // Save assignment metadata to Firestore
-              await window.firebaseFunctions.addDoc(
-                window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
-                {
-                  title: title,
-                  subject: subject,
-                  fileUrl: downloadURL,
-                  fileName: file.name,
-                  filePath: uploadTask.snapshot.ref.fullPath,
-                  teacherId: currentUser.uid,
-                  teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-                  createdAt: new Date()
-                }
-              );
-              
-              // Reset form
-              resetUploadForm('assignment');
-              
-              // Reload assignments
-              await loadAssignments();
-              
-              alert('Assignment uploaded successfully!');
-            } catch (error) {
-              console.error("Error saving to Firestore:", error);
-              alert('Failed to save assignment metadata. Please try again.');
-              resetUploadForm('assignment');
-            }
-          }
-        );
-        
-      } catch (error) {
-        console.error("Error in upload process:", error);
-        alert('Upload failed: ' + error.message);
-        resetUploadForm('assignment');
-      }
-    }
-
-    // Upload rubric to Firestore and Storage
-    async function uploadRubric() {
-      const title = rubricTitleInput.value.trim();
-      const subject = rubricSubjectSelect.value;
-      const file = rubricFileInput.files[0];
-      
-      if (!title) {
-        alert('Please enter a rubric title');
-        return;
-      }
-      
-      if (!subject) {
-        alert('Please select a subject');
-        return;
-      }
-      
-      if (!file) {
-        alert('Please select a PDF file');
-        return;
-      }
-      
-      if (file.type !== 'application/pdf') {
-        alert('Please select a PDF file');
-        return;
-      }
-      
-      try {
-        uploadRubricBtn.disabled = true;
-        uploadRubricBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        rubricUploadProgress.style.display = 'block';
-        
-        // Create a unique filename
-        const timestamp = Date.now();
-        const fileName = `rubric_${timestamp}_${file.name}`;
-        
-        // Create storage reference
-        const storageRef = window.firebaseFunctions.ref(
-          window.firebaseStorage, 
-          `rubrics/${currentUser.uid}/${fileName}`
-        );
-        
-        // Upload file to Firebase Storage with progress tracking
-        const uploadTask = window.firebaseFunctions.uploadBytesResumable(storageRef, file);
-        
-        // Track upload progress
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            rubricProgressBar.style.width = progress + '%';
-            rubricProgressText.textContent = Math.round(progress) + '%';
-          },
-          (error) => {
-            console.error("Upload error:", error);
-            alert('Upload failed: ' + error.message);
-            resetUploadForm('rubric');
-          },
-          async () => {
-            try {
-              const downloadURL = await window.firebaseFunctions.getDownloadURL(uploadTask.snapshot.ref);
-              
-              // Save rubric metadata to Firestore
-              await window.firebaseFunctions.addDoc(
-                window.firebaseFunctions.collection(window.firebaseDb, "rubrics"),
-                {
-                  title: title,
-                  subject: subject,
-                  fileUrl: downloadURL,
-                  fileName: file.name,
-                  filePath: uploadTask.snapshot.ref.fullPath,
-                  teacherId: currentUser.uid,
-                  teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-                  createdAt: new Date()
-                }
-              );
-              
-              // Reset form
-              resetUploadForm('rubric');
-              
-              // Reload rubrics
-              await loadRubrics();
-              
-              alert('Rubric uploaded successfully!');
-            } catch (error) {
-              console.error("Error saving to Firestore:", error);
-              alert('Failed to save rubric metadata. Please try again.');
-              resetUploadForm('rubric');
-            }
-          }
-        );
-        
-      } catch (error) {
-        console.error("Error in upload process:", error);
-        alert('Upload failed: ' + error.message);
-        resetUploadForm('rubric');
-      }
-    }
-
-    // Reset upload form
-    function resetUploadForm(type) {
-      const resetMap = {
-        'test': {
-          title: testTitleInput,
-          subject: testSubjectSelect,
-          file: testFileInput,
-          fileName: testFileName,
-          btn: uploadTestBtn,
-          progress: testUploadProgress,
-          progressBar: testProgressBar,
-          progressText: testProgressText
-        },
-        'assignment': {
-          title: assignmentTitleInput,
-          subject: assignmentSubjectSelect,
-          file: assignmentFileInput,
-          fileName: assignmentFileName,
-          btn: uploadAssignmentBtn,
-          progress: assignmentUploadProgress,
-          progressBar: assignmentProgressBar,
-          progressText: assignmentProgressText
-        },
-        'rubric': {
-          title: rubricTitleInput,
-          subject: rubricSubjectSelect,
-          file: rubricFileInput,
-          fileName: rubricFileName,
-          btn: uploadRubricBtn,
-          progress: rubricUploadProgress,
-          progressBar: rubricProgressBar,
-          progressText: rubricProgressText
+        if (!questionText) {
+          alert(`Please enter text for question ${index + 1}`);
+          return;
         }
-      };
+        
+        // Determine question type
+        const questionType = item.querySelector('.question-type').textContent.toLowerCase();
+        
+        let questionData = {
+          text: questionText,
+          type: questionType
+        };
+        
+        if (questionType === 'multiple choice') {
+          const optionsList = item.querySelector('.options-list');
+          const optionItems = optionsList.querySelectorAll('.option-item');
+          
+          // Collect options
+          const options = [];
+          let correctAnswer = 0;
+          
+          optionItems.forEach((optionItem, optionIndex) => {
+            const optionText = optionItem.querySelector('input[type="text"]').value.trim();
+            
+            if (!optionText) {
+              alert(`Please enter text for option ${optionIndex + 1} in question ${index + 1}`);
+              return;
+            }
+            
+            options.push(optionText);
+            
+            // Check if this option is the correct answer
+            const radioInput = optionItem.querySelector('input[type="radio"]');
+            if (radioInput.checked) {
+              correctAnswer = optionIndex;
+            }
+          });
+          
+          if (options.length < 2) {
+            alert(`Please add at least 2 options for question ${index + 1}`);
+            return;
+          }
+          
+          questionData.options = options;
+          questionData.correctAnswer = correctAnswer;
+        } else {
+          // For short and long answer questions
+          const answerText = item.querySelector('.answer-field textarea').value.trim();
+          questionData.expectedAnswer = answerText;
+        }
+        
+        questions.push(questionData);
+      });
       
-      const form = resetMap[type];
-      if (form) {
-        form.title.value = '';
-        form.subject.value = '';
-        form.file.value = '';
-        form.fileName.textContent = 'No file chosen';
-        form.btn.disabled = false;
-        form.btn.innerHTML = type === 'test' ? 'UPLOAD TEST' : 
-                            type === 'assignment' ? 'UPLOAD ASSIGNMENT' : 'UPLOAD RUBRIC';
-        form.progress.style.display = 'none';
-        form.progressBar.style.width = '0%';
-        form.progressText.textContent = '0%';
+      if (questions.length === 0) {
+        return;
+      }
+      
+      try {
+        createTestBtn.disabled = true;
+        createTestBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+        
+        // Save test to Firestore
+        const docRef = await window.firebaseFunctions.addDoc(
+          window.firebaseFunctions.collection(window.firebaseDb, "tests"),
+          {
+            title: title,
+            subject: subject,
+            description: description,
+            questions: questions,
+            teacherId: currentUser.uid,
+            teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
+            createdAt: new Date(),
+            type: "practice" // This is a practice test for students
+          }
+        );
+        
+        console.log("Test saved to Firestore with ID:", docRef.id);
+        
+        // Reset form
+        resetTestForm();
+        
+        // Reload tests
+        await loadTests();
+        
+        alert('Test created successfully! Students can now practice with this test.');
+      } catch (error) {
+        console.error("Error saving test:", error);
+        alert('Failed to create test. Please try again.');
+        createTestBtn.disabled = false;
+        createTestBtn.innerHTML = 'CREATE TEST';
       }
     }
 
-    // Download file
-    function downloadFile(url, fileName) {
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName + '.pdf';
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    // Reset the test form
+    function resetTestForm() {
+      testTitleInput.value = '';
+      testSubjectSelect.value = '';
+      testDescriptionInput.value = '';
+      
+      // Remove all questions
+      const questionItems = questionsContainer.querySelectorAll('.question-item');
+      questionItems.forEach(item => {
+        item.remove();
+      });
+      
+      questionCounter = 0;
+      
+      createTestBtn.disabled = false;
+      createTestBtn.innerHTML = 'CREATE TEST';
+    }
+
+    // View a test
+    async function viewTest(testId) {
+      try {
+        const testDoc = await window.firebaseFunctions.getDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "tests", testId)
+        );
+        
+        if (testDoc.exists()) {
+          const test = testDoc.data();
+          showTestDetails(test);
+        } else {
+          alert('Test not found');
+        }
+      } catch (error) {
+        console.error("Error viewing test:", error);
+        alert('Failed to load test details');
+      }
+    }
+
+    // Show test details in a popup
+    function showTestDetails(test) {
+      // Create a popup for test details
+      const testDetailsPopup = document.createElement('div');
+      testDetailsPopup.className = 'popup';
+      testDetailsPopup.id = 'test-details-popup';
+      
+      let questionsHtml = '';
+      if (test.questions && test.questions.length > 0) {
+        test.questions.forEach((question, index) => {
+          let questionContent = '';
+          
+          if (question.type === 'multiple choice') {
+            let optionsHtml = '';
+            question.options.forEach((option, optionIndex) => {
+              const isCorrect = optionIndex === question.correctAnswer;
+              optionsHtml += `
+                <div class="option-item ${isCorrect ? 'correct' : ''}">
+                  <input type="radio" ${isCorrect ? 'checked' : ''} disabled>
+                  <span>${option} ${isCorrect ? '(Correct)' : ''}</span>
+                </div>
+              `;
+            });
+            
+            questionContent = `
+              <div class="question-text">${question.text}</div>
+              <div class="options-list">${optionsHtml}</div>
+            `;
+          } else {
+            questionContent = `
+              <div class="question-text">${question.text}</div>
+              ${question.expectedAnswer ? `
+                <div class="answer-field">
+                  <label>Expected Answer:</label>
+                  <div class="expected-answer">${question.expectedAnswer}</div>
+                </div>
+              ` : ''}
+            `;
+          }
+          
+          questionsHtml += `
+            <div class="question-item">
+              <div class="question-header">
+                <span class="question-number">Question ${index + 1}</span>
+                <span class="question-type">${question.type}</span>
+              </div>
+              ${questionContent}
+            </div>
+          `;
+        });
+      }
+      
+      testDetailsPopup.innerHTML = `
+        <button class="popup-close">&times;</button>
+        <h3><i class="fas fa-eye"></i> Test Details</h3>
+        <div class="popup-content">
+          <div class="test-info">
+            <h4>${test.title}</h4>
+            <p><strong>Subject:</strong> ${test.subject}</p>
+            <p><strong>Created:</strong> ${formatDate(test.createdAt)}</p>
+            <p><strong>Questions:</strong> ${test.questions ? test.questions.length : 0}</p>
+            ${test.description ? `<p><strong>Description:</strong> ${test.description}</p>` : ''}
+          </div>
+          <div class="questions-preview">
+            <h4>Questions</h4>
+            ${questionsHtml}
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary close-test-details">Close</button>
+        </div>
+      `;
+      
+      document.body.appendChild(testDetailsPopup);
+      overlay.style.display = 'block';
+      testDetailsPopup.style.display = 'block';
+      
+      // Add event listeners
+      const closeBtn = testDetailsPopup.querySelector('.popup-close');
+      const closeDetailsBtn = testDetailsPopup.querySelector('.close-test-details');
+      
+      closeBtn.addEventListener('click', () => {
+        testDetailsPopup.remove();
+        overlay.style.display = 'none';
+      });
+      
+      closeDetailsBtn.addEventListener('click', () => {
+        testDetailsPopup.remove();
+        overlay.style.display = 'none';
+      });
+      
+      overlay.addEventListener('click', () => {
+        testDetailsPopup.remove();
+        overlay.style.display = 'none';
+      });
     }
 
     // Confirm deletion
-    function confirmDelete(fileId, filePath, type) {
-      fileToDelete = { id: fileId, path: filePath, type: type };
+    function confirmDelete(testId) {
+      testToDelete = testId;
       confirmPopup.style.display = 'block';
       overlay.style.display = 'block';
     }
 
-    // Delete file from Firestore and Storage
-    async function deleteFile() {
-      if (!fileToDelete) return;
+    // Delete test from Firestore
+    async function deleteTest() {
+      if (!testToDelete) return;
       
       try {
-        // Delete from Firestore
-        let collectionName;
-        switch (fileToDelete.type) {
-          case 'test':
-            collectionName = 'tests';
-            break;
-          case 'assignment':
-            collectionName = 'assignments';
-            break;
-          case 'rubric':
-            collectionName = 'rubrics';
-            break;
-          default:
-            return;
-        }
-        
         await window.firebaseFunctions.deleteDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, collectionName, fileToDelete.id)
+          window.firebaseFunctions.doc(window.firebaseDb, "tests", testToDelete)
         );
         
-        // Delete from Storage
-        const storageRef = window.firebaseFunctions.ref(window.firebaseStorage, fileToDelete.path);
-        await window.firebaseFunctions.deleteObject(storageRef);
+        // Reload tests
+        await loadTests();
         
-        // Reload the appropriate list
-        switch (fileToDelete.type) {
-          case 'test':
-            await loadTests();
-            break;
-          case 'assignment':
-            await loadAssignments();
-            break;
-          case 'rubric':
-            await loadRubrics();
-            break;
-        }
-        
-        alert('File deleted successfully!');
+        alert('Test deleted successfully!');
       } catch (error) {
-        console.error("Error deleting file:", error);
-        alert('Failed to delete file. Please try again.');
+        console.error("Error deleting test:", error);
+        alert('Failed to delete test. Please try again.');
       } finally {
         closePopup(confirmPopup);
-        fileToDelete = null;
+        testToDelete = null;
       }
     }
 
@@ -1867,35 +1708,20 @@
         }
       });
 
-      // File input displays
-      testFileInput.addEventListener('change', () => {
-        if (testFileInput.files.length > 0) {
-          testFileName.textContent = testFileInput.files[0].name;
-        } else {
-          testFileName.textContent = 'No file chosen';
-        }
+      // Question type selector
+      typeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          typeButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          currentQuestionType = this.getAttribute('data-type');
+        });
       });
 
-      assignmentFileInput.addEventListener('change', () => {
-        if (assignmentFileInput.files.length > 0) {
-          assignmentFileName.textContent = assignmentFileInput.files[0].name;
-        } else {
-          assignmentFileName.textContent = 'No file chosen';
-        }
-      });
+      // Add question button
+      addQuestionBtn.addEventListener('click', addQuestion);
 
-      rubricFileInput.addEventListener('change', () => {
-        if (rubricFileInput.files.length > 0) {
-          rubricFileName.textContent = rubricFileInput.files[0].name;
-        } else {
-          rubricFileName.textContent = 'No file chosen';
-        }
-      });
-
-      // Upload buttons
-      uploadTestBtn.addEventListener('click', uploadTest);
-      uploadAssignmentBtn.addEventListener('click', uploadAssignment);
-      uploadRubricBtn.addEventListener('click', uploadRubric);
+      // Create test button
+      createTestBtn.addEventListener('click', createTest);
 
       // Popup controls
       popupCloseButtons.forEach(button => {
@@ -1913,7 +1739,7 @@
         closePopup(confirmPopup);
       });
 
-      confirmDeleteBtn.addEventListener('click', deleteFile);
+      confirmDeleteBtn.addEventListener('click', deleteTest);
     }
 
     // Close a specific popup
@@ -1930,678 +1756,6 @@
       });
       overlay.style.display = 'none';
     }
-    // Autograding System Notifications
-document.addEventListener('DOMContentLoaded', function() {
-    // Add CSS styles dynamically for the modal
-    const style = document.createElement('style');
-    style.textContent = `
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1002;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow: auto;
-            padding: 0;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-            position: relative;
-            border: 1px solid rgba(0,0,0,0.08);
-            animation: popIn 0.3s ease;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 2px solid #eee;
-            background: #fff;
-            border-radius: 12px 12px 0 0;
-        }
-        
-        .modal-header h3 {
-            color: #8e44ad;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .modal-header h3 i {
-            color: #8e44ad;
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-            transition: all 0.3s ease;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .close-modal:hover {
-            background: #f0e6f5;
-            color: #ff6b6b;
-            transform: rotate(90deg);
-        }
-        
-        /* Modal footer styling */
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            padding: 20px;
-            border-top: 2px solid #eee;
-            background: #fff;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-secondary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-secondary:hover::before {
-            left: 100%;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        /* Notification item styling */
-        .notifications-list {
-            padding: 0;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e9ecef;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            gap: 12px;
-            background: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .notification-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .notification-item:hover::before {
-            left: 100%;
-        }
-
-        .notification-item:hover {
-            background: #f9f2fc;
-            transform: translateX(3px);
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .notification-item.unread {
-            border-left: 4px solid #8e44ad;
-            background: rgba(142, 68, 173, 0.03);
-        }
-
-        .notification-item.read {
-            border-left: 4px solid #e9ecef;
-            opacity: 0.8;
-        }
-
-        .notification-item.priority-high.unread {
-            border-left-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.03);
-        }
-
-        .notification-item.priority-medium.unread {
-            border-left-color: #ffa726;
-            background: rgba(255, 167, 38, 0.03);
-        }
-
-        /* Notification icon */
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f0e6f5;
-            color: #8e44ad;
-            flex-shrink: 0;
-            font-size: 16px;
-        }
-
-        .notification-item.priority-high .notification-icon {
-            background: #ffe9e9;
-            color: #ff6b6b;
-        }
-
-        .notification-item.priority-medium .notification-icon {
-            background: #fff3e0;
-            color: #ffa726;
-        }
-
-        /* Notification content */
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-content h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #333;
-        }
-
-        .notification-content p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-
-        .notification-content small {
-            font-size: 12px;
-            color: #888;
-            opacity: 0.8;
-        }
-
-        /* Notification actions */
-        .notification-actions {
-            display: flex;
-            align-items: center;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .action-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-            color: #8e44ad;
-            transform: scale(1.2);
-        }
-
-        /* Notification sections */
-        .notification-section {
-            margin-bottom: 0;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e9ecef;
-            background: #f8f9fa;
-        }
-
-        .count-badge {
-            background: #8e44ad;
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* Empty state styling */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #888;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            color: #ddd;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .empty-state small {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // DOM elements
-    const notificationIcon = document.getElementById('notification-icon');
-    const notificationBadge = document.querySelector('#notification-icon .icon-badge');
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    
-    // Create modal content
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-bell"></i> System Notifications</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="notifications-list" id="notifications-list">
-                <!-- Notifications will be dynamically added here -->
-            </div>
-            <div class="modal-footer">
-                <button id="mark-all-read" class="btn-secondary">Mark All as Read</button>
-            </div>
-        </div>
-    `;
-    
-    // Add modal to the document
-    document.body.appendChild(modal);
-    
-    // Store notifications
-    let notifications = [];
-    
-    // Generate notifications based on real test and assignment data
-    function generateNotifications(tests, assignments) {
-        const notifications = [];
-        const now = new Date();
-        
-        // Check for upcoming tests (within 3 days)
-        tests.forEach(test => {
-            const testDueDate = new Date(test.dueDate || test.scheduledDate);
-            const timeDiff = testDueDate.getTime() - now.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            
-            if (daysDiff <= 3 && daysDiff > 0 && test.status === "scheduled") {
-                notifications.push({
-                    id: `test-${test.id}`,
-                    title: "Upcoming Test",
-                    message: `${test.title || test.name} (${test.subject}) is in ${daysDiff} day${daysDiff > 1 ? 's' : ''}`,
-                    timestamp: formatTimestamp(testDueDate),
-                    type: "test",
-                    priority: daysDiff === 1 ? "high" : "medium",
-                    read: false,
-                    relatedId: test.id
-                });
-            }
-            
-            // Check for missed tests
-            if (test.status === "missed" || (daysDiff < 0 && !test.completed)) {
-                const missedDays = Math.floor((now.getTime() - testDueDate.getTime()) / (1000 * 3600 * 24));
-                notifications.push({
-                    id: `missed-test-${test.id}`,
-                    title: "Missed Test",
-                    message: `You missed ${test.title || test.name} (${test.subject}) - ${missedDays} day${missedDays > 1 ? 's' : ''} ago`,
-                    timestamp: formatTimestamp(testDueDate),
-                    type: "test",
-                    priority: "high",
-                    read: false,
-                    relatedId: test.id
-                });
-            }
-        });
-        
-        // Check for assignment deadlines (within 2 days)
-        assignments.forEach(assignment => {
-            if (assignment.submitted || assignment.status === "submitted") return;
-            
-            const assignmentDueDate = new Date(assignment.dueDate);
-            const timeDiff = assignmentDueDate.getTime() - now.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            
-            if (daysDiff <= 2 && daysDiff > 0) {
-                notifications.push({
-                    id: `assignment-${assignment.id}`,
-                    title: "Assignment Due Soon",
-                    message: `${assignment.title} (${assignment.subject || assignment.course}) due in ${daysDiff} day${daysDiff > 1 ? 's' : ''}`,
-                    timestamp: formatTimestamp(assignmentDueDate),
-                    type: "assignment",
-                    priority: daysDiff === 1 ? "high" : "medium",
-                    read: false,
-                    relatedId: assignment.id
-                });
-            }
-            
-            // Check for overdue assignments
-            if (daysDiff < 0) {
-                const overdueDays = Math.abs(daysDiff);
-                notifications.push({
-                    id: `overdue-assignment-${assignment.id}`,
-                    title: "Overdue Assignment",
-                    message: `${assignment.title} (${assignment.subject || assignment.course}) is ${overdueDays} day${overdueDays > 1 ? 's' : ''} overdue`,
-                    timestamp: formatTimestamp(assignmentDueDate),
-                    type: "assignment",
-                    priority: "high",
-                    read: false,
-                    relatedId: assignment.id
-                });
-            }
-        });
-        
-        // Sort by priority and date (high priority first, then by due date)
-        return notifications.sort((a, b) => {
-            const priorityOrder = { high: 1, medium: 2, low: 3 };
-            if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-                return priorityOrder[a.priority] - priorityOrder[b.priority];
-            }
-            return new Date(a.timestamp) - new Date(b.timestamp);
-        });
-    }
-    
-    // Format timestamp for display
-    function formatTimestamp(date) {
-        const now = new Date();
-        const diffMs = date.getTime() - now.getTime();
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 0) {
-            return "Today";
-        } else if (diffDays === 1) {
-            return "Tomorrow";
-        } else if (diffDays === -1) {
-            return "Yesterday";
-        } else if (diffDays > 1) {
-            return `In ${diffDays} days`;
-        } else {
-            return `${Math.abs(diffDays)} days ago`;
-        }
-    }
-    
-    // Update notification badge
-    function updateNotificationBadge() {
-        const unreadCount = notifications.filter(notification => !notification.read).length;
-        if (notificationBadge) {
-            notificationBadge.textContent = unreadCount;
-            
-            // Add/remove animation if there are unread notifications
-            if (unreadCount > 0) {
-                notificationBadge.style.animation = 'pulse 1.5s infinite';
-            } else {
-                notificationBadge.style.animation = 'none';
-            }
-        }
-    }
-    
-    // Render notifications in the modal
-    function renderNotifications() {
-        const notificationsList = document.getElementById('notifications-list');
-        notificationsList.innerHTML = '';
-        
-        if (notifications.length === 0) {
-            notificationsList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-bell-slash"></i>
-                    <p>No notifications at this time</p>
-                    <small>You're all caught up!</small>
-                </div>
-            `;
-            return;
-        }
-        
-        // Group notifications by type
-        const testNotifications = notifications.filter(n => n.type === "test");
-        const assignmentNotifications = notifications.filter(n => n.type === "assignment");
-        
-        // Render test notifications
-        if (testNotifications.length > 0) {
-            const testSection = document.createElement('div');
-            testSection.className = 'notification-section';
-            testSection.innerHTML = `<h4 class="section-title">Tests <span class="count-badge">${testNotifications.length}</span></h4>`;
-            notificationsList.appendChild(testSection);
-            
-            testNotifications.forEach(notification => {
-                renderNotificationItem(notification, testSection);
-            });
-        }
-        
-        // Render assignment notifications
-        if (assignmentNotifications.length > 0) {
-            const assignmentSection = document.createElement('div');
-            assignmentSection.className = 'notification-section';
-            assignmentSection.innerHTML = `<h4 class="section-title">Assignments <span class="count-badge">${assignmentNotifications.length}</span></h4>`;
-            notificationsList.appendChild(assignmentSection);
-            
-            assignmentNotifications.forEach(notification => {
-                renderNotificationItem(notification, assignmentSection);
-            });
-        }
-    }
-    
-    // Render individual notification item
-    function renderNotificationItem(notification, container) {
-        const notificationItem = document.createElement('div');
-        notificationItem.className = `notification-item ${notification.read ? 'read' : 'unread'} priority-${notification.priority}`;
-        notificationItem.innerHTML = `
-            <div class="notification-icon">
-                <i class="fas ${notification.type === 'test' ? 'fa-clipboard-list' : 'fa-tasks'}"></i>
-            </div>
-            <div class="notification-content">
-                <h4>${notification.title}</h4>
-                <p>${notification.message}</p>
-                <small>${notification.timestamp}</small>
-            </div>
-            <div class="notification-actions">
-                <button class="action-btn" data-id="${notification.id}" title="${notification.read ? 'Mark as unread' : 'Mark as read'}">
-                    <i class="fas ${notification.read ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                </button>
-            </div>
-        `;
-        
-        // Mark as read when clicked
-        notificationItem.addEventListener('click', function(e) {
-            if (!e.target.closest('.action-btn')) {
-                if (!notification.read) {
-                    notification.read = true;
-                    updateNotificationBadge();
-                    renderNotifications();
-                }
-                
-                // Navigate to relevant test/assignment
-                handleNotificationAction(notification);
-            }
-        });
-        
-        // Toggle read status with action button
-        const actionBtn = notificationItem.querySelector('.action-btn');
-        actionBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notification.read = !notification.read;
-            updateNotificationBadge();
-            renderNotifications();
-        });
-        
-        container.appendChild(notificationItem);
-    }
-    
-    // Handle notification action (navigate to test/assignment)
-    function handleNotificationAction(notification) {
-        console.log(`Navigating to: ${notification.type} with ID: ${notification.relatedId}`);
-        
-        // You can add your actual navigation logic here:
-        if (notification.type === 'test') {
-            // Example: window.location.href = `/take-test/${notification.relatedId}`;
-            alert(`Would navigate to test: ${notification.message}`);
-        } else if (notification.type === 'assignment') {
-            // Example: window.location.href = `/submit-assignment/${notification.relatedId}`;
-            alert(`Would navigate to assignment: ${notification.message}`);
-        }
-    }
-    
-    // Show modal
-    function showNotificationModal() {
-        modal.style.display = 'flex';
-        renderNotifications();
-    }
-    
-    // Hide modal
-    function hideNotificationModal() {
-        modal.style.display = 'none';
-    }
-    
-    // Mark all notifications as read
-    function markAllAsRead() {
-        let hasUnread = false;
-        notifications.forEach(notification => {
-            if (!notification.read) {
-                notification.read = true;
-                hasUnread = true;
-            }
-        });
-        
-        if (hasUnread) {
-            updateNotificationBadge();
-            renderNotifications();
-        }
-    }
-    
-    // Event listeners
-    if (notificationIcon) {
-        notificationIcon.addEventListener('click', function(e) {
-            e.preventDefault();
-            showNotificationModal();
-        });
-    }
-    
-    modal.querySelector('.close-modal').addEventListener('click', hideNotificationModal);
-    
-    // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            hideNotificationModal();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            hideNotificationModal();
-        }
-    });
-    
-    // Mark all as read button
-    document.getElementById('mark-all-read').addEventListener('click', markAllAsRead);
-    
-    // Initialize notification system with real data
-    window.initializeNotifications = function(testsData, assignmentsData) {
-        notifications = generateNotifications(testsData, assignmentsData);
-        updateNotificationBadge();
-    };
-    
-    // Refresh notifications when data changes
-    window.refreshNotifications = function(testsData, assignmentsData) {
-        notifications = generateNotifications(testsData, assignmentsData);
-        updateNotificationBadge();
-        
-        // If modal is open, update it
-        if (modal.style.display === 'flex') {
-            renderNotifications();
-        }
-    };
-    
-    // Initialize with demo data (replace with your actual data)
-    setTimeout(() => {
-        window.initializeNotifications(demoData.tests, demoData.assignments);
-    }, 1000);
-    
-    // Hide loading screen
-    setTimeout(function() {
-        const loadingScreen = document.getElementById('loadingScreen');
-        if (loadingScreen) {
-            loadingScreen.style.display = 'none';
-        }
-    }, 2000);
-    
-    // Mobile menu toggle functionality
-    const menuToggle = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-        });
-    }
-})
   </script>
 </body>
 </html>
