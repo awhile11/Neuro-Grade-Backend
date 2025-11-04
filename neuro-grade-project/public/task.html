@@ -23,8 +23,7 @@
       doc,
       getDoc,
       deleteDoc,
-      orderBy,
-      updateDoc
+      orderBy
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { 
       getStorage, 
@@ -69,7 +68,6 @@
       getDoc,
       deleteDoc,
       orderBy,
-      updateDoc,
       ref,
       uploadBytes,
       uploadBytesResumable,
@@ -327,41 +325,6 @@
       border: 2px solid #8e44ad;
     }
 
-    /* Subject view indicator */
-    .subject-view-indicator {
-      background: #e3f2fd;
-      border-left: 4px solid #3498db;
-      padding: 12px 15px;
-      margin-bottom: 20px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .subject-view-indicator h3 {
-      color: #3498db;
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .subject-view-indicator button {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-
-    .subject-view-indicator button:hover {
-      background: #2980b9;
-      transform: translateY(-2px);
-    }
-
     /* Upload page layout */
     .upload-layout {
       display: grid;
@@ -589,10 +552,8 @@
       border-radius: 12px;
       box-shadow: 0 5px 25px rgba(0,0,0,0.2);
       z-index: 1000;
-      width: 500px;
+      width: 400px;
       max-width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
       border: 1px solid rgba(0,0,0,0.08);
       animation: popIn 0.3s ease;
     }
@@ -611,7 +572,7 @@
     }
 
     .popup-content {
-      max-height: 60vh;
+      max-height: 300px;
       overflow-y: auto;
       padding: 10px 0;
       color: #333;
@@ -781,97 +742,6 @@
       transform: rotate(90deg);
     }
 
-    /* Message and notification styles */
-    .message-item, .notification-item {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .message-item:hover, .notification-item:hover {
-      background: #f8f9fa;
-      padding-left: 20px;
-      border-radius: 6px;
-    }
-
-    .message-item:last-child, .notification-item:last-child {
-      border-bottom: none;
-    }
-
-    .message-header, .notification-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .message-sender, .notification-title {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .message-time, .notification-time {
-      font-size: 12px;
-      color: #999;
-    }
-
-    .message-preview, .notification-preview {
-      font-size: 13px;
-      color: #666;
-      line-height: 1.4;
-    }
-
-    .message-unread, .notification-unread {
-      background-color: #e3f2fd;
-      border-left: 4px solid #3498db;
-    }
-
-    .message-read, .notification-read {
-      opacity: 0.8;
-    }
-
-    /* Message and notification popup styles */
-    .message-details, .notification-details {
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      margin-top: 15px;
-    }
-
-    .message-actions, .notification-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
-    }
-
-    .mark-read-btn, .delete-btn {
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.3s ease;
-    }
-
-    .mark-read-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-    }
-
-    .mark-read-btn:hover {
-      background: #2980b9;
-    }
-
-    .delete-btn {
-      background: #e74c3c;
-      color: white;
-      border: none;
-    }
-
-    .delete-btn:hover {
-      background: #c0392b;
-    }
-
     /* Responsive design */
     @media (max-width: 992px) {
       .sidebar {
@@ -934,6 +804,7 @@
       }
     }
   </style>
+  </style>
 </head>
 <body>
   <!-- Loading screen -->
@@ -991,12 +862,6 @@
         <span><b id="user-name">Loading...</b><br><small id="user-email">Loading...</small></span>
         <img src="https://placehold.co/35x35/8e44ad/FFFFFF?text=?" alt="User" id="user-avatar">
       </div>
-    </div>
-
-    <!-- Subject View Indicator -->
-    <div class="subject-view-indicator" id="subject-view-indicator" style="display: none;">
-      <h3 id="current-subject-view">Currently viewing: <span id="subject-name"></span></h3>
-      <button id="clear-subject-view">View All Subjects</button>
     </div>
 
     <div class="upload-layout">
@@ -1090,93 +955,48 @@
         </div>
       </div>
 
-      <!-- Test Rubrics Section -->
+      <!-- Uploaded Rubrics Section -->
       <div class="upload-section">
         <div class="section-header">
-          <h2><i class="fas fa-list-check"></i> Test Rubrics</h2>
+          <h2><i class="fas fa-list-check"></i> Uploaded Rubrics</h2>
         </div>
-        <div class="file-list" id="test-rubrics-list">
+        <div class="file-list" id="rubrics-list">
           <div class="empty-state">
             <i class="fas fa-list-check"></i>
-            <p>No test rubrics uploaded yet</p>
-            <p>Upload test rubrics for marking tests</p>
+            <p>No rubrics uploaded yet</p>
+            <p>Uploaded rubrics will appear here</p>
           </div>
         </div>
       </div>
 
-      <!-- Upload Test Rubrics Section -->
+      <!-- Upload Rubrics Section -->
       <div class="upload-section">
         <div class="section-header">
-          <h2><i class="fas fa-file-contract"></i> Upload Test Rubrics</h2>
+          <h2><i class="fas fa-file-contract"></i> Upload Rubrics</h2>
         </div>
         <div class="form-group">
-          <label for="test-rubric-title">Rubric Title</label>
-          <input type="text" id="test-rubric-title" placeholder="Enter rubric title">
+          <label for="rubric-title">Rubric Title</label>
+          <input type="text" id="rubric-title" placeholder="Enter rubric title">
         </div>
         <div class="form-group">
-          <label for="test-rubric-subject">Subject</label>
-          <select id="test-rubric-subject">
+          <label for="rubric-subject">Subject</label>
+          <select id="rubric-subject">
             <option value="">Select subject</option>
           </select>
         </div>
         <div class="file-input-container">
-          <label for="test-rubric-file" class="file-input-label">
+          <label for="rubric-file" class="file-input-label">
             <i class="fas fa-cloud-upload-alt"></i> Choose PDF file
           </label>
-          <input type="file" id="test-rubric-file" class="file-input" accept=".pdf">
-          <div class="file-name" id="test-rubric-file-name">No file chosen</div>
+          <input type="file" id="rubric-file" class="file-input" accept=".pdf">
+          <div class="file-name" id="rubric-file-name">No file chosen</div>
         </div>
-        <button class="upload-btn" id="upload-test-rubric-btn">UPLOAD TEST RUBRIC</button>
-        <div id="test-rubric-upload-progress" style="display: none; margin-top: 10px;">
+        <button class="upload-btn" id="upload-rubric-btn">UPLOAD RUBRIC</button>
+        <div id="rubric-upload-progress" style="display: none; margin-top: 10px;">
           <div style="background: #f0f0f0; border-radius: 10px; height: 10px;">
-            <div id="test-rubric-progress-bar" style="background: #8e44ad; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
+            <div id="rubric-progress-bar" style="background: #8e44ad; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
           </div>
-          <div id="test-rubric-progress-text" style="text-align: center; font-size: 12px; margin-top: 5px;">0%</div>
-        </div>
-      </div>
-
-      <!-- Assignment Rubrics Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-clipboard-check"></i> Assignment Rubrics</h2>
-        </div>
-        <div class="file-list" id="assignment-rubrics-list">
-          <div class="empty-state">
-            <i class="fas fa-clipboard-check"></i>
-            <p>No assignment rubrics uploaded yet</p>
-            <p>Upload assignment rubrics for marking assignments</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Upload Assignment Rubrics Section -->
-      <div class="upload-section">
-        <div class="section-header">
-          <h2><i class="fas fa-file-signature"></i> Upload Assignment Rubrics</h2>
-        </div>
-        <div class="form-group">
-          <label for="assignment-rubric-title">Rubric Title</label>
-          <input type="text" id="assignment-rubric-title" placeholder="Enter rubric title">
-        </div>
-        <div class="form-group">
-          <label for="assignment-rubric-subject">Subject</label>
-          <select id="assignment-rubric-subject">
-            <option value="">Select subject</option>
-          </select>
-        </div>
-        <div class="file-input-container">
-          <label for="assignment-rubric-file" class="file-input-label">
-            <i class="fas fa-cloud-upload-alt"></i> Choose PDF file
-          </label>
-          <input type="file" id="assignment-rubric-file" class="file-input" accept=".pdf">
-          <div class="file-name" id="assignment-rubric-file-name">No file chosen</div>
-        </div>
-        <button class="upload-btn" id="upload-assignment-rubric-btn">UPLOAD ASSIGNMENT RUBRIC</button>
-        <div id="assignment-rubric-upload-progress" style="display: none; margin-top: 10px;">
-          <div style="background: #f0f0f0; border-radius: 10px; height: 10px;">
-            <div id="assignment-rubric-progress-bar" style="background: #8e44ad; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
-          </div>
-          <div id="assignment-rubric-progress-text" style="text-align: center; font-size: 12px; margin-top: 5px;">0%</div>
+          <div id="rubric-progress-text" style="text-align: center; font-size: 12px; margin-top: 5px;">0%</div>
         </div>
       </div>
     </div>
@@ -1195,58 +1015,6 @@
     </div>
   </div>
 
-  <!-- Messages Popup -->
-  <div class="popup" id="messages-popup">
-    <button class="popup-close">&times;</button>
-    <h3><i class="fas fa-envelope"></i> Your Messages</h3>
-    <div class="popup-content" id="messages-content">
-      <div class="empty-state">
-        <i class="fas fa-envelope-open"></i>
-        <p>No messages yet</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notifications Popup -->
-  <div class="popup" id="notifications-popup">
-    <button class="popup-close">&times;</button>
-    <h3><i class="fas fa-bell"></i> Notifications</h3>
-    <div class="popup-content" id="notifications-content">
-      <div class="empty-state">
-        <i class="fas fa-bell-slash"></i>
-        <p>No notifications yet</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Message Detail Popup -->
-  <div class="popup" id="message-detail-popup">
-    <button class="popup-close">&times;</button>
-    <h3><i class="fas fa-envelope"></i> Message Details</h3>
-    <div class="popup-content">
-      <div id="message-detail-content">
-        <div class="empty-state">
-          <i class="fas fa-spinner"></i>
-          <p>Loading message...</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notification Detail Popup -->
-  <div class="popup" id="notification-detail-popup">
-    <button class="popup-close">&times;</button>
-    <h3><i class="fas fa-bell"></i> Notification Details</h3>
-    <div class="popup-content">
-      <div id="notification-detail-content">
-        <div class="empty-state">
-          <i class="fas fa-spinner"></i>
-          <p>Loading notification...</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
@@ -1261,16 +1029,10 @@
     const userEmail = document.getElementById('user-email');
     const userAvatar = document.getElementById('user-avatar');
     
-    // Subject view elements
-    const subjectViewIndicator = document.getElementById('subject-view-indicator');
-    const subjectNameDisplay = document.getElementById('subject-name');
-    const clearSubjectViewBtn = document.getElementById('clear-subject-view');
-    
     // File lists
     const testsList = document.getElementById('tests-list');
     const assignmentsList = document.getElementById('assignments-list');
-    const testRubricsList = document.getElementById('test-rubrics-list');
-    const assignmentRubricsList = document.getElementById('assignment-rubrics-list');
+    const rubricsList = document.getElementById('rubrics-list');
     
     // Upload forms
     const testTitleInput = document.getElementById('test-title');
@@ -1291,53 +1053,27 @@
     const assignmentProgressBar = document.getElementById('assignment-progress-bar');
     const assignmentProgressText = document.getElementById('assignment-progress-text');
     
-    const testRubricTitleInput = document.getElementById('test-rubric-title');
-    const testRubricSubjectSelect = document.getElementById('test-rubric-subject');
-    const testRubricFileInput = document.getElementById('test-rubric-file');
-    const testRubricFileName = document.getElementById('test-rubric-file-name');
-    const uploadTestRubricBtn = document.getElementById('upload-test-rubric-btn');
-    const testRubricUploadProgress = document.getElementById('test-rubric-upload-progress');
-    const testRubricProgressBar = document.getElementById('test-rubric-progress-bar');
-    const testRubricProgressText = document.getElementById('test-rubric-progress-text');
-    
-    const assignmentRubricTitleInput = document.getElementById('assignment-rubric-title');
-    const assignmentRubricSubjectSelect = document.getElementById('assignment-rubric-subject');
-    const assignmentRubricFileInput = document.getElementById('assignment-rubric-file');
-    const assignmentRubricFileName = document.getElementById('assignment-rubric-file-name');
-    const uploadAssignmentRubricBtn = document.getElementById('upload-assignment-rubric-btn');
-    const assignmentRubricUploadProgress = document.getElementById('assignment-rubric-upload-progress');
-    const assignmentRubricProgressBar = document.getElementById('assignment-rubric-progress-bar');
-    const assignmentRubricProgressText = document.getElementById('assignment-rubric-progress-text');
+    const rubricTitleInput = document.getElementById('rubric-title');
+    const rubricSubjectSelect = document.getElementById('rubric-subject');
+    const rubricFileInput = document.getElementById('rubric-file');
+    const rubricFileName = document.getElementById('rubric-file-name');
+    const uploadRubricBtn = document.getElementById('upload-rubric-btn');
+    const rubricUploadProgress = document.getElementById('rubric-upload-progress');
+    const rubricProgressBar = document.getElementById('rubric-progress-bar');
+    const rubricProgressText = document.getElementById('rubric-progress-text');
     
     // Popup elements
     const confirmPopup = document.getElementById('confirm-popup');
-    const messagesPopup = document.getElementById('messages-popup');
-    const notificationsPopup = document.getElementById('notifications-popup');
-    const messageDetailPopup = document.getElementById('message-detail-popup');
-    const notificationDetailPopup = document.getElementById('notification-detail-popup');
     const overlay = document.getElementById('overlay');
     const popupCloseButtons = document.querySelectorAll('.popup-close');
     const cancelDeleteBtn = document.getElementById('cancel-delete');
     const confirmDeleteBtn = document.getElementById('confirm-delete');
     
-    // Message and notification elements
-    const mailIcon = document.getElementById('mail-icon');
-    const notificationIcon = document.getElementById('notification-icon');
-    const mailBadge = document.getElementById('mail-badge');
-    const notificationBadge = document.getElementById('notification-badge');
-    const messagesContent = document.getElementById('messages-content');
-    const notificationsContent = document.getElementById('notifications-content');
-    const messageDetailContent = document.getElementById('message-detail-content');
-    const notificationDetailContent = document.getElementById('notification-detail-content');
-    
     // Global variables
     let currentUser = null;
     let currentTeacher = null;
     let teacherSubjects = [];
-    let currentSubjectView = null;
     let fileToDelete = null;
-    let messages = [];
-    let notifications = [];
 
     // Initialize the dashboard
     document.addEventListener('DOMContentLoaded', function() {
@@ -1393,12 +1129,6 @@
           teacherSubjects = currentTeacher.subjects;
           populateSubjectSelects();
         }
-        
-        // Check for subject view from localStorage
-        const savedSubjectView = localStorage.getItem('currentSubjectView');
-        if (savedSubjectView && teacherSubjects.includes(savedSubjectView)) {
-          setSubjectView(savedSubjectView);
-        }
       }
     }
 
@@ -1407,8 +1137,7 @@
       const subjectSelects = [
         testSubjectSelect,
         assignmentSubjectSelect,
-        testRubricSubjectSelect,
-        assignmentRubricSubjectSelect
+        rubricSubjectSelect
       ];
       
       subjectSelects.forEach(select => {
@@ -1424,49 +1153,14 @@
           option.textContent = subject;
           select.appendChild(option);
         });
-        
-        // Set current subject view if active
-        if (currentSubjectView) {
-          select.value = currentSubjectView;
-        }
       });
-    }
-
-    // Set the current subject view
-    function setSubjectView(subject) {
-      currentSubjectView = subject;
-      subjectNameDisplay.textContent = subject;
-      subjectViewIndicator.style.display = 'flex';
-      localStorage.setItem('currentSubjectView', subject);
-      
-      // Update subject dropdowns
-      populateSubjectSelects();
-      
-      // Reload data filtered by subject
-      loadDashboardData();
-    }
-
-    // Clear the subject view
-    function clearSubjectView() {
-      currentSubjectView = null;
-      subjectViewIndicator.style.display = 'none';
-      localStorage.removeItem('currentSubjectView');
-      
-      // Update subject dropdowns
-      populateSubjectSelects();
-      
-      // Reload all data
-      loadDashboardData();
     }
 
     // Load dashboard data
     async function loadDashboardData() {
       await loadTests();
       await loadAssignments();
-      await loadTestRubrics();
-      await loadAssignmentRubrics();
-      await loadMessages();
-      await loadNotifications();
+      await loadRubrics();
     }
 
     // Load tests from Firestore
@@ -1474,21 +1168,11 @@
       try {
         if (!currentUser) return;
         
-        let testsQuery;
-        if (currentSubjectView) {
-          testsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "tests"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.where("subject", "==", currentSubjectView),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        } else {
-          testsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "tests"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        }
+        const testsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "tests"),
+          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
         
         const querySnapshot = await window.firebaseFunctions.getDocs(testsQuery);
         renderTests(querySnapshot);
@@ -1510,7 +1194,7 @@
           <div class="empty-state">
             <i class="fas fa-file-alt"></i>
             <p>No tests uploaded yet</p>
-            <p>${currentSubjectView ? `No tests for ${currentSubjectView}` : 'Uploaded tests will appear here'}</p>
+            <p>Uploaded tests will appear here</p>
           </div>
         `;
         return;
@@ -1570,21 +1254,11 @@
       try {
         if (!currentUser) return;
         
-        let assignmentsQuery;
-        if (currentSubjectView) {
-          assignmentsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.where("subject", "==", currentSubjectView),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        } else {
-          assignmentsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        }
+        const assignmentsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
+          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
         
         const querySnapshot = await window.firebaseFunctions.getDocs(assignmentsQuery);
         renderAssignments(querySnapshot);
@@ -1606,7 +1280,7 @@
           <div class="empty-state">
             <i class="fas fa-clipboard-list"></i>
             <p>No assignments uploaded yet</p>
-            <p>${currentSubjectView ? `No assignments for ${currentSubjectView}` : 'Uploaded assignments will appear here'}</p>
+            <p>Uploaded assignments will appear here</p>
           </div>
         `;
         return;
@@ -1661,54 +1335,44 @@
       });
     }
 
-    // Load test rubrics from Firestore
-    async function loadTestRubrics() {
+    // Load rubrics from Firestore
+    async function loadRubrics() {
       try {
         if (!currentUser) return;
         
-        let rubricsQuery;
-        if (currentSubjectView) {
-          rubricsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "testRubrics"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.where("subject", "==", currentSubjectView),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        } else {
-          rubricsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "testRubrics"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        }
+        const rubricsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "rubrics"),
+          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
         
         const querySnapshot = await window.firebaseFunctions.getDocs(rubricsQuery);
-        renderTestRubrics(querySnapshot);
+        renderRubrics(querySnapshot);
       } catch (error) {
-        console.error("Error loading test rubrics:", error);
-        testRubricsList.innerHTML = `
+        console.error("Error loading rubrics:", error);
+        rubricsList.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-exclamation-triangle"></i>
-            <p>Error loading test rubrics</p>
+            <p>Error loading rubrics</p>
           </div>
         `;
       }
     }
 
-    // Render test rubrics in the UI
-    function renderTestRubrics(querySnapshot) {
+    // Render rubrics in the UI
+    function renderRubrics(querySnapshot) {
       if (querySnapshot.empty) {
-        testRubricsList.innerHTML = `
+        rubricsList.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-list-check"></i>
-            <p>No test rubrics uploaded yet</p>
-            <p>${currentSubjectView ? `No test rubrics for ${currentSubjectView}` : 'Upload test rubrics for marking tests'}</p>
+            <p>No rubrics uploaded yet</p>
+            <p>Uploaded rubrics will appear here</p>
           </div>
         `;
         return;
       }
       
-      testRubricsList.innerHTML = '';
+      rubricsList.innerHTML = '';
       
       querySnapshot.forEach((doc) => {
         const rubric = doc.data();
@@ -1733,12 +1397,12 @@
             </button>
           </div>
         `;
-        testRubricsList.appendChild(rubricItem);
+        rubricsList.appendChild(rubricItem);
       });
       
       // Add event listeners to action buttons
-      const downloadButtons = testRubricsList.querySelectorAll('.download-btn');
-      const deleteButtons = testRubricsList.querySelectorAll('.delete-btn');
+      const downloadButtons = rubricsList.querySelectorAll('.download-btn');
+      const deleteButtons = rubricsList.querySelectorAll('.delete-btn');
       
       downloadButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -1752,103 +1416,7 @@
         button.addEventListener('click', function() {
           const fileId = this.getAttribute('data-id');
           const filePath = this.getAttribute('data-path');
-          confirmDelete(fileId, filePath, 'testRubric');
-        });
-      });
-    }
-
-    // Load assignment rubrics from Firestore
-    async function loadAssignmentRubrics() {
-      try {
-        if (!currentUser) return;
-        
-        let rubricsQuery;
-        if (currentSubjectView) {
-          rubricsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "assignmentRubrics"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.where("subject", "==", currentSubjectView),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        } else {
-          rubricsQuery = window.firebaseFunctions.query(
-            window.firebaseFunctions.collection(window.firebaseDb, "assignmentRubrics"),
-            window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-            window.firebaseFunctions.orderBy("createdAt", "desc")
-          );
-        }
-        
-        const querySnapshot = await window.firebaseFunctions.getDocs(rubricsQuery);
-        renderAssignmentRubrics(querySnapshot);
-      } catch (error) {
-        console.error("Error loading assignment rubrics:", error);
-        assignmentRubricsList.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>Error loading assignment rubrics</p>
-          </div>
-        `;
-      }
-    }
-
-    // Render assignment rubrics in the UI
-    function renderAssignmentRubrics(querySnapshot) {
-      if (querySnapshot.empty) {
-        assignmentRubricsList.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-clipboard-check"></i>
-            <p>No assignment rubrics uploaded yet</p>
-            <p>${currentSubjectView ? `No assignment rubrics for ${currentSubjectView}` : 'Upload assignment rubrics for marking assignments'}</p>
-          </div>
-        `;
-        return;
-      }
-      
-      assignmentRubricsList.innerHTML = '';
-      
-      querySnapshot.forEach((doc) => {
-        const rubric = doc.data();
-        const rubricItem = document.createElement('div');
-        rubricItem.className = 'file-item';
-        rubricItem.innerHTML = `
-          <div class="file-info">
-            <div class="file-icon">
-              <i class="fas fa-file-pdf"></i>
-            </div>
-            <div class="file-details">
-              <h4>${rubric.title}</h4>
-              <span>${rubric.subject} • ${formatDate(rubric.createdAt)}</span>
-            </div>
-          </div>
-          <div class="file-actions">
-            <button class="file-action-btn download-btn" data-url="${rubric.fileUrl}" data-name="${rubric.title}">
-              <i class="fas fa-download"></i>
-            </button>
-            <button class="file-action-btn delete-btn" data-id="${doc.id}" data-path="${rubric.filePath}">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        `;
-        assignmentRubricsList.appendChild(rubricItem);
-      });
-      
-      // Add event listeners to action buttons
-      const downloadButtons = assignmentRubricsList.querySelectorAll('.download-btn');
-      const deleteButtons = assignmentRubricsList.querySelectorAll('.delete-btn');
-      
-      downloadButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const fileUrl = this.getAttribute('data-url');
-          const fileName = this.getAttribute('data-name');
-          downloadFile(fileUrl, fileName);
-        });
-      });
-      
-      deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const fileId = this.getAttribute('data-id');
-          const filePath = this.getAttribute('data-path');
-          confirmDelete(fileId, filePath, 'assignmentRubric');
+          confirmDelete(fileId, filePath, 'rubric');
         });
       });
     }
@@ -2057,11 +1625,11 @@
       }
     }
 
-    // Upload test rubric to Firestore and Storage
-    async function uploadTestRubric() {
-      const title = testRubricTitleInput.value.trim();
-      const subject = testRubricSubjectSelect.value;
-      const file = testRubricFileInput.files[0];
+    // Upload rubric to Firestore and Storage
+    async function uploadRubric() {
+      const title = rubricTitleInput.value.trim();
+      const subject = rubricSubjectSelect.value;
+      const file = rubricFileInput.files[0];
       
       if (!title) {
         alert('Please enter a rubric title');
@@ -2084,18 +1652,18 @@
       }
       
       try {
-        uploadTestRubricBtn.disabled = true;
-        uploadTestRubricBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        testRubricUploadProgress.style.display = 'block';
+        uploadRubricBtn.disabled = true;
+        uploadRubricBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        rubricUploadProgress.style.display = 'block';
         
         // Create a unique filename
         const timestamp = Date.now();
-        const fileName = `test_rubric_${timestamp}_${file.name}`;
+        const fileName = `rubric_${timestamp}_${file.name}`;
         
         // Create storage reference
         const storageRef = window.firebaseFunctions.ref(
           window.firebaseStorage, 
-          `testRubrics/${currentUser.uid}/${fileName}`
+          `rubrics/${currentUser.uid}/${fileName}`
         );
         
         // Upload file to Firebase Storage with progress tracking
@@ -2105,13 +1673,13 @@
         uploadTask.on('state_changed',
           (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            testRubricProgressBar.style.width = progress + '%';
-            testRubricProgressText.textContent = Math.round(progress) + '%';
+            rubricProgressBar.style.width = progress + '%';
+            rubricProgressText.textContent = Math.round(progress) + '%';
           },
           (error) => {
             console.error("Upload error:", error);
             alert('Upload failed: ' + error.message);
-            resetUploadForm('testRubric');
+            resetUploadForm('rubric');
           },
           async () => {
             try {
@@ -2119,7 +1687,7 @@
               
               // Save rubric metadata to Firestore
               await window.firebaseFunctions.addDoc(
-                window.firebaseFunctions.collection(window.firebaseDb, "testRubrics"),
+                window.firebaseFunctions.collection(window.firebaseDb, "rubrics"),
                 {
                   title: title,
                   subject: subject,
@@ -2128,22 +1696,21 @@
                   filePath: uploadTask.snapshot.ref.fullPath,
                   teacherId: currentUser.uid,
                   teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-                  rubricType: 'test',
                   createdAt: new Date()
                 }
               );
               
               // Reset form
-              resetUploadForm('testRubric');
+              resetUploadForm('rubric');
               
-              // Reload test rubrics
-              await loadTestRubrics();
+              // Reload rubrics
+              await loadRubrics();
               
-              alert('Test rubric uploaded successfully!');
+              alert('Rubric uploaded successfully!');
             } catch (error) {
               console.error("Error saving to Firestore:", error);
               alert('Failed to save rubric metadata. Please try again.');
-              resetUploadForm('testRubric');
+              resetUploadForm('rubric');
             }
           }
         );
@@ -2151,105 +1718,7 @@
       } catch (error) {
         console.error("Error in upload process:", error);
         alert('Upload failed: ' + error.message);
-        resetUploadForm('testRubric');
-      }
-    }
-
-    // Upload assignment rubric to Firestore and Storage
-    async function uploadAssignmentRubric() {
-      const title = assignmentRubricTitleInput.value.trim();
-      const subject = assignmentRubricSubjectSelect.value;
-      const file = assignmentRubricFileInput.files[0];
-      
-      if (!title) {
-        alert('Please enter a rubric title');
-        return;
-      }
-      
-      if (!subject) {
-        alert('Please select a subject');
-        return;
-      }
-      
-      if (!file) {
-        alert('Please select a PDF file');
-        return;
-      }
-      
-      if (file.type !== 'application/pdf') {
-        alert('Please select a PDF file');
-        return;
-      }
-      
-      try {
-        uploadAssignmentRubricBtn.disabled = true;
-        uploadAssignmentRubricBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        assignmentRubricUploadProgress.style.display = 'block';
-        
-        // Create a unique filename
-        const timestamp = Date.now();
-        const fileName = `assignment_rubric_${timestamp}_${file.name}`;
-        
-        // Create storage reference
-        const storageRef = window.firebaseFunctions.ref(
-          window.firebaseStorage, 
-          `assignmentRubrics/${currentUser.uid}/${fileName}`
-        );
-        
-        // Upload file to Firebase Storage with progress tracking
-        const uploadTask = window.firebaseFunctions.uploadBytesResumable(storageRef, file);
-        
-        // Track upload progress
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            assignmentRubricProgressBar.style.width = progress + '%';
-            assignmentRubricProgressText.textContent = Math.round(progress) + '%';
-          },
-          (error) => {
-            console.error("Upload error:", error);
-            alert('Upload failed: ' + error.message);
-            resetUploadForm('assignmentRubric');
-          },
-          async () => {
-            try {
-              const downloadURL = await window.firebaseFunctions.getDownloadURL(uploadTask.snapshot.ref);
-              
-              // Save rubric metadata to Firestore
-              await window.firebaseFunctions.addDoc(
-                window.firebaseFunctions.collection(window.firebaseDb, "assignmentRubrics"),
-                {
-                  title: title,
-                  subject: subject,
-                  fileUrl: downloadURL,
-                  fileName: file.name,
-                  filePath: uploadTask.snapshot.ref.fullPath,
-                  teacherId: currentUser.uid,
-                  teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-                  rubricType: 'assignment',
-                  createdAt: new Date()
-                }
-              );
-              
-              // Reset form
-              resetUploadForm('assignmentRubric');
-              
-              // Reload assignment rubrics
-              await loadAssignmentRubrics();
-              
-              alert('Assignment rubric uploaded successfully!');
-            } catch (error) {
-              console.error("Error saving to Firestore:", error);
-              alert('Failed to save rubric metadata. Please try again.');
-              resetUploadForm('assignmentRubric');
-            }
-          }
-        );
-        
-      } catch (error) {
-        console.error("Error in upload process:", error);
-        alert('Upload failed: ' + error.message);
-        resetUploadForm('assignmentRubric');
+        resetUploadForm('rubric');
       }
     }
 
@@ -2276,38 +1745,27 @@
           progressBar: assignmentProgressBar,
           progressText: assignmentProgressText
         },
-        'testRubric': {
-          title: testRubricTitleInput,
-          subject: testRubricSubjectSelect,
-          file: testRubricFileInput,
-          fileName: testRubricFileName,
-          btn: uploadTestRubricBtn,
-          progress: testRubricUploadProgress,
-          progressBar: testRubricProgressBar,
-          progressText: testRubricProgressText
-        },
-        'assignmentRubric': {
-          title: assignmentRubricTitleInput,
-          subject: assignmentRubricSubjectSelect,
-          file: assignmentRubricFileInput,
-          fileName: assignmentRubricFileName,
-          btn: uploadAssignmentRubricBtn,
-          progress: assignmentRubricUploadProgress,
-          progressBar: assignmentRubricProgressBar,
-          progressText: assignmentRubricProgressText
+        'rubric': {
+          title: rubricTitleInput,
+          subject: rubricSubjectSelect,
+          file: rubricFileInput,
+          fileName: rubricFileName,
+          btn: uploadRubricBtn,
+          progress: rubricUploadProgress,
+          progressBar: rubricProgressBar,
+          progressText: rubricProgressText
         }
       };
       
       const form = resetMap[type];
       if (form) {
         form.title.value = '';
-        form.subject.value = currentSubjectView || '';
+        form.subject.value = '';
         form.file.value = '';
         form.fileName.textContent = 'No file chosen';
         form.btn.disabled = false;
         form.btn.innerHTML = type === 'test' ? 'UPLOAD TEST' : 
-                            type === 'assignment' ? 'UPLOAD ASSIGNMENT' : 
-                            type === 'testRubric' ? 'UPLOAD TEST RUBRIC' : 'UPLOAD ASSIGNMENT RUBRIC';
+                            type === 'assignment' ? 'UPLOAD ASSIGNMENT' : 'UPLOAD RUBRIC';
         form.progress.style.display = 'none';
         form.progressBar.style.width = '0%';
         form.progressText.textContent = '0%';
@@ -2346,11 +1804,8 @@
           case 'assignment':
             collectionName = 'assignments';
             break;
-          case 'testRubric':
-            collectionName = 'testRubrics';
-            break;
-          case 'assignmentRubric':
-            collectionName = 'assignmentRubrics';
+          case 'rubric':
+            collectionName = 'rubrics';
             break;
           default:
             return;
@@ -2372,11 +1827,8 @@
           case 'assignment':
             await loadAssignments();
             break;
-          case 'testRubric':
-            await loadTestRubrics();
-            break;
-          case 'assignmentRubric':
-            await loadAssignmentRubrics();
+          case 'rubric':
+            await loadRubrics();
             break;
         }
         
@@ -2387,361 +1839,6 @@
       } finally {
         closePopup(confirmPopup);
         fileToDelete = null;
-      }
-    }
-
-    // Load messages from Firestore
-    async function loadMessages() {
-      try {
-        if (!currentUser) return;
-        
-        const messagesQuery = window.firebaseFunctions.query(
-          window.firebaseFunctions.collection(window.firebaseDb, "messages"),
-          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-          window.firebaseFunctions.orderBy("timestamp", "desc")
-        );
-        
-        const querySnapshot = await window.firebaseFunctions.getDocs(messagesQuery);
-        messages = [];
-        
-        querySnapshot.forEach((doc) => {
-          messages.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // Update badge count (only unread messages)
-        const unreadCount = messages.filter(msg => !msg.read).length;
-        mailBadge.textContent = unreadCount > 0 ? unreadCount : 0;
-        
-        // Render messages in the popup
-        renderMessages();
-      } catch (error) {
-        console.error("Error loading messages:", error);
-      }
-    }
-
-    // Render messages in the popup
-    function renderMessages() {
-      if (messages.length === 0) {
-        messagesContent.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-envelope-open"></i>
-            <p>No messages yet</p>
-          </div>
-        `;
-        return;
-      }
-      
-      messagesContent.innerHTML = '';
-      
-      messages.forEach(message => {
-        const messageItem = document.createElement('div');
-        messageItem.className = `message-item ${message.read ? 'message-read' : 'message-unread'}`;
-        messageItem.setAttribute('data-id', message.id);
-        
-        // Format date
-        const messageDate = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = messageDate.toLocaleDateString() + ' ' + messageDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        // Truncate message content for preview
-        const previewContent = message.content ? 
-          (message.content.length > 100 ? message.content.substring(0, 100) + '...' : message.content) : 
-          'No content';
-        
-        messageItem.innerHTML = `
-          <div class="message-header">
-            <div class="message-sender">${message.senderName || 'Unknown Sender'}</div>
-            <div class="message-time">${formattedDate}</div>
-          </div>
-          <div class="message-preview">
-            <strong>${message.subject || 'No Subject'}</strong> - ${previewContent}
-          </div>
-        `;
-        
-        messagesContent.appendChild(messageItem);
-      });
-      
-      // Add click event listeners to message items
-      const messageItems = messagesContent.querySelectorAll('.message-item');
-      messageItems.forEach(item => {
-        item.addEventListener('click', function() {
-          const messageId = this.getAttribute('data-id');
-          openMessageDetail(messageId);
-        });
-      });
-    }
-
-    // Load notifications from Firestore
-    async function loadNotifications() {
-      try {
-        if (!currentUser) return;
-        
-        const notificationsQuery = window.firebaseFunctions.query(
-          window.firebaseFunctions.collection(window.firebaseDb, "notifications"),
-          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
-          window.firebaseFunctions.orderBy("timestamp", "desc")
-        );
-        
-        const querySnapshot = await window.firebaseFunctions.getDocs(notificationsQuery);
-        notifications = [];
-        
-        querySnapshot.forEach((doc) => {
-          notifications.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // Update badge count (only unread notifications)
-        const unreadCount = notifications.filter(notif => !notif.read).length;
-        notificationBadge.textContent = unreadCount > 0 ? unreadCount : 0;
-        
-        // Render notifications in the popup
-        renderNotifications();
-      } catch (error) {
-        console.error("Error loading notifications:", error);
-      }
-    }
-
-    // Render notifications in the popup
-    function renderNotifications() {
-      if (notifications.length === 0) {
-        notificationsContent.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-bell-slash"></i>
-            <p>No notifications yet</p>
-          </div>
-        `;
-        return;
-      }
-      
-      notificationsContent.innerHTML = '';
-      
-      notifications.forEach(notification => {
-        const notificationItem = document.createElement('div');
-        notificationItem.className = `notification-item ${notification.read ? 'notification-read' : 'notification-unread'}`;
-        notificationItem.setAttribute('data-id', notification.id);
-        
-        // Format date
-        const notificationDate = notification.timestamp ? notification.timestamp.toDate() : new Date();
-        const formattedDate = notificationDate.toLocaleDateString() + ' ' + notificationDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        // Truncate notification content for preview
-        const previewContent = notification.message ? 
-          (notification.message.length > 100 ? notification.message.substring(0, 100) + '...' : notification.message) : 
-          'No content';
-        
-        notificationItem.innerHTML = `
-          <div class="notification-header">
-            <div class="notification-title">${notification.title || 'Notification'}</div>
-            <div class="notification-time">${formattedDate}</div>
-          </div>
-          <div class="notification-preview">
-            ${previewContent}
-          </div>
-        `;
-        
-        notificationsContent.appendChild(notificationItem);
-      });
-      
-      // Add click event listeners to notification items
-      const notificationItems = notificationsContent.querySelectorAll('.notification-item');
-      notificationItems.forEach(item => {
-        item.addEventListener('click', function() {
-          const notificationId = this.getAttribute('data-id');
-          openNotificationDetail(notificationId);
-        });
-      });
-    }
-
-    // Open message detail popup
-    async function openMessageDetail(messageId) {
-      const message = messages.find(msg => msg.id === messageId);
-      
-      if (!message) {
-        alert('Message not found');
-        return;
-      }
-      
-      // Format date
-      const messageDate = message.timestamp ? message.timestamp.toDate() : new Date();
-      const formattedDate = messageDate.toLocaleDateString() + ' at ' + messageDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      
-      messageDetailContent.innerHTML = `
-        <div class="message-details">
-          <div class="message-header">
-            <div class="message-sender">From: ${message.senderName || 'Unknown Sender'}</div>
-            <div class="message-time">${formattedDate}</div>
-          </div>
-          <h4>${message.subject || 'No Subject'}</h4>
-          <p>${message.content || 'No content'}</p>
-          <div class="message-actions">
-            <button class="mark-read-btn" id="mark-message-read">
-              <i class="fas fa-check"></i> ${message.read ? 'Mark as Unread' : 'Mark as Read'}
-            </button>
-            <button class="delete-btn" id="delete-message">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </div>
-      `;
-      
-      // Add event listeners for message actions
-      document.getElementById('mark-message-read').addEventListener('click', () => {
-        toggleMessageReadStatus(messageId, !message.read);
-      });
-      
-      document.getElementById('delete-message').addEventListener('click', () => {
-        deleteMessage(messageId);
-      });
-      
-      // Mark as read if not already read
-      if (!message.read) {
-        await toggleMessageReadStatus(messageId, true);
-      }
-      
-      messageDetailPopup.style.display = 'block';
-      overlay.style.display = 'block';
-    }
-
-    // Open notification detail popup
-    async function openNotificationDetail(notificationId) {
-      const notification = notifications.find(notif => notif.id === notificationId);
-      
-      if (!notification) {
-        alert('Notification not found');
-        return;
-      }
-      
-      // Format date
-      const notificationDate = notification.timestamp ? notification.timestamp.toDate() : new Date();
-      const formattedDate = notificationDate.toLocaleDateString() + ' at ' + notificationDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      
-      notificationDetailContent.innerHTML = `
-        <div class="notification-details">
-          <div class="notification-header">
-            <div class="notification-title">${notification.title || 'Notification'}</div>
-            <div class="notification-time">${formattedDate}</div>
-          </div>
-          <p>${notification.message || 'No content'}</p>
-          <div class="notification-actions">
-            <button class="mark-read-btn" id="mark-notification-read">
-              <i class="fas fa-check"></i> ${notification.read ? 'Mark as Unread' : 'Mark as Read'}
-            </button>
-            <button class="delete-btn" id="delete-notification">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </div>
-      `;
-      
-      // Add event listeners for notification actions
-      document.getElementById('mark-notification-read').addEventListener('click', () => {
-        toggleNotificationReadStatus(notificationId, !notification.read);
-      });
-      
-      document.getElementById('delete-notification').addEventListener('click', () => {
-        deleteNotification(notificationId);
-      });
-      
-      // Mark as read if not already read
-      if (!notification.read) {
-        await toggleNotificationReadStatus(notificationId, true);
-      }
-      
-      notificationDetailPopup.style.display = 'block';
-      overlay.style.display = 'block';
-    }
-
-    // Toggle message read status
-    async function toggleMessageReadStatus(messageId, readStatus) {
-      try {
-        await window.firebaseFunctions.updateDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId),
-          { read: readStatus }
-        );
-        
-        // Reload messages to reflect the change
-        await loadMessages();
-        
-        // If message detail is open, update it
-        if (messageDetailPopup.style.display === 'block') {
-          const currentMessage = messages.find(msg => msg.id === messageId);
-          if (currentMessage) {
-            openMessageDetail(messageId);
-          }
-        }
-      } catch (error) {
-        console.error("Error updating message status:", error);
-        alert('Failed to update message status');
-      }
-    }
-
-    // Toggle notification read status
-    async function toggleNotificationReadStatus(notificationId, readStatus) {
-      try {
-        await window.firebaseFunctions.updateDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId),
-          { read: readStatus }
-        );
-        
-        // Reload notifications to reflect the change
-        await loadNotifications();
-        
-        // If notification detail is open, update it
-        if (notificationDetailPopup.style.display === 'block') {
-          const currentNotification = notifications.find(notif => notif.id === notificationId);
-          if (currentNotification) {
-            openNotificationDetail(notificationId);
-          }
-        }
-      } catch (error) {
-        console.error("Error updating notification status:", error);
-        alert('Failed to update notification status');
-      }
-    }
-
-    // Delete a message
-    async function deleteMessage(messageId) {
-      if (!confirm('Are you sure you want to delete this message?')) {
-        return;
-      }
-      
-      try {
-        await window.firebaseFunctions.deleteDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId)
-        );
-        
-        // Reload messages to reflect the change
-        await loadMessages();
-        
-        // Close the message detail popup
-        closePopup(messageDetailPopup);
-        
-        alert('Message deleted successfully');
-      } catch (error) {
-        console.error("Error deleting message:", error);
-        alert('Failed to delete message');
-      }
-    }
-
-    // Delete a notification
-    async function deleteNotification(notificationId) {
-      if (!confirm('Are you sure you want to delete this notification?')) {
-        return;
-      }
-      
-      try {
-        await window.firebaseFunctions.deleteDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId)
-        );
-        
-        // Reload notifications to reflect the change
-        await loadNotifications();
-        
-        // Close the notification detail popup
-        closePopup(notificationDetailPopup);
-        
-        alert('Notification deleted successfully');
-      } catch (error) {
-        console.error("Error deleting notification:", error);
-        alert('Failed to delete notification');
       }
     }
 
@@ -2787,27 +1884,18 @@
         }
       });
 
-      testRubricFileInput.addEventListener('change', () => {
-        if (testRubricFileInput.files.length > 0) {
-          testRubricFileName.textContent = testRubricFileInput.files[0].name;
+      rubricFileInput.addEventListener('change', () => {
+        if (rubricFileInput.files.length > 0) {
+          rubricFileName.textContent = rubricFileInput.files[0].name;
         } else {
-          testRubricFileName.textContent = 'No file chosen';
-        }
-      });
-
-      assignmentRubricFileInput.addEventListener('change', () => {
-        if (assignmentRubricFileInput.files.length > 0) {
-          assignmentRubricFileName.textContent = assignmentRubricFileInput.files[0].name;
-        } else {
-          assignmentRubricFileName.textContent = 'No file chosen';
+          rubricFileName.textContent = 'No file chosen';
         }
       });
 
       // Upload buttons
       uploadTestBtn.addEventListener('click', uploadTest);
       uploadAssignmentBtn.addEventListener('click', uploadAssignment);
-      uploadTestRubricBtn.addEventListener('click', uploadTestRubric);
-      uploadAssignmentRubricBtn.addEventListener('click', uploadAssignmentRubric);
+      uploadRubricBtn.addEventListener('click', uploadRubric);
 
       // Popup controls
       popupCloseButtons.forEach(button => {
@@ -2826,22 +1914,6 @@
       });
 
       confirmDeleteBtn.addEventListener('click', deleteFile);
-
-      // Clear subject view button
-      clearSubjectViewBtn.addEventListener('click', clearSubjectView);
-
-      // Mail and notification icons
-      mailIcon.addEventListener('click', (e) => {
-        e.preventDefault();
-        messagesPopup.style.display = 'block';
-        overlay.style.display = 'block';
-      });
-
-      notificationIcon.addEventListener('click', (e) => {
-        e.preventDefault();
-        notificationsPopup.style.display = 'block';
-        overlay.style.display = 'block';
-      });
     }
 
     // Close a specific popup
@@ -2858,6 +1930,678 @@
       });
       overlay.style.display = 'none';
     }
+    // Autograding System Notifications
+document.addEventListener('DOMContentLoaded', function() {
+    // Add CSS styles dynamically for the modal
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: auto;
+            padding: 0;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.08);
+            animation: popIn 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid #eee;
+            background: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .modal-header h3 {
+            color: #8e44ad;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-header h3 i {
+            color: #8e44ad;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s ease;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-modal:hover {
+            background: #f0e6f5;
+            color: #ff6b6b;
+            transform: rotate(90deg);
+        }
+        
+        /* Modal footer styling */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            border-top: 2px solid #eee;
+            background: #fff;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-secondary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Notification item styling */
+        .notifications-list {
+            padding: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 12px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .notification-item:hover::before {
+            left: 100%;
+        }
+
+        .notification-item:hover {
+            background: #f9f2fc;
+            transform: translateX(3px);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid #8e44ad;
+            background: rgba(142, 68, 173, 0.03);
+        }
+
+        .notification-item.read {
+            border-left: 4px solid #e9ecef;
+            opacity: 0.8;
+        }
+
+        .notification-item.priority-high.unread {
+            border-left-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.03);
+        }
+
+        .notification-item.priority-medium.unread {
+            border-left-color: #ffa726;
+            background: rgba(255, 167, 38, 0.03);
+        }
+
+        /* Notification icon */
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0e6f5;
+            color: #8e44ad;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .notification-item.priority-high .notification-icon {
+            background: #ffe9e9;
+            color: #ff6b6b;
+        }
+
+        .notification-item.priority-medium .notification-icon {
+            background: #fff3e0;
+            color: #ffa726;
+        }
+
+        /* Notification content */
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .notification-content p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .notification-content small {
+            font-size: 12px;
+            color: #888;
+            opacity: 0.8;
+        }
+
+        /* Notification actions */
+        .notification-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #8e44ad;
+            transform: scale(1.2);
+        }
+
+        /* Notification sections */
+        .notification-section {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .count-badge {
+            background: #8e44ad;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Empty state styling */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .empty-state small {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // DOM elements
+    const notificationIcon = document.getElementById('notification-icon');
+    const notificationBadge = document.querySelector('#notification-icon .icon-badge');
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    // Create modal content
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-bell"></i> System Notifications</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="notifications-list" id="notifications-list">
+                <!-- Notifications will be dynamically added here -->
+            </div>
+            <div class="modal-footer">
+                <button id="mark-all-read" class="btn-secondary">Mark All as Read</button>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to the document
+    document.body.appendChild(modal);
+    
+    // Store notifications
+    let notifications = [];
+    
+    // Generate notifications based on real test and assignment data
+    function generateNotifications(tests, assignments) {
+        const notifications = [];
+        const now = new Date();
+        
+        // Check for upcoming tests (within 3 days)
+        tests.forEach(test => {
+            const testDueDate = new Date(test.dueDate || test.scheduledDate);
+            const timeDiff = testDueDate.getTime() - now.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            if (daysDiff <= 3 && daysDiff > 0 && test.status === "scheduled") {
+                notifications.push({
+                    id: `test-${test.id}`,
+                    title: "Upcoming Test",
+                    message: `${test.title || test.name} (${test.subject}) is in ${daysDiff} day${daysDiff > 1 ? 's' : ''}`,
+                    timestamp: formatTimestamp(testDueDate),
+                    type: "test",
+                    priority: daysDiff === 1 ? "high" : "medium",
+                    read: false,
+                    relatedId: test.id
+                });
+            }
+            
+            // Check for missed tests
+            if (test.status === "missed" || (daysDiff < 0 && !test.completed)) {
+                const missedDays = Math.floor((now.getTime() - testDueDate.getTime()) / (1000 * 3600 * 24));
+                notifications.push({
+                    id: `missed-test-${test.id}`,
+                    title: "Missed Test",
+                    message: `You missed ${test.title || test.name} (${test.subject}) - ${missedDays} day${missedDays > 1 ? 's' : ''} ago`,
+                    timestamp: formatTimestamp(testDueDate),
+                    type: "test",
+                    priority: "high",
+                    read: false,
+                    relatedId: test.id
+                });
+            }
+        });
+        
+        // Check for assignment deadlines (within 2 days)
+        assignments.forEach(assignment => {
+            if (assignment.submitted || assignment.status === "submitted") return;
+            
+            const assignmentDueDate = new Date(assignment.dueDate);
+            const timeDiff = assignmentDueDate.getTime() - now.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            if (daysDiff <= 2 && daysDiff > 0) {
+                notifications.push({
+                    id: `assignment-${assignment.id}`,
+                    title: "Assignment Due Soon",
+                    message: `${assignment.title} (${assignment.subject || assignment.course}) due in ${daysDiff} day${daysDiff > 1 ? 's' : ''}`,
+                    timestamp: formatTimestamp(assignmentDueDate),
+                    type: "assignment",
+                    priority: daysDiff === 1 ? "high" : "medium",
+                    read: false,
+                    relatedId: assignment.id
+                });
+            }
+            
+            // Check for overdue assignments
+            if (daysDiff < 0) {
+                const overdueDays = Math.abs(daysDiff);
+                notifications.push({
+                    id: `overdue-assignment-${assignment.id}`,
+                    title: "Overdue Assignment",
+                    message: `${assignment.title} (${assignment.subject || assignment.course}) is ${overdueDays} day${overdueDays > 1 ? 's' : ''} overdue`,
+                    timestamp: formatTimestamp(assignmentDueDate),
+                    type: "assignment",
+                    priority: "high",
+                    read: false,
+                    relatedId: assignment.id
+                });
+            }
+        });
+        
+        // Sort by priority and date (high priority first, then by due date)
+        return notifications.sort((a, b) => {
+            const priorityOrder = { high: 1, medium: 2, low: 3 };
+            if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            }
+            return new Date(a.timestamp) - new Date(b.timestamp);
+        });
+    }
+    
+    // Format timestamp for display
+    function formatTimestamp(date) {
+        const now = new Date();
+        const diffMs = date.getTime() - now.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+            return "Today";
+        } else if (diffDays === 1) {
+            return "Tomorrow";
+        } else if (diffDays === -1) {
+            return "Yesterday";
+        } else if (diffDays > 1) {
+            return `In ${diffDays} days`;
+        } else {
+            return `${Math.abs(diffDays)} days ago`;
+        }
+    }
+    
+    // Update notification badge
+    function updateNotificationBadge() {
+        const unreadCount = notifications.filter(notification => !notification.read).length;
+        if (notificationBadge) {
+            notificationBadge.textContent = unreadCount;
+            
+            // Add/remove animation if there are unread notifications
+            if (unreadCount > 0) {
+                notificationBadge.style.animation = 'pulse 1.5s infinite';
+            } else {
+                notificationBadge.style.animation = 'none';
+            }
+        }
+    }
+    
+    // Render notifications in the modal
+    function renderNotifications() {
+        const notificationsList = document.getElementById('notifications-list');
+        notificationsList.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            notificationsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>No notifications at this time</p>
+                    <small>You're all caught up!</small>
+                </div>
+            `;
+            return;
+        }
+        
+        // Group notifications by type
+        const testNotifications = notifications.filter(n => n.type === "test");
+        const assignmentNotifications = notifications.filter(n => n.type === "assignment");
+        
+        // Render test notifications
+        if (testNotifications.length > 0) {
+            const testSection = document.createElement('div');
+            testSection.className = 'notification-section';
+            testSection.innerHTML = `<h4 class="section-title">Tests <span class="count-badge">${testNotifications.length}</span></h4>`;
+            notificationsList.appendChild(testSection);
+            
+            testNotifications.forEach(notification => {
+                renderNotificationItem(notification, testSection);
+            });
+        }
+        
+        // Render assignment notifications
+        if (assignmentNotifications.length > 0) {
+            const assignmentSection = document.createElement('div');
+            assignmentSection.className = 'notification-section';
+            assignmentSection.innerHTML = `<h4 class="section-title">Assignments <span class="count-badge">${assignmentNotifications.length}</span></h4>`;
+            notificationsList.appendChild(assignmentSection);
+            
+            assignmentNotifications.forEach(notification => {
+                renderNotificationItem(notification, assignmentSection);
+            });
+        }
+    }
+    
+    // Render individual notification item
+    function renderNotificationItem(notification, container) {
+        const notificationItem = document.createElement('div');
+        notificationItem.className = `notification-item ${notification.read ? 'read' : 'unread'} priority-${notification.priority}`;
+        notificationItem.innerHTML = `
+            <div class="notification-icon">
+                <i class="fas ${notification.type === 'test' ? 'fa-clipboard-list' : 'fa-tasks'}"></i>
+            </div>
+            <div class="notification-content">
+                <h4>${notification.title}</h4>
+                <p>${notification.message}</p>
+                <small>${notification.timestamp}</small>
+            </div>
+            <div class="notification-actions">
+                <button class="action-btn" data-id="${notification.id}" title="${notification.read ? 'Mark as unread' : 'Mark as read'}">
+                    <i class="fas ${notification.read ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                </button>
+            </div>
+        `;
+        
+        // Mark as read when clicked
+        notificationItem.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-btn')) {
+                if (!notification.read) {
+                    notification.read = true;
+                    updateNotificationBadge();
+                    renderNotifications();
+                }
+                
+                // Navigate to relevant test/assignment
+                handleNotificationAction(notification);
+            }
+        });
+        
+        // Toggle read status with action button
+        const actionBtn = notificationItem.querySelector('.action-btn');
+        actionBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notification.read = !notification.read;
+            updateNotificationBadge();
+            renderNotifications();
+        });
+        
+        container.appendChild(notificationItem);
+    }
+    
+    // Handle notification action (navigate to test/assignment)
+    function handleNotificationAction(notification) {
+        console.log(`Navigating to: ${notification.type} with ID: ${notification.relatedId}`);
+        
+        // You can add your actual navigation logic here:
+        if (notification.type === 'test') {
+            // Example: window.location.href = `/take-test/${notification.relatedId}`;
+            alert(`Would navigate to test: ${notification.message}`);
+        } else if (notification.type === 'assignment') {
+            // Example: window.location.href = `/submit-assignment/${notification.relatedId}`;
+            alert(`Would navigate to assignment: ${notification.message}`);
+        }
+    }
+    
+    // Show modal
+    function showNotificationModal() {
+        modal.style.display = 'flex';
+        renderNotifications();
+    }
+    
+    // Hide modal
+    function hideNotificationModal() {
+        modal.style.display = 'none';
+    }
+    
+    // Mark all notifications as read
+    function markAllAsRead() {
+        let hasUnread = false;
+        notifications.forEach(notification => {
+            if (!notification.read) {
+                notification.read = true;
+                hasUnread = true;
+            }
+        });
+        
+        if (hasUnread) {
+            updateNotificationBadge();
+            renderNotifications();
+        }
+    }
+    
+    // Event listeners
+    if (notificationIcon) {
+        notificationIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            showNotificationModal();
+        });
+    }
+    
+    modal.querySelector('.close-modal').addEventListener('click', hideNotificationModal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            hideNotificationModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            hideNotificationModal();
+        }
+    });
+    
+    // Mark all as read button
+    document.getElementById('mark-all-read').addEventListener('click', markAllAsRead);
+    
+    // Initialize notification system with real data
+    window.initializeNotifications = function(testsData, assignmentsData) {
+        notifications = generateNotifications(testsData, assignmentsData);
+        updateNotificationBadge();
+    };
+    
+    // Refresh notifications when data changes
+    window.refreshNotifications = function(testsData, assignmentsData) {
+        notifications = generateNotifications(testsData, assignmentsData);
+        updateNotificationBadge();
+        
+        // If modal is open, update it
+        if (modal.style.display === 'flex') {
+            renderNotifications();
+        }
+    };
+    
+    // Initialize with demo data (replace with your actual data)
+    setTimeout(() => {
+        window.initializeNotifications(demoData.tests, demoData.assignments);
+    }, 1000);
+    
+    // Hide loading screen
+    setTimeout(function() {
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+    }, 2000);
+    
+    // Mobile menu toggle functionality
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    }
+})
   </script>
 </body>
 </html>
