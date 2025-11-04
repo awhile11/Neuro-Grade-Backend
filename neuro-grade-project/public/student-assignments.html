@@ -1047,7 +1047,7 @@
 </style>
 </head>
 <body>
-
+  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
   <!-- Integrity Confirmation Popup -->
   <div class="popup-overlay" id="integrity-popup-overlay">
     <div class="integrity-popup">
@@ -1789,6 +1789,328 @@
       finalSubmitButton.disabled = false;
     }
   }
+  // Notification System
+document.addEventListener('DOMContentLoaded', function() {
+    // Create notification modal
+    const notificationModal = document.createElement('div');
+    notificationModal.className = 'popup-overlay';
+    notificationModal.innerHTML = `
+        <div class="integrity-popup" style="max-width: 500px;">
+            <div class="popup-header">
+                <h2>Notifications</h2>
+            </div>
+            <div class="popup-content">
+                <div id="notifications-list" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Notifications will be loaded here -->
+                </div>
+                <div class="popup-buttons">
+                    <button class="popup-button cancel-button">Close</button>
+                    <button class="popup-button submit-button" id="mark-all-read">Mark All as Read</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notificationModal);
+    
+    // // Sample notification data
+    // let notifications = [
+    //     {
+    //         id: 1,
+    //         title: "Upcoming Test",
+    //         message: "Mathematics Midterm (MATH101) is in 2 days",
+    //         timestamp: "2024-01-15 10:00",
+    //         type: "test",
+    //         priority: "medium",
+    //         read: false
+    //     },
+    //     {
+    //         id: 2,
+    //         title: "Assignment Due Soon",
+    //         message: "Physics Lab Report (PHYS201) due tomorrow",
+    //         timestamp: "2024-01-16 14:00",
+    //         type: "assignment",
+    //         priority: "high",
+    //         read: false
+    //     },
+    //     {
+    //         id: 3,
+    //         title: "Missed Test",
+    //         message: "You missed Chemistry Quiz (CHEM101) - 3 days ago",
+    //         timestamp: "2024-01-12 09:00",
+    //         type: "test",
+    //         priority: "high",
+    //         read: false
+    //     },
+    //     {
+    //         id: 4,
+    //         title: "Overdue Assignment",
+    //         message: "Computer Science Project (CS101) is 1 day overdue",
+    //         timestamp: "2024-01-14 23:59",
+    //         type: "assignment",
+    //         priority: "high",
+    //         read: true
+    //     }
+    // ];
+    
+    // Get DOM elements
+    const notificationIcon = document.getElementById('notification-icon');
+    const notificationBadge = notificationIcon.querySelector('.icon-badge');
+    const closeButton = notificationModal.querySelector('.cancel-button');
+    const markAllReadButton = document.getElementById('mark-all-read');
+    
+    // Update notification badge
+    function updateNotificationBadge() {
+        const unreadCount = notifications.filter(notification => !notification.read).length;
+        notificationBadge.textContent = unreadCount;
+        
+        if (unreadCount > 0) {
+            notificationBadge.style.display = 'flex';
+            notificationBadge.style.animation = 'pulse 1.5s infinite';
+        } else {
+            notificationBadge.style.display = 'none';
+        }
+    }
+    
+    // Render notifications
+    function renderNotifications() {
+        const notificationsList = document.getElementById('notifications-list');
+        notificationsList.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            notificationsList.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: #666;">
+                    <i class="fas fa-bell-slash" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p>No notifications</p>
+                    <small>You're all caught up!</small>
+                </div>
+            `;
+            return;
+        }
+        
+        // Sort notifications: unread first, then by priority
+        const sortedNotifications = [...notifications].sort((a, b) => {
+            if (a.read !== b.read) return a.read ? 1 : -1;
+            const priorityOrder = { high: 1, medium: 2, low: 3 };
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+        });
+        
+        sortedNotifications.forEach(notification => {
+            const notificationElement = document.createElement('div');
+            notificationElement.className = `notification-item ${notification.read ? 'read' : 'unread'} priority-${notification.priority}`;
+            notificationElement.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas ${notification.type === 'test' ? 'fa-clipboard-list' : 'fa-tasks'}"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>${notification.title}</h4>
+                    <p>${notification.message}</p>
+                    <small>${formatTime(notification.timestamp)}</small>
+                </div>
+                <div class="notification-actions">
+                    <button class="action-btn" data-id="${notification.id}">
+                        <i class="fas ${notification.read ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Click to mark as read
+            notificationElement.addEventListener('click', function(e) {
+                if (!e.target.closest('.action-btn')) {
+                    if (!notification.read) {
+                        notification.read = true;
+                        updateNotificationBadge();
+                        renderNotifications();
+                    }
+                }
+            });
+            
+            // Toggle read status with action button
+            const actionBtn = notificationElement.querySelector('.action-btn');
+            actionBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notification.read = !notification.read;
+                updateNotificationBadge();
+                renderNotifications();
+            });
+            
+            notificationsList.appendChild(notificationElement);
+        });
+    }
+    
+    // Format timestamp
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+            return 'Today';
+        } else if (diffDays === 1) {
+            return 'Yesterday';
+        } else if (diffDays < 7) {
+            return `${diffDays} days ago`;
+        } else {
+            return date.toLocaleDateString();
+        }
+    }
+    
+    // Show notification modal
+    function showNotificationModal() {
+        notificationModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderNotifications();
+    }
+    
+    // Hide notification modal
+    function hideNotificationModal() {
+        notificationModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Mark all as read
+    function markAllAsRead() {
+        notifications.forEach(notification => {
+            notification.read = true;
+        });
+        updateNotificationBadge();
+        renderNotifications();
+    }
+    
+    // Event listeners
+    notificationIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        showNotificationModal();
+    });
+    
+    closeButton.addEventListener('click', hideNotificationModal);
+    markAllReadButton.addEventListener('click', markAllAsRead);
+    
+    // Close modal when clicking outside
+    notificationModal.addEventListener('click', function(e) {
+        if (e.target === notificationModal) {
+            hideNotificationModal();
+        }
+    });
+    
+    // Close with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && notificationModal.classList.contains('active')) {
+            hideNotificationModal();
+        }
+    });
+    
+    // Initialize
+    updateNotificationBadge();
+    
+    // Add notification styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 12px;
+        }
+        
+        .notification-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-item.unread {
+            border-left: 4px solid #3a86ff;
+            background: rgba(58, 134, 255, 0.05);
+        }
+        
+        .notification-item.read {
+            border-left: 4px solid #ddd;
+            opacity: 0.8;
+        }
+        
+        .notification-item.priority-high.unread {
+            border-left-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.05);
+        }
+        
+        .notification-item.priority-medium.unread {
+            border-left-color: #ffa726;
+            background: rgba(255, 167, 38, 0.05);
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(58, 134, 255, 0.1);
+            color: #3a86ff;
+            flex-shrink: 0;
+        }
+        
+        .notification-item.priority-high .notification-icon {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+        }
+        
+        .notification-item.priority-medium .notification-icon {
+            background: rgba(255, 167, 38, 0.1);
+            color: #ffa726;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-content h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .notification-content p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .notification-content small {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .notification-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #3a86ff;
+        }
+    `;
+    document.head.appendChild(style);
+});
 </script>
 
 </body>
