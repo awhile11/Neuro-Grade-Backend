@@ -22,6 +22,7 @@
     getDocs,
     doc,
     getDoc,
+    updateDoc,
     orderBy
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -54,6 +55,7 @@
     getDocs,
     doc,
     getDoc,
+    updateDoc,
     orderBy
   };
 </script>
@@ -602,69 +604,6 @@
     transform: scale(1.2);
   }
 
-  /* Grade tab layout */
-  .grade-layout { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 20px; 
-  }
-  
-  .grade-card { 
-    background: #fff; 
-    border-radius: 12px; 
-    padding: 15px; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-  }
-  
-  .grade-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  }
-  
-  .grade-bottom { 
-    grid-column: span 2; 
-    display: flex; 
-    justify-content: flex-start; 
-    padding: 20px; 
-  }
-  
-  .circular { 
-    position: relative; 
-    width: 160px; 
-    height: 160px; 
-    background: #f8f9fa;
-    border-radius: 50%;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
-  }
-  
-  .circular:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  }
-  
-  .circular canvas { 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-  }
-  
-  .circular span { 
-    position: absolute; 
-    top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, -50%); 
-    font-size: 28px; 
-    font-weight: bold; 
-    transition: all 0.3s ease;
-  }
-  
-  .circular:hover span {
-    color: #8e44ad;
-  }
-
   /* Logout button */
   .logout-btn {
     background: #ff6b6b;
@@ -711,6 +650,209 @@
   .menu-toggle:hover {
     background: #793a9c;
     transform: rotate(90deg);
+  }
+
+  /* Test title link */
+  .test-title {
+    color: #8e44ad;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .test-title:hover {
+    background: #f0e6f5;
+    text-decoration: underline;
+  }
+
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1002;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow: auto;
+    padding: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    border: 1px solid #e9ecef;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .modal-header h3 {
+    color: #8e44ad;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .close-modal:hover {
+    background: #f0e6f5;
+    color: #8e44ad;
+  }
+  
+  .modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  
+  .question-item {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+  }
+  
+  .question-text {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 16px;
+  }
+  
+  .question-points {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .student-answer {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .grade-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .grade-input label {
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .grade-input input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 80px;
+    font-size: 14px;
+  }
+  
+  .grade-input input:focus {
+    outline: none;
+    border-color: #8e44ad;
+    box-shadow: 0 0 0 2px rgba(142, 68, 173, 0.2);
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 0 0 16px 16px;
+    gap: 10px;
+  }
+  
+  .btn-primary {
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background: #793a9c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .btn-secondary {
+    background: #888;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-secondary:hover {
+    background: #666;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Test info section */
+  .test-info {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f0e6f5;
+    border-radius: 8px;
+    border-left: 4px solid #8e44ad;
+  }
+  
+  .test-info p {
+    margin: 5px 0;
+    font-size: 14px;
   }
 
   /* Responsive design */
@@ -768,12 +910,13 @@
       margin-bottom: 10px;
     }
     
-    .grade-layout {
-      grid-template-columns: 1fr;
+    .modal-content {
+      width: 95%;
     }
     
-    .grade-bottom {
-      grid-column: span 1;
+    .grade-input {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>
@@ -853,52 +996,37 @@
           </div>
         </div>
 
-        <!-- Right: Assignments/Tests/Grades -->
+        <!-- Right: Tests -->
         <div class="student-details">
           <div class="tabs">
-            <button class="tab-btn" data-tab="assignments">Assignments</button>
-            <button class="tab-btn" data-tab="tests">Tests</button>
-            <button class="tab-btn active" data-tab="grades">Grades</button>
+            <button class="tab-btn active" data-tab="tests">Tests</button>
           </div>
 
           <!-- Tab content -->
-          <div id="assignments" class="tab-content" style="display:none;">
-            <div class="empty-state">
-              <i class="fas fa-clipboard-list"></i>
-              <p>Select a student to view assignments</p>
-            </div>
-          </div>
-
-          <div id="tests" class="tab-content" style="display:none;">
+          <div id="tests" class="tab-content">
             <div class="empty-state">
               <i class="fas fa-file-alt"></i>
               <p>Select a student to view tests</p>
             </div>
           </div>
-
-          <div id="grades" class="tab-content">
-            <!-- Grades Tab Content -->
-            <div class="grade-layout">
-              <div class="grade-card">
-                <h4>Assignments Progress</h4>
-                <canvas id="assignmentsChart"></canvas>
-              </div>
-              <div class="grade-card">
-                <h4>Tests Progress</h4>
-                <canvas id="testsChart"></canvas>
-              </div>
-              <div class="grade-bottom">
-                <div class="grade-card">
-                  <h4>Overall Grade</h4>
-                  <div class="circular">
-                    <canvas id="overallGradeChart" width="160" height="160"></canvas>
-                    <span id="gradeText">0%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Details Modal -->
+  <div class="modal" id="testDetailsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTestTitle">Test Details</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modalTestBody">
+        <!-- Test questions and answers will be populated here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="closeModalBtn">Close</button>
+        <button class="btn-primary" id="saveGradesBtn">Save Grades</button>
       </div>
     </div>
   </div>
@@ -908,7 +1036,10 @@
   let currentUser = null;
   let currentTeacher = null;
   let teacherStudents = [];
-  let assignmentsChart, testsChart, overallGradeChart;
+  let currentTestData = null;
+  let currentTestId = null;
+  let currentTestType = null;
+  let originalTestData = null;
 
   // Initialize the dashboard
   document.addEventListener('DOMContentLoaded', function() {
@@ -944,7 +1075,6 @@
         currentTeacher = teacherDoc.data();
         updateUserInterface();
         await loadStudentsFromDatabase();
-        initCharts();
       } else {
         console.error("Teacher data not found");
       }
@@ -1036,8 +1166,7 @@
         
         // Load data for the selected student
         const studentId = this.dataset.studentId;
-        const activeTab = document.querySelector(".tab-btn.active").dataset.tab;
-        loadTabData(activeTab, studentId);
+        loadTestsData(studentId);
       });
     });
     
@@ -1045,352 +1174,8 @@
     if (students.length > 0) {
       const firstStudent = document.querySelector(".student-item.active");
       if (firstStudent) {
-        const activeTab = document.querySelector(".tab-btn.active").dataset.tab;
-        loadTabData(activeTab, firstStudent.dataset.studentId);
+        loadTestsData(firstStudent.dataset.studentId);
       }
-    }
-  }
-
-  // Initialize charts with zero data
-  function initCharts() {
-    const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov"];
-    
-    // Assignments chart
-    assignmentsChart = new Chart(document.getElementById('assignmentsChart'), {
-      type: 'line',
-      data: {
-        labels: monthLabels,
-        datasets: [{
-          label: "Performance",
-          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          borderColor: "#8e44ad",
-          backgroundColor: "#8e44ad33",
-          fill: true,
-          tension: 0.3,
-          pointBackgroundColor: "#8e44ad",
-          pointBorderColor: "#fff",
-          pointBorderWidth: 2,
-          pointRadius: 4
-        }]
-      },
-      options: { 
-        plugins: { legend: { display: false } }, 
-        scales: { 
-          y: { 
-            beginAtZero: true, 
-            max: 100,
-            grid: {
-              color: 'rgba(0,0,0,0.05)'
-            }
-          },
-          x: {
-            grid: {
-              color: 'rgba(0,0,0,0.05)'
-            },
-            ticks: {
-              maxRotation: 0,
-              callback: function(value, index, values) {
-                return monthLabels[index];
-              }
-            }
-          }
-        } 
-      }
-    });
-
-    // Tests chart
-    testsChart = new Chart(document.getElementById('testsChart'), {
-      type: 'line',
-      data: {
-        labels: monthLabels,
-        datasets: [{
-          label: "Performance",
-          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          borderColor: "#8e44ad",
-          backgroundColor: "#8e44ad33",
-          fill: true,
-          tension: 0.3,
-          pointBackgroundColor: "#8e44ad",
-          pointBorderColor: "#fff",
-          pointBorderWidth: 2,
-          pointRadius: 4
-        }]
-      },
-      options: { 
-        plugins: { legend: { display: false } }, 
-        scales: { 
-          y: { 
-            beginAtZero: true, 
-            max: 100,
-            grid: {
-              color: 'rgba(0,0,0,0.05)'
-            }
-          },
-          x: {
-            grid: {
-              color: 'rgba(0,0,0,0.05)'
-            },
-            ticks: {
-              maxRotation: 0,
-              callback: function(value, index, values) {
-                return monthLabels[index];
-              }
-            }
-          }
-        } 
-      }
-    });
-
-    // Circular overall grade chart
-    overallGradeChart = new Chart(document.getElementById('overallGradeChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ["Grade","Remaining"],
-        datasets: [{
-          data: [0, 100],
-          backgroundColor: ["#8e44ad","#eee"],
-          borderWidth: 1,
-          borderColor: "#fff",
-          cutout: "75%"
-        }]
-      },
-      options: { 
-        plugins: { legend: { display: false } },
-        elements: {
-          arc: {
-            borderWidth: 1,
-            borderColor: '#fff'
-          }
-        }
-      }
-    });
-  }
-
-  // Function to update charts with data from database
-    // This is where you would fetch data from your database
-    // Function to update charts with data from database
-  async function updateCharts(studentId) {
-    try {
-      const studentData = await fetchStudentData(studentId);
-      
-      // Update assignments chart
-      assignmentsChart.data.datasets[0].data = studentData.assignments;
-      assignmentsChart.update();
-      
-      // Update tests chart
-      testsChart.data.datasets[0].data = studentData.tests;
-      testsChart.update();
-      
-      // Update overall grade chart
-      const overallGrade = studentData.overallGrade;
-      overallGradeChart.data.datasets[0].data = [overallGrade, 100 - overallGrade];
-      overallGradeChart.update();
-      
-      // Update grade text
-      document.getElementById('gradeText').textContent = `${overallGrade}%`;
-    } catch (error) {
-      console.error("Error updating charts:", error);
-    }
-  }
-
-  // Fetch student data from Firestore
-  async function fetchStudentData(studentId) {
-    try {
-      // Get student document
-      const studentDoc = await window.firebaseFunctions.getDoc(
-        window.firebaseFunctions.doc(window.firebaseDb, "students", studentId)
-      );
-      
-      if (!studentDoc.exists()) {
-        throw new Error("Student not found");
-      }
-      
-      const studentData = studentDoc.data();
-      
-      // Get assignments for this student
-      const assignmentsQuery = window.firebaseFunctions.query(
-        window.firebaseFunctions.collection(window.firebaseDb, "assignments"),
-        window.firebaseFunctions.where("studentId", "==", studentId)
-      );
-      
-      const assignmentsSnapshot = await window.firebaseFunctions.getDocs(assignmentsQuery);
-      const assignmentsData = [];
-      
-      assignmentsSnapshot.forEach(doc => {
-        assignmentsData.push({ id: doc.id, ...doc.data() });
-      });
-      
-      // Get tests for this student
-      const testsQuery = window.firebaseFunctions.query(
-        window.firebaseFunctions.collection(window.firebaseDb, "tests"),
-        window.firebaseFunctions.where("studentId", "==", studentId)
-      );
-      
-      const testsSnapshot = await window.firebaseFunctions.getDocs(testsQuery);
-      const testsData = [];
-      
-      testsSnapshot.forEach(doc => {
-        testsData.push({ id: doc.id, ...doc.data() });
-      });
-      
-      // Calculate progress data for charts
-      const assignmentsProgress = calculateMonthlyProgress(assignmentsData, "assignments");
-      const testsProgress = calculateMonthlyProgress(testsData, "tests");
-      const overallGrade = calculateOverallGrade(assignmentsData, testsData);
-      
-      return {
-        assignments: assignmentsProgress,
-        tests: testsProgress,
-        overallGrade: overallGrade,
-        assignmentsData: assignmentsData,
-        testsData: testsData
-      };
-    } catch (error) {
-      console.error("Error fetching student data:", error);
-      // Return default data structure
-      return {
-        assignments: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        tests: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        overallGrade: 0,
-        assignmentsData: [],
-        testsData: []
-      };
-    }
-  }
-
-  // Calculate monthly progress for charts
-  function calculateMonthlyProgress(data, type) {
-    const monthlyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // Jan-Nov
-    
-    data.forEach(item => {
-      if (item.submittedAt) {
-        const date = item.submittedAt.toDate();
-        const month = date.getMonth(); // 0-10 for Jan-Nov
-        
-        if (month >= 0 && month <= 10) {
-          // Use AI grade if available, otherwise use updated grade
-          const grade = item.aiGrade || item.updatedGrade || 0;
-          monthlyData[month] = Math.max(monthlyData[month], grade);
-        }
-      }
-    });
-    
-    return monthlyData;
-  }
-
-  // Calculate overall grade
-  function calculateOverallGrade(assignmentsData, testsData) {
-    if (assignmentsData.length === 0 && testsData.length === 0) return 0;
-    
-    let totalGrade = 0;
-    let count = 0;
-    
-    // Calculate average from assignments
-    assignmentsData.forEach(assignment => {
-      const grade = assignment.updatedGrade || assignment.aiGrade;
-      if (grade) {
-        totalGrade += grade;
-        count++;
-      }
-    });
-    
-    // Calculate average from tests
-    testsData.forEach(test => {
-      const grade = test.updatedGrade || test.aiGrade;
-      if (grade) {
-        totalGrade += grade;
-        count++;
-      }
-    });
-    
-    return count > 0 ? Math.round(totalGrade / count) : 0;
-  }
-
-  // Load assignments data from database
-  async function loadAssignmentsData(studentId) {
-    const contentDiv = document.getElementById('assignments');
-    
-    // Show loading state
-    contentDiv.innerHTML = `
-      <div class="loading">
-        <i class="fas fa-spinner"></i>
-        <p>Loading assignments from database...</p>
-      </div>
-    `;
-    
-    try {
-      const studentData = await fetchStudentData(studentId);
-      const assignments = studentData.assignmentsData;
-      
-      if (assignments.length === 0) {
-        contentDiv.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-clipboard-list"></i>
-            <p>No assignments found for this student</p>
-            <p>Assignments will appear here when created</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Create assignments table
-      let tableHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Assignment Name</th>
-              <th>Due Date</th>
-              <th>Status</th>
-              <th>AI Grade</th>
-              <th>Updated Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      
-      assignments.forEach(assignment => {
-        const dueDate = assignment.dueDate ? assignment.dueDate.toDate().toLocaleDateString() : 'N/A';
-        const submittedDate = assignment.submittedAt ? assignment.submittedAt.toDate() : null;
-        const dueDateTime = assignment.dueDate ? assignment.dueDate.toDate() : null;
-        
-        // Determine status
-        let status = 'Not Submitted';
-        let statusClass = 'status-missing';
-        
-        if (submittedDate) {
-          if (dueDateTime && submittedDate > dueDateTime) {
-            status = 'Late';
-            statusClass = 'status-late';
-          } else {
-            status = 'On Time';
-            statusClass = 'status-ontime';
-          }
-        }
-        
-        const aiGrade = assignment.aiGrade ? `${assignment.aiGrade}%` : 'N/A';
-        const updatedGrade = assignment.updatedGrade ? `${assignment.updatedGrade}%` : 'N/A';
-        
-        tableHTML += `
-          <tr>
-            <td>${assignment.name || 'Unnamed Assignment'}</td>
-            <td>${dueDate}</td>
-            <td><span class="status-badge ${statusClass}">${status}</span></td>
-            <td>${aiGrade}</td>
-            <td>${updatedGrade}</td>
-          </tr>
-        `;
-      });
-      
-      tableHTML += `</tbody></table>`;
-      contentDiv.innerHTML = tableHTML;
-    } catch (error) {
-      console.error("Error loading assignments:", error);
-      contentDiv.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>Error loading assignments data</p>
-        </div>
-      `;
     }
   }
 
@@ -1407,10 +1192,47 @@
     `;
     
     try {
-      const studentData = await fetchStudentData(studentId);
-      const tests = studentData.testsData;
+      // Get student document
+      const studentDoc = await window.firebaseFunctions.getDoc(
+        window.firebaseFunctions.doc(window.firebaseDb, "students", studentId)
+      );
       
-      if (tests.length === 0) {
+      if (!studentDoc.exists()) {
+        throw new Error("Student not found");
+      }
+      
+      const studentData = studentDoc.data();
+      
+      // Get test submissions for this student
+      const testSubmissionsQuery = window.firebaseFunctions.query(
+        window.firebaseFunctions.collection(window.firebaseDb, "testSubmissions"),
+        window.firebaseFunctions.where("studentId", "==", studentId)
+      );
+      
+      const testSubmissionsSnapshot = await window.firebaseFunctions.getDocs(testSubmissionsQuery);
+      const testSubmissions = [];
+      
+      testSubmissionsSnapshot.forEach(doc => {
+        testSubmissions.push({ id: doc.id, ...doc.data() });
+      });
+      
+      // Get manual test submissions for this student
+      const manualTestSubmissionsQuery = window.firebaseFunctions.query(
+        window.firebaseFunctions.collection(window.firebaseDb, "manual test submissions"),
+        window.firebaseFunctions.where("studentId", "==", studentId)
+      );
+      
+      const manualTestSubmissionsSnapshot = await window.firebaseFunctions.getDocs(manualTestSubmissionsQuery);
+      const manualTestSubmissions = [];
+      
+      manualTestSubmissionsSnapshot.forEach(doc => {
+        manualTestSubmissions.push({ id: doc.id, ...doc.data() });
+      });
+      
+      // Combine both test submission types
+      const allTestSubmissions = [...testSubmissions, ...manualTestSubmissions];
+      
+      if (allTestSubmissions.length === 0) {
         contentDiv.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-file-alt"></i>
@@ -1436,8 +1258,9 @@
           <tbody>
       `;
       
-      tests.forEach(test => {
-        const testDate = test.testDate ? test.testDate.toDate().toLocaleDateString() : 'N/A';
+      for (const test of allTestSubmissions) {
+        const testDate = test.submittedAt ? test.submittedAt.toDate().toLocaleDateString() : 
+                         test.createdAt ? test.createdAt.toDate().toLocaleDateString() : 'N/A';
         
         // Determine status
         const status = test.submittedAt ? 'Taken' : 'Not Taken';
@@ -1446,19 +1269,51 @@
         const aiGrade = test.aiGrade ? `${test.aiGrade}%` : 'N/A';
         const updatedGrade = test.updatedGrade ? `${test.updatedGrade}%` : 'N/A';
         
+        // Get test title from original test if available
+        let testTitle = test.testName || test.name || 'Unnamed Test';
+        let testType = test.testId ? 'testSubmissions' : 'manual test submissions';
+        
+        // Try to get the original test document to get the title
+        if (test.testId) {
+          try {
+            const originalTestDoc = await window.firebaseFunctions.getDoc(
+              window.firebaseFunctions.doc(window.firebaseDb, "tests", test.testId)
+            );
+            if (originalTestDoc.exists()) {
+              const originalTestData = originalTestDoc.data();
+              testTitle = originalTestData.title || originalTestData.name || testTitle;
+            }
+          } catch (error) {
+            console.error("Error fetching original test data:", error);
+          }
+        }
+        
         tableHTML += `
           <tr>
-            <td>${test.name || 'Unnamed Test'}</td>
+            <td>
+              <a class="test-title" data-test-id="${test.id}" data-test-type="${testType}">
+                ${testTitle}
+              </a>
+            </td>
             <td>${testDate}</td>
             <td><span class="status-badge ${statusClass}">${status}</span></td>
             <td>${aiGrade}</td>
             <td>${updatedGrade}</td>
           </tr>
         `;
-      });
+      }
       
       tableHTML += `</tbody></table>`;
       contentDiv.innerHTML = tableHTML;
+      
+      // Add event listeners to test titles
+      document.querySelectorAll(".test-title").forEach(title => {
+        title.addEventListener("click", async function() {
+          const testId = this.dataset.testId;
+          const testType = this.dataset.testType;
+          await showTestDetails(testId, testType);
+        });
+      });
     } catch (error) {
       console.error("Error loading tests:", error);
       contentDiv.innerHTML = `
@@ -1470,17 +1325,188 @@
     }
   }
 
-  // Load data for active tab
-  async function loadTabData(tabName, studentId) {
-    if (!studentId) return;
+  // Show test details in modal
+  async function showTestDetails(testId, testType) {
+    const modal = document.getElementById('testDetailsModal');
+    const modalTitle = document.getElementById('modalTestTitle');
+    const modalBody = document.getElementById('modalTestBody');
     
-    if (tabName === "grades") {
-      await updateCharts(studentId);
-    } else if (tabName === "assignments") {
-      await loadAssignmentsData(studentId);
-    } else if (tabName === "tests") {
-      await loadTestsData(studentId);
+    // Show loading state
+    modalBody.innerHTML = `
+      <div class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Loading test details...</p>
+      </div>
+    `;
+    
+    modal.style.display = 'flex';
+    currentTestId = testId;
+    currentTestType = testType;
+    
+    try {
+      // Get test submission document
+      const testDoc = await window.firebaseFunctions.getDoc(
+        window.firebaseFunctions.doc(window.firebaseDb, testType, testId)
+      );
+      
+      if (!testDoc.exists()) {
+        throw new Error("Test not found");
+      }
+      
+      currentTestData = testDoc.data();
+      
+      // Get original test data from "tests" collection
+      let testTitle = currentTestData.testName || currentTestData.name || 'Test Details';
+      let questions = [];
+      
+      if (currentTestData.testId) {
+        try {
+          const originalTestDoc = await window.firebaseFunctions.getDoc(
+            window.firebaseFunctions.doc(window.firebaseDb, "tests", currentTestData.testId)
+          );
+          if (originalTestDoc.exists()) {
+            originalTestData = originalTestDoc.data();
+            testTitle = originalTestData.title || originalTestData.name || testTitle;
+            questions = originalTestData.questions || [];
+          }
+        } catch (error) {
+          console.error("Error fetching original test data:", error);
+        }
+      }
+      
+      // If no questions from original test, try to get from submission
+      if (questions.length === 0) {
+        questions = currentTestData.questions || [];
+      }
+      
+      modalTitle.textContent = testTitle;
+      
+      // Display test information
+      const testInfoHTML = `
+        <div class="test-info">
+          <p><strong>Student:</strong> ${currentTestData.studentName || 'Unknown Student'}</p>
+          <p><strong>Submitted:</strong> ${currentTestData.submittedAt ? currentTestData.submittedAt.toDate().toLocaleString() : 'Not submitted'}</p>
+          <p><strong>Current Grade:</strong> ${currentTestData.updatedGrade || currentTestData.aiGrade || 'Not graded'}%</p>
+        </div>
+      `;
+      
+      // Display questions and answers
+      let questionsHTML = '';
+      
+      if (questions.length > 0) {
+        questions.forEach((question, index) => {
+          // Get student answer
+          let studentAnswer = 'No answer provided';
+          if (currentTestData.answers && currentTestData.answers[index] !== undefined) {
+            studentAnswer = currentTestData.answers[index];
+          } else if (currentTestData.answer && index === 0) {
+            // For single question tests
+            studentAnswer = currentTestData.answer;
+          }
+          
+          // Get current grade for this question
+          const currentGrade = currentTestData.questionGrades ? currentTestData.questionGrades[index] : '';
+          const questionPoints = question.points || 10;
+          
+          questionsHTML += `
+            <div class="question-item">
+              <div class="question-text">Question ${index + 1}: ${question.text || question.question || question}</div>
+              <div class="question-points">Points: ${questionPoints}</div>
+              <div class="student-answer">
+                <strong>Student Answer:</strong><br>
+                ${studentAnswer}
+              </div>
+              <div class="grade-input">
+                <label for="grade-${index}">Grade (points):</label>
+                <input type="number" id="grade-${index}" value="${currentGrade}" min="0" max="${questionPoints}" step="0.5">
+                <span> / ${questionPoints}</span>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        questionsHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>No questions found in this test</p>
+          </div>
+        `;
+      }
+      
+      modalBody.innerHTML = testInfoHTML + questionsHTML;
+    } catch (error) {
+      console.error("Error loading test details:", error);
+      modalBody.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Error loading test details</p>
+        </div>
+      `;
     }
+  }
+
+  // Save grades to database
+  async function saveGrades() {
+    if (!currentTestId || !currentTestData || !currentTestType) return;
+    
+    try {
+      const questionGrades = [];
+      let totalGrade = 0;
+      let maxPoints = 0;
+      
+      // Collect grades from inputs
+      document.querySelectorAll('.grade-input input').forEach((input, index) => {
+        const grade = parseFloat(input.value) || 0;
+        questionGrades.push(grade);
+        totalGrade += grade;
+        
+        // Calculate max points from original test questions
+        if (originalTestData && originalTestData.questions && originalTestData.questions[index]) {
+          maxPoints += originalTestData.questions[index].points || 10;
+        } else if (currentTestData.questions && currentTestData.questions[index]) {
+          maxPoints += currentTestData.questions[index].points || 10;
+        } else {
+          maxPoints += 10;
+        }
+      });
+      
+      // Calculate percentage
+      const percentage = maxPoints > 0 ? Math.round((totalGrade / maxPoints) * 100) : 0;
+      
+      // Update the test document
+      const testRef = window.firebaseFunctions.doc(window.firebaseDb, currentTestType, currentTestId);
+      
+      await window.firebaseFunctions.updateDoc(testRef, {
+        questionGrades: questionGrades,
+        updatedGrade: percentage,
+        lastGradedBy: currentUser.uid,
+        gradedAt: new Date()
+      });
+      
+      // Close modal and refresh test data
+      closeModal();
+      
+      // Refresh the tests table to show updated grades
+      const activeStudent = document.querySelector(".student-item.active");
+      if (activeStudent) {
+        loadTestsData(activeStudent.dataset.studentId);
+      }
+      
+      alert('Grades saved successfully!');
+    } catch (error) {
+      console.error("Error saving grades:", error);
+      alert('Error saving grades. Please try again.');
+    }
+  }
+
+  // Close modal
+  function closeModal() {
+    const modal = document.getElementById('testDetailsModal');
+    modal.style.display = 'none';
+    currentTestData = null;
+    currentTestId = null;
+    currentTestType = null;
+    originalTestData = null;
   }
 
   // Search functionality
@@ -1504,23 +1530,6 @@
     // Search functionality
     document.getElementById("studentNumberSearch").addEventListener("input", filterStudents);
     document.getElementById("studentNameSearch").addEventListener("input", filterStudents);
-    
-    // Tabs inside students
-    document.querySelectorAll(".tab-btn").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        let tabName = tab.dataset.tab;
-        document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
-        document.getElementById(tabName).style.display = "block";
-        
-        // Load data from database for active student
-        const activeStudent = document.querySelector(".student-item.active");
-        if (activeStudent) {
-          loadTabData(tabName, activeStudent.dataset.studentId);
-        }
-      });
-    });
     
     // Mobile menu toggle
     const menuToggle = document.getElementById('menu-toggle');
@@ -1547,631 +1556,26 @@
         this.classList.add("active");
       });
     });
-  }
-  // Autograding System Notifications
-document.addEventListener('DOMContentLoaded', function() {
-    // Add CSS styles dynamically for the modal
-    const style = document.createElement('style');
-    style.textContent = `
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1002;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow: auto;
-            padding: 0;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            position: relative;
-            border: 1px solid #e9ecef;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-            background: #f8f9fa;
-            border-radius: 16px 16px 0 0;
-        }
-        
-        .modal-header h3 {
-            color: #8e44ad;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0;
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #888;
-            transition: all 0.3s ease;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .close-modal:hover {
-            background: #f0e6f5;
-            color: #8e44ad;
-        }
-        
-        /* Modal footer styling */
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            padding: 20px;
-            border-top: 1px solid #e9ecef;
-            background: #f8f9fa;
-            border-radius: 0 0 16px 16px;
-        }
-
-        .btn-secondary {
-            background: #888;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: #666;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        /* Notification item styling */
-        .notifications-list {
-            padding: 0;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e9ecef;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            gap: 12px;
-            background: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .notification-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .notification-item:hover::before {
-            left: 100%;
-        }
-
-        .notification-item:hover {
-            background: #f9f2fc;
-            transform: translateX(5px);
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .notification-item.unread {
-            border-left: 4px solid #8e44ad;
-            background: rgba(142, 68, 173, 0.03);
-        }
-
-        .notification-item.read {
-            border-left: 4px solid #e9ecef;
-            opacity: 0.8;
-        }
-
-        .notification-item.priority-high.unread {
-            border-left-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.03);
-        }
-
-        .notification-item.priority-medium.unread {
-            border-left-color: #ffa726;
-            background: rgba(255, 167, 38, 0.03);
-        }
-
-        /* Notification icon */
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f0e6f5;
-            color: #8e44ad;
-            flex-shrink: 0;
-            font-size: 16px;
-        }
-
-        .notification-item.priority-high .notification-icon {
-            background: #ffe9e9;
-            color: #ff6b6b;
-        }
-
-        .notification-item.priority-medium .notification-icon {
-            background: #fff3e0;
-            color: #ffa726;
-        }
-
-        /* Notification content */
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-content h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #333;
-        }
-
-        .notification-content p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-
-        .notification-content small {
-            font-size: 12px;
-            color: #888;
-            opacity: 0.8;
-        }
-
-        /* Notification actions */
-        .notification-actions {
-            display: flex;
-            align-items: center;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .action-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-            color: #8e44ad;
-        }
-
-        /* Notification sections */
-        .notification-section {
-            margin-bottom: 0;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e9ecef;
-            background: #f8f9fa;
-        }
-
-        .count-badge {
-            background: #8e44ad;
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* Empty state styling */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #888;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            color: #ddd;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .empty-state small {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // DOM elements
-    const notificationIcon = document.getElementById('notification-icon');
-    const notificationBadge = document.querySelector('#notification-icon .icon-badge');
-    const modal = document.createElement('div');
-    modal.className = 'modal';
     
-    // Create modal content
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>System Notifications</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="notifications-list" id="notifications-list">
-                <!-- Notifications will be dynamically added here -->
-            </div>
-            <div class="modal-footer">
-                <button id="mark-all-read" class="btn-secondary">Mark All as Read</button>
-            </div>
-        </div>
-    `;
-    
-    // Add modal to the document
-    document.body.appendChild(modal);
-    
-    // Store notifications
-    let notifications = [];
-    
-    // Generate notifications based on real test and assignment data
-    function generateNotifications(tests, assignments) {
-        const notifications = [];
-        const now = new Date();
-        
-        // Check for upcoming tests (within 3 days)
-        tests.forEach(test => {
-            const testDueDate = new Date(test.dueDate || test.scheduledDate);
-            const timeDiff = testDueDate.getTime() - now.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            
-            if (daysDiff <= 3 && daysDiff > 0 && test.status === "scheduled") {
-                notifications.push({
-                    id: `test-${test.id}`,
-                    title: "Upcoming Test",
-                    message: `${test.title || test.name} (${test.subject}) is in ${daysDiff} day${daysDiff > 1 ? 's' : ''}`,
-                    timestamp: formatTimestamp(testDueDate),
-                    type: "test",
-                    priority: daysDiff === 1 ? "high" : "medium",
-                    read: false,
-                    relatedId: test.id
-                });
-            }
-            
-            // Check for missed tests
-            if (test.status === "missed" || (daysDiff < 0 && !test.completed)) {
-                const missedDays = Math.floor((now.getTime() - testDueDate.getTime()) / (1000 * 3600 * 24));
-                notifications.push({
-                    id: `missed-test-${test.id}`,
-                    title: "Missed Test",
-                    message: `You missed ${test.title || test.name} (${test.subject}) - ${missedDays} day${missedDays > 1 ? 's' : ''} ago`,
-                    timestamp: formatTimestamp(testDueDate),
-                    type: "test",
-                    priority: "high",
-                    read: false,
-                    relatedId: test.id
-                });
-            }
-        });
-        
-        // Check for assignment deadlines (within 2 days)
-        assignments.forEach(assignment => {
-            if (assignment.submitted || assignment.status === "submitted") return;
-            
-            const assignmentDueDate = new Date(assignment.dueDate);
-            const timeDiff = assignmentDueDate.getTime() - now.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            
-            if (daysDiff <= 2 && daysDiff > 0) {
-                notifications.push({
-                    id: `assignment-${assignment.id}`,
-                    title: "Assignment Due Soon",
-                    message: `${assignment.title} (${assignment.subject || assignment.course}) due in ${daysDiff} day${daysDiff > 1 ? 's' : ''}`,
-                    timestamp: formatTimestamp(assignmentDueDate),
-                    type: "assignment",
-                    priority: daysDiff === 1 ? "high" : "medium",
-                    read: false,
-                    relatedId: assignment.id
-                });
-            }
-            
-            // Check for overdue assignments
-            if (daysDiff < 0) {
-                const overdueDays = Math.abs(daysDiff);
-                notifications.push({
-                    id: `overdue-assignment-${assignment.id}`,
-                    title: "Overdue Assignment",
-                    message: `${assignment.title} (${assignment.subject || assignment.course}) is ${overdueDays} day${overdueDays > 1 ? 's' : ''} overdue`,
-                    timestamp: formatTimestamp(assignmentDueDate),
-                    type: "assignment",
-                    priority: "high",
-                    read: false,
-                    relatedId: assignment.id
-                });
-            }
-        });
-        
-        // Sort by priority and date (high priority first, then by due date)
-        return notifications.sort((a, b) => {
-            const priorityOrder = { high: 1, medium: 2, low: 3 };
-            if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-                return priorityOrder[a.priority] - priorityOrder[b.priority];
-            }
-            return new Date(a.timestamp) - new Date(b.timestamp);
-        });
-    }
-    
-    // Format timestamp for display
-    function formatTimestamp(date) {
-        const now = new Date();
-        const diffMs = date.getTime() - now.getTime();
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 0) {
-            return "Today";
-        } else if (diffDays === 1) {
-            return "Tomorrow";
-        } else if (diffDays === -1) {
-            return "Yesterday";
-        } else if (diffDays > 1) {
-            return `In ${diffDays} days`;
-        } else {
-            return `${Math.abs(diffDays)} days ago`;
-        }
-    }
-    
-    // Update notification badge
-    function updateNotificationBadge() {
-        const unreadCount = notifications.filter(notification => !notification.read).length;
-        if (notificationBadge) {
-            notificationBadge.textContent = unreadCount;
-            
-            // Add/remove animation if there are unread notifications
-            if (unreadCount > 0) {
-                notificationBadge.style.animation = 'pulse 1.5s infinite';
-            } else {
-                notificationBadge.style.animation = 'none';
-            }
-        }
-    }
-    
-    // Render notifications in the modal
-    function renderNotifications() {
-        const notificationsList = document.getElementById('notifications-list');
-        notificationsList.innerHTML = '';
-        
-        if (notifications.length === 0) {
-            notificationsList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-bell-slash"></i>
-                    <p>No notifications at this time</p>
-                    <small>You're all caught up!</small>
-                </div>
-            `;
-            return;
-        }
-        
-        // Group notifications by type
-        const testNotifications = notifications.filter(n => n.type === "test");
-        const assignmentNotifications = notifications.filter(n => n.type === "assignment");
-        
-        // Render test notifications
-        if (testNotifications.length > 0) {
-            const testSection = document.createElement('div');
-            testSection.className = 'notification-section';
-            testSection.innerHTML = `<h4 class="section-title">Tests <span class="count-badge">${testNotifications.length}</span></h4>`;
-            notificationsList.appendChild(testSection);
-            
-            testNotifications.forEach(notification => {
-                renderNotificationItem(notification, testSection);
-            });
-        }
-        
-        // Render assignment notifications
-        if (assignmentNotifications.length > 0) {
-            const assignmentSection = document.createElement('div');
-            assignmentSection.className = 'notification-section';
-            assignmentSection.innerHTML = `<h4 class="section-title">Assignments <span class="count-badge">${assignmentNotifications.length}</span></h4>`;
-            notificationsList.appendChild(assignmentSection);
-            
-            assignmentNotifications.forEach(notification => {
-                renderNotificationItem(notification, assignmentSection);
-            });
-        }
-    }
-    
-    // Render individual notification item
-    function renderNotificationItem(notification, container) {
-        const notificationItem = document.createElement('div');
-        notificationItem.className = `notification-item ${notification.read ? 'read' : 'unread'} priority-${notification.priority}`;
-        notificationItem.innerHTML = `
-            <div class="notification-icon">
-                <i class="fas ${notification.type === 'test' ? 'fa-clipboard-list' : 'fa-tasks'}"></i>
-            </div>
-            <div class="notification-content">
-                <h4>${notification.title}</h4>
-                <p>${notification.message}</p>
-                <small>${notification.timestamp}</small>
-            </div>
-            <div class="notification-actions">
-                <button class="action-btn" data-id="${notification.id}" title="${notification.read ? 'Mark as unread' : 'Mark as read'}">
-                    <i class="fas ${notification.read ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                </button>
-            </div>
-        `;
-        
-        // Mark as read when clicked
-        notificationItem.addEventListener('click', function(e) {
-            if (!e.target.closest('.action-btn')) {
-                if (!notification.read) {
-                    notification.read = true;
-                    updateNotificationBadge();
-                    renderNotifications();
-                }
-                
-                // Navigate to relevant test/assignment
-                handleNotificationAction(notification);
-            }
-        });
-        
-        // Toggle read status with action button
-        const actionBtn = notificationItem.querySelector('.action-btn');
-        actionBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notification.read = !notification.read;
-            updateNotificationBadge();
-            renderNotifications();
-        });
-        
-        container.appendChild(notificationItem);
-    }
-    
-    // Handle notification action (navigate to test/assignment)
-    function handleNotificationAction(notification) {
-        console.log(`Navigating to: ${notification.type} with ID: ${notification.relatedId}`);
-        
-        // You can add your actual navigation logic here:
-        if (notification.type === 'test') {
-            // Example: window.location.href = `/take-test/${notification.relatedId}`;
-            alert(`Would navigate to test: ${notification.message}`);
-        } else if (notification.type === 'assignment') {
-            // Example: window.location.href = `/submit-assignment/${notification.relatedId}`;
-            alert(`Would navigate to assignment: ${notification.message}`);
-        }
-    }
-    
-    // Show modal
-    function showNotificationModal() {
-        modal.style.display = 'flex';
-        renderNotifications();
-    }
-    
-    // Hide modal
-    function hideNotificationModal() {
-        modal.style.display = 'none';
-    }
-    
-    // Mark all notifications as read
-    function markAllAsRead() {
-        let hasUnread = false;
-        notifications.forEach(notification => {
-            if (!notification.read) {
-                notification.read = true;
-                hasUnread = true;
-            }
-        });
-        
-        if (hasUnread) {
-            updateNotificationBadge();
-            renderNotifications();
-        }
-    }
-    
-    // Event listeners
-    if (notificationIcon) {
-        notificationIcon.addEventListener('click', function(e) {
-            e.preventDefault();
-            showNotificationModal();
-        });
-    }
-    
-    modal.querySelector('.close-modal').addEventListener('click', hideNotificationModal);
+    // Modal event listeners
+    document.querySelector('.close-modal').addEventListener('click', closeModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('saveGradesBtn').addEventListener('click', saveGrades);
     
     // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            hideNotificationModal();
-        }
+    document.getElementById('testDetailsModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
     });
     
     // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            hideNotificationModal();
-        }
+      if (e.key === 'Escape') {
+        closeModal();
+      }
     });
-    
-    // Mark all as read button
-    document.getElementById('mark-all-read').addEventListener('click', markAllAsRead);
-    
-    // Initialize notification system with real data
-    window.initializeNotifications = function(testsData, assignmentsData) {
-        notifications = generateNotifications(testsData, assignmentsData);
-        updateNotificationBadge();
-    };
-    
-    // Refresh notifications when data changes
-    window.refreshNotifications = function(testsData, assignmentsData) {
-        notifications = generateNotifications(testsData, assignmentsData);
-        updateNotificationBadge();
-        
-        // If modal is open, update it
-        if (modal.style.display === 'flex') {
-            renderNotifications();
-        }
-    };
-    
-    // Initialize with demo data (replace with your actual data)
-    setTimeout(() => {
-        window.initializeNotifications(demoData.tests, demoData.assignments);
-    }, 1000);
-    
-    // Hide loading screen
-    setTimeout(function() {
-        const loadingScreen = document.getElementById('loadingScreen');
-        if (loadingScreen) {
-            loadingScreen.style.display = 'none';
-        }
-    }, 2000);
-});
+  }
 </script>
 </body>
 </html>
