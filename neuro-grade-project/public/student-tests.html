@@ -24,7 +24,9 @@
       getDoc,
       updateDoc,
       orderBy,
-      onSnapshot
+      onSnapshot,
+      addDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Firebase configuration
@@ -58,7 +60,9 @@
       getDoc,
       updateDoc,
       orderBy,
-      onSnapshot
+      onSnapshot,
+      addDoc,
+      serverTimestamp
     };
   </script>
   <style>
@@ -70,6 +74,9 @@
       --text-light: #6c757d;
       --border-color: #dee2e6;
       --selected-color: #e6f0ff;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
     }
     
     * { 
@@ -574,6 +581,220 @@
       transform: translateY(-2px);
     }
 
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.2s;
+    }
+    
+    .modal-close:hover {
+      color: var(--text-dark);
+      transform: scale(1.1);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .notification-item, .message-item {
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .notification-item:hover, .message-item:hover {
+      background: #f8f9fa;
+    }
+    
+    .notification-title, .message-sender {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-dark);
+    }
+    
+    .notification-content, .message-preview {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .notification-time, .message-time {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    
+    .empty-notifications, .empty-messages {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+    }
+    
+    .empty-notifications i, .empty-messages i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Test Results Modal */
+    .test-results-modal .modal-content {
+      max-width: 600px;
+    }
+    
+    .results-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .results-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .results-subtitle {
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+    
+    .results-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stat-item {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-value.score {
+      color: var(--success-color);
+    }
+    
+    .stat-value.not-marked {
+      color: var(--warning-color);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    
+    .results-details {
+      margin-bottom: 1.5rem;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .detail-label {
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    .detail-value {
+      color: var(--text-dark);
+    }
+    
+    .not-marked-message {
+      text-align: center;
+      padding: 2rem;
+      background: #fff9e6;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .not-marked-icon {
+      font-size: 3rem;
+      color: var(--warning-color);
+      margin-bottom: 1rem;
+    }
+    
+    .not-marked-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .not-marked-subtext {
+      color: var(--text-light);
+    }
+    
+    .results-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
     /* Mobile menu toggle */
     .menu-toggle {
       display: none;
@@ -631,6 +852,10 @@
       .details-content {
         grid-template-columns: 1fr;
       }
+      
+      .results-stats {
+        grid-template-columns: 1fr;
+      }
     }
     
     @media (max-width: 768px) {
@@ -653,6 +878,10 @@
       }
       
       .action-buttons {
+        flex-direction: column;
+      }
+      
+      .results-actions {
         flex-direction: column;
       }
     }
@@ -738,11 +967,11 @@
     <div class="top-bar">
       <a href="#" class="icon-link" id="mail-icon">
         <i class="fas fa-envelope"></i>
-        <span class="icon-badge">0</span>
+        <span class="icon-badge" id="message-badge">0</span>
       </a>
       <a href="#" class="icon-link" id="notification-icon">
         <i class="fas fa-bell"></i>
-        <span class="icon-badge">0</span>
+        <span class="icon-badge" id="notification-badge">0</span>
       </a>
       <div class="top-user" id="user-info">
         <span><b id="user-name">Loading...</b><br><small id="user-course">Loading...</small></span>
@@ -820,8 +1049,55 @@
           </div>
           <div class="action-buttons" id="actionButtons">
             <button class="action-btn primary-btn" id="primaryAction">View Details</button>
-            <button class="action-btn secondary-btn" id="downloadBtn">Download</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications Modal -->
+  <div class="modal" id="notificationsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Notifications</h3>
+        <button class="modal-close" id="closeNotifications">&times;</button>
+      </div>
+      <div class="modal-body" id="notificationsList">
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading notifications...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Modal -->
+  <div class="modal" id="messagesModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Messages</h3>
+        <button class="modal-close" id="closeMessages">&times;</button>
+      </div>
+      <div class="modal-body" id="messagesList">
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading messages...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Results Modal -->
+  <div class="modal test-results-modal" id="testResultsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Test Results</h3>
+        <button class="modal-close" id="closeTestResults">&times;</button>
+      </div>
+      <div class="modal-body" id="testResultsContent">
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading results...</p>
         </div>
       </div>
     </div>
@@ -834,6 +1110,8 @@
     let studentTests = [];
     let selectedTest = null;
     let teacherTests = [];
+    let notifications = [];
+    let messages = [];
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
@@ -885,6 +1163,8 @@
           currentStudent = { id: studentDoc.id, ...studentDoc.data() };
           updateUserInterface();
           await loadAllTests();
+          await loadNotifications();
+          await loadMessages();
         } else {
           console.error("Student data not found");
         }
@@ -899,6 +1179,193 @@
         document.getElementById('user-name').textContent = `${currentStudent.firstName} ${currentStudent.lastName}`;
         document.getElementById('user-course').textContent = currentStudent.course || 'Student';
         document.getElementById('user-avatar').src = `https://placehold.co/35x35/3a86ff/FFFFFF?text=${currentStudent.firstName.charAt(0)}${currentStudent.lastName.charAt(0)}`;
+      }
+    }
+
+    // Load notifications from Firestore
+    async function loadNotifications() {
+      try {
+        const notificationsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "notifications"),
+          window.firebaseFunctions.where("target", "==", "students"),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
+        
+        const notificationsSnapshot = await window.firebaseFunctions.getDocs(notificationsQuery);
+        notifications = [];
+        
+        notificationsSnapshot.forEach(doc => {
+          const notificationData = doc.data();
+          notifications.push({ id: doc.id, ...notificationData });
+        });
+        
+        // Update badge count
+        const unreadNotifications = notifications.filter(n => !n.read).length;
+        document.getElementById('notification-badge').textContent = unreadNotifications;
+        
+        // Render notifications in modal
+        renderNotifications();
+      } catch (error) {
+        console.error("Error loading notifications:", error);
+      }
+    }
+
+    // Load messages from Firestore
+    async function loadMessages() {
+      try {
+        const messagesQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "messages"),
+          window.firebaseFunctions.where("studentId", "==", currentStudent.id),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
+        
+        const messagesSnapshot = await window.firebaseFunctions.getDocs(messagesQuery);
+        messages = [];
+        
+        messagesSnapshot.forEach(doc => {
+          const messageData = doc.data();
+          messages.push({ id: doc.id, ...messageData });
+        });
+        
+        // Update badge count
+        const unreadMessages = messages.filter(m => !m.read).length;
+        document.getElementById('message-badge').textContent = unreadMessages;
+        
+        // Render messages in modal
+        renderMessages();
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
+    }
+
+    // Render notifications in the modal
+    function renderNotifications() {
+      const notificationsList = document.getElementById("notificationsList");
+      
+      if (notifications.length === 0) {
+        notificationsList.innerHTML = `
+          <div class="empty-notifications">
+            <i class="fas fa-bell-slash"></i>
+            <p>No notifications yet</p>
+            <p>Notifications from your teachers will appear here</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let notificationsHTML = "";
+      notifications.forEach(notification => {
+        const timeAgo = notification.createdAt ? 
+          formatTimeAgo(notification.createdAt.toDate()) : 'Unknown time';
+        
+        notificationsHTML += `
+          <div class="notification-item ${notification.read ? '' : 'unread'}" data-notification-id="${notification.id}">
+            <div class="notification-title">${notification.title || 'Notification'}</div>
+            <div class="notification-content">${notification.content || ''}</div>
+            <div class="notification-time">${timeAgo}</div>
+          </div>
+        `;
+      });
+      
+      notificationsList.innerHTML = notificationsHTML;
+      
+      // Add click event to mark as read
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const notificationId = this.getAttribute('data-notification-id');
+          markNotificationAsRead(notificationId);
+        });
+      });
+    }
+
+    // Render messages in the modal
+    function renderMessages() {
+      const messagesList = document.getElementById("messagesList");
+      
+      if (messages.length === 0) {
+        messagesList.innerHTML = `
+          <div class="empty-messages">
+            <i class="fas fa-envelope-open"></i>
+            <p>No messages yet</p>
+            <p>Messages from your teachers will appear here</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let messagesHTML = "";
+      messages.forEach(message => {
+        const timeAgo = message.createdAt ? 
+          formatTimeAgo(message.createdAt.toDate()) : 'Unknown time';
+        const preview = message.content ? 
+          (message.content.length > 100 ? message.content.substring(0, 100) + '...' : message.content) : '';
+        
+        messagesHTML += `
+          <div class="message-item ${message.read ? '' : 'unread'}" data-message-id="${message.id}">
+            <div class="message-sender">From: ${message.teacherName || 'Teacher'}</div>
+            <div class="message-preview">${preview}</div>
+            <div class="message-time">${timeAgo}</div>
+          </div>
+        `;
+      });
+      
+      messagesList.innerHTML = messagesHTML;
+      
+      // Add click event to mark as read
+      document.querySelectorAll('.message-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const messageId = this.getAttribute('data-message-id');
+          markMessageAsRead(messageId);
+        });
+      });
+    }
+
+    // Mark notification as read
+    async function markNotificationAsRead(notificationId) {
+      try {
+        const notificationRef = window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId);
+        await window.firebaseFunctions.updateDoc(notificationRef, {
+          read: true
+        });
+        
+        // Reload notifications
+        await loadNotifications();
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+      }
+    }
+
+    // Mark message as read
+    async function markMessageAsRead(messageId) {
+      try {
+        const messageRef = window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId);
+        await window.firebaseFunctions.updateDoc(messageRef, {
+          read: true
+        });
+        
+        // Reload messages
+        await loadMessages();
+      } catch (error) {
+        console.error("Error marking message as read:", error);
+      }
+    }
+
+    // Format time ago
+    function formatTimeAgo(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      
+      if (diffInSeconds < 60) {
+        return 'Just now';
+      } else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      } else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else {
+        const days = Math.floor(diffInSeconds / 86400);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
       }
     }
 
@@ -1099,7 +1566,6 @@
       const detailTeacher = document.getElementById('detailTeacher');
       const detailCreatedDate = document.getElementById('detailCreatedDate');
       const primaryAction = document.getElementById('primaryAction');
-      const downloadBtn = document.getElementById('downloadBtn');
       const closeDetails = document.getElementById('closeDetails');
       
       testItems.forEach(item => {
@@ -1133,8 +1599,6 @@
               // Update buttons for completed test
               primaryAction.textContent = 'View Results';
               primaryAction.onclick = () => viewTestResults(selectedTest.id);
-              downloadBtn.style.display = 'block';
-              downloadBtn.onclick = () => downloadTestAsPDF(selectedTest.id);
             }
           } else {
             // This is a new test
@@ -1153,7 +1617,6 @@
               // Update buttons for new test
               primaryAction.textContent = 'Start Attempt';
               primaryAction.onclick = () => startTestAttempt(selectedTest.id);
-              downloadBtn.style.display = 'none';
             }
           }
           
@@ -1178,36 +1641,105 @@
 
     // View test results
     function viewTestResults(testId) {
-      // Redirect to test results page
-      window.location.href = `test-results.html?testId=${testId}`;
-    }
-
-    // Download test as PDF
-    function downloadTestAsPDF(testId) {
       const test = studentTests.find(t => t.id === testId);
       const teacherTest = teacherTests.find(t => t.id === test.testId);
       
       if (!test || !teacherTest) return;
       
-      // Create a simple PDF download (in a real app, this would generate a proper PDF)
-      const element = document.createElement('a');
-      const content = `
-        Test: ${teacherTest.title || 'Unnamed Test'}
-        Subject: ${teacherTest.subject || 'Not specified'}
-        Score: ${test.score || 'Not graded'}/100
-        Submitted: ${test.submittedAt ? test.submittedAt.toDate().toLocaleDateString() : 'Unknown'}
+      // Show the test results modal
+      const testResultsModal = document.getElementById('testResultsModal');
+      const testResultsContent = document.getElementById('testResultsContent');
+      
+      // Check if test has been marked
+      if (test.score !== undefined && test.score !== null) {
+        // Test has been marked - show results
+        const score = test.score;
+        const totalQuestions = teacherTest.questions ? teacherTest.questions.length : 0;
+        const percentage = Math.round((score / 100) * 100);
         
-        This would be a PDF download in a real application.
-      `;
+        testResultsContent.innerHTML = `
+          <div class="results-header">
+            <h3 class="results-title">${teacherTest.title || 'Test Results'}</h3>
+            <p class="results-subtitle">${teacherTest.subject || 'General'} • ${test.submittedAt ? test.submittedAt.toDate().toLocaleDateString() : 'Unknown date'}</p>
+          </div>
+          
+          <div class="results-stats">
+            <div class="stat-item">
+              <div class="stat-value score">${score}/100</div>
+              <div class="stat-label">Total Score</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${percentage}%</div>
+              <div class="stat-label">Percentage</div>
+            </div>
+          </div>
+          
+          <div class="results-details">
+            <div class="detail-row">
+              <span class="detail-label">Questions</span>
+              <span class="detail-value">${totalQuestions}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Duration</span>
+              <span class="detail-value">${teacherTest.duration || 'N/A'} minutes</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Submitted</span>
+              <span class="detail-value">${test.submittedAt ? test.submittedAt.toDate().toLocaleString() : 'Unknown'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Teacher</span>
+              <span class="detail-value">${teacherTest.teacherName || 'Unknown'}</span>
+            </div>
+          </div>
+          
+          <div class="results-actions">
+            <button class="action-btn primary-btn" id="closeResultsBtn">Close</button>
+          </div>
+        `;
+      } else {
+        // Test has not been marked
+        testResultsContent.innerHTML = `
+          <div class="results-header">
+            <h3 class="results-title">${teacherTest.title || 'Test Results'}</h3>
+            <p class="results-subtitle">${teacherTest.subject || 'General'}</p>
+          </div>
+          
+          <div class="not-marked-message">
+            <div class="not-marked-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="not-marked-text">Test Not Marked Yet</div>
+            <div class="not-marked-subtext">Your teacher hasn't marked this test yet. Please check back later.</div>
+          </div>
+          
+          <div class="results-details">
+            <div class="detail-row">
+              <span class="detail-label">Questions</span>
+              <span class="detail-value">${teacherTest.questions ? teacherTest.questions.length : 0}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Duration</span>
+              <span class="detail-value">${teacherTest.duration || 'N/A'} minutes</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Submitted</span>
+              <span class="detail-value">${test.submittedAt ? test.submittedAt.toDate().toLocaleString() : 'Unknown'}</span>
+            </div>
+          </div>
+          
+          <div class="results-actions">
+            <button class="action-btn primary-btn" id="closeResultsBtn">Close</button>
+          </div>
+        `;
+      }
       
-      const file = new Blob([content], {type: 'text/plain'});
-      element.href = URL.createObjectURL(file);
-      element.download = `${teacherTest.title || 'test'}_results.txt`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      testResultsModal.classList.add('active');
       
-      alert('In a real application, this would download a PDF file with your test results.');
+      // Add event listener to close button
+      document.getElementById('closeResultsBtn').addEventListener('click', function() {
+        testResultsModal.classList.remove('active');
+      });
     }
 
     // Setup event listeners
@@ -1244,6 +1776,50 @@
       document.getElementById('viewAllTests').addEventListener('click', function() {
         // In a real app, this would show all tests in a modal or separate page
         alert('This would show all tests in a detailed view.');
+      });
+
+      // Notifications modal
+      document.getElementById('notification-icon').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('notificationsModal').classList.add('active');
+      });
+
+      document.getElementById('closeNotifications').addEventListener('click', function() {
+        document.getElementById('notificationsModal').classList.remove('active');
+      });
+
+      // Messages modal
+      document.getElementById('mail-icon').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('messagesModal').classList.add('active');
+      });
+
+      document.getElementById('closeMessages').addEventListener('click', function() {
+        document.getElementById('messagesModal').classList.remove('active');
+      });
+
+      // Test results modal close button
+      document.getElementById('closeTestResults').addEventListener('click', function() {
+        document.getElementById('testResultsModal').classList.remove('active');
+      });
+
+      // Close modals when clicking outside
+      window.addEventListener('click', function(e) {
+        const notificationsModal = document.getElementById('notificationsModal');
+        const messagesModal = document.getElementById('messagesModal');
+        const testResultsModal = document.getElementById('testResultsModal');
+        
+        if (e.target === notificationsModal) {
+          notificationsModal.classList.remove('active');
+        }
+        
+        if (e.target === messagesModal) {
+          messagesModal.classList.remove('active');
+        }
+        
+        if (e.target === testResultsModal) {
+          testResultsModal.classList.remove('active');
+        }
       });
     }
   </script>
