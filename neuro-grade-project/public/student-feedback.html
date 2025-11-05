@@ -399,6 +399,13 @@
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .grade-average-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   }
 
   .circular-progress {
@@ -471,6 +478,18 @@
   .topics {
     color: var(--text-light);
     font-size: 14px;
+  }
+
+  .feedback-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .feedback-date {
+    font-style: italic;
   }
 
   /* Subject Details Styles */
@@ -972,18 +991,12 @@
       <div class="card">
         <h2 class="card-title">ACADEMIC OVERVIEW</h2>
         <div class="overview-grid">
-          <div class="overview-item" id="tests-overview">
-            <h3>Tests</h3>
-            <div class="score-display" id="tests-average">0%</div>
-            <p>Average score</p>
-          </div>
-          
-          <div class="grade-average-container">
+          <div class="grade-average-container" id="test-overview">
             <div class="circular-progress" id="grade-circular-progress">
               <span class="progress-value" id="grade-average">0%</span>
             </div>
-            <div class="grade-text">Grade Average</div>
-            <div class="grade-subtext">Based on all assessments</div>
+            <div class="grade-text">Test Average</div>
+            <div class="grade-subtext">Based on all test results</div>
           </div>
         </div>
       </div>
@@ -1062,6 +1075,8 @@
     // Global variables
     let currentUser = null;
     let currentStudent = null;
+    let studentTeacherId = null;
+    let studentSubjects = [];
     let testSubmissions = [];
     let assignmentSubmissions = [];
     let improvementAreas = [];
@@ -1117,6 +1132,17 @@
         if (studentDoc.exists()) {
           currentStudent = { id: studentDoc.id, ...studentDoc.data() };
           updateUserInterface();
+          
+          // Get the teacher ID and subjects for this student
+          studentTeacherId = currentStudent.teacherId;
+          studentSubjects = currentStudent.subjects || [];
+          
+          if (!studentTeacherId) {
+            console.error("Student is not assigned to a teacher");
+            showErrorState("You are not assigned to a teacher yet.");
+            return;
+          }
+          
           await loadStudentSubmissions();
           await loadImprovementAreas();
           await loadNotifications();
@@ -1178,28 +1204,51 @@
       }
     }
 
-    // Load improvement areas from Firebase
+    // Load improvement areas from Firebase feedback collection
     async function loadImprovementAreas() {
       try {
-        // Query for feedback that indicates areas for improvement
-        const improvementQuery = window.firebaseFunctions.query(
+        if (!studentTeacherId || studentSubjects.length === 0) {
+          console.log("No teacher ID or subjects found for student");
+          renderImprovementAreas();
+          return;
+        }
+        
+        // Query for feedback from the student's teacher for their enrolled subjects
+        const feedbackQuery = window.firebaseFunctions.query(
           window.firebaseFunctions.collection(window.firebaseDb, "feedback"),
+          window.firebaseFunctions.where("teacherId", "==", studentTeacherId),
           window.firebaseFunctions.where("studentId", "==", currentStudent.id),
-          window.firebaseFunctions.where("type", "in", ["improvement", "ai_feedback"]),
+          window.firebaseFunctions.where("subject", "in", studentSubjects),
           window.firebaseFunctions.orderBy("createdAt", "desc")
         );
         
-        const improvementSnapshot = await window.firebaseFunctions.getDocs(improvementQuery);
+        const feedbackSnapshot = await window.firebaseFunctions.getDocs(feedbackQuery);
         improvementAreas = [];
         
-        improvementSnapshot.forEach(doc => {
-          improvementAreas.push({ id: doc.id, ...doc.data() });
+        feedbackSnapshot.forEach(doc => {
+          const feedbackData = doc.data();
+          // Only include feedback that indicates areas for improvement
+          if (feedbackData.type === 'improvement' || 
+              feedbackData.category === 'improvement' ||
+              feedbackData.message?.toLowerCase().includes('improve') ||
+              feedbackData.message?.toLowerCase().includes('work on') ||
+              feedbackData.message?.toLowerCase().includes('focus on') ||
+              feedbackData.message?.toLowerCase().includes('need to')) {
+            improvementAreas.push({ id: doc.id, ...feedbackData });
+          }
         });
         
-        console.log(`Loaded ${improvementAreas.length} improvement areas`);
+        console.log(`Loaded ${improvementAreas.length} improvement areas from teacher ${studentTeacherId}`);
         renderImprovementAreas();
       } catch (error) {
         console.error("Error loading improvement areas:", error);
+        // If there's an error, show a generic message
+        document.getElementById('improvement-list').innerHTML = `
+          <div class="loading">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Unable to load improvement areas at this time</p>
+          </div>
+        `;
       }
     }
 
@@ -1261,22 +1310,11 @@
       const testAverage = testScores.length > 0 ? 
         Math.round(testScores.reduce((a, b) => a + b, 0) / testScores.length) : 0;
       
-      document.getElementById('tests-average').textContent = `${testAverage}%`;
-      
-      // Calculate overall grade average (tests and assignments)
-      const assignmentScores = assignmentSubmissions
-        .filter(sub => sub.grade || sub.aiGrade)
-        .map(sub => sub.grade || sub.aiGrade);
-      
-      const allScores = [...testScores, ...assignmentScores];
-      const overallAverage = allScores.length > 0 ? 
-        Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0;
-      
-      document.getElementById('grade-average').textContent = `${overallAverage}%`;
+      document.getElementById('grade-average').textContent = `${testAverage}%`;
       
       // Update circular progress bar
       const circularProgress = document.getElementById('grade-circular-progress');
-      circularProgress.style.background = `conic-gradient(var(--primary-color) ${overallAverage}%, #ddd 0)`;
+      circularProgress.style.background = `conic-gradient(var(--primary-color) ${testAverage}%, #ddd 0)`;
     }
 
     // Render improvement areas
@@ -1288,6 +1326,7 @@
           <div class="loading">
             <i class="fas fa-check-circle"></i>
             <p>No improvement areas identified</p>
+            <small>Your teacher hasn't provided any specific improvement feedback yet</small>
           </div>
         `;
         return;
@@ -1296,10 +1335,17 @@
       let improvementHTML = '';
       
       improvementAreas.forEach(area => {
+        const feedbackDate = area.createdAt ? 
+          area.createdAt.toDate().toLocaleDateString() : 'Recently';
+        
         improvementHTML += `
           <li class="improvement-item" data-subject="${area.subject}">
             <div class="course-code">${area.subject || 'General'}</div>
             <div class="topics">${area.message || area.feedback || 'No specific details available'}</div>
+            <div class="feedback-meta">
+              <span class="feedback-source">From: ${area.teacherName || 'Your Teacher'}</span>
+              <span class="feedback-date">${feedbackDate}</span>
+            </div>
           </li>
         `;
       });
@@ -1329,8 +1375,8 @@
       document.getElementById('test-details').classList.remove('active');
       document.getElementById('detailed-view').classList.add('active');
       
-      document.getElementById('detailed-title').textContent = `${subject} Assessments`;
-      renderSubjectAssessments(subject);
+      document.getElementById('detailed-title').textContent = `${subject} Tests`;
+      renderSubjectTests(subject);
     }
 
     // Back to overview
@@ -1397,41 +1443,36 @@
       });
     }
 
-    // Render subject assessments
-    function renderSubjectAssessments(subject) {
+    // Render subject tests
+    function renderSubjectTests(subject) {
       const assessmentList = document.getElementById('assessment-list');
       
-      // Get all assessments for this subject (both tests and assignments)
-      const subjectTests = testSubmissions.filter(sub => sub.subject === subject);
-      const subjectAssignments = assignmentSubmissions.filter(sub => sub.subject === subject);
+      // Get all tests for this subject
+      const subjectTests = testSubmissions.filter(sub => sub.subject === subject)
+        .sort((a, b) => {
+          const dateA = a.submittedAt ? a.submittedAt.toDate() : new Date(0);
+          const dateB = b.submittedAt ? b.submittedAt.toDate() : new Date(0);
+          return dateB - dateA;
+        });
       
-      const allAssessments = [
-        ...subjectTests.map(test => ({ ...test, type: 'Test' })),
-        ...subjectAssignments.map(assignment => ({ ...assignment, type: 'Assignment' }))
-      ].sort((a, b) => {
-        const dateA = a.submittedAt ? a.submittedAt.toDate() : new Date(0);
-        const dateB = b.submittedAt ? b.submittedAt.toDate() : new Date(0);
-        return dateB - dateA;
-      });
-      
-      if (allAssessments.length === 0) {
-        assessmentList.innerHTML = '<div class="loading">No assessments found for this subject</div>';
+      if (subjectTests.length === 0) {
+        assessmentList.innerHTML = '<div class="loading">No tests found for this subject</div>';
         return;
       }
       
-      let assessmentsHTML = '';
+      let testsHTML = '';
       
-      allAssessments.forEach(assessment => {
-        const score = assessment.grade || assessment.aiGrade || 'Not graded';
-        const submittedDate = assessment.submittedAt ? 
-          assessment.submittedAt.toDate().toLocaleDateString() : 'Not submitted';
-        const feedback = assessment.feedback || 'No feedback available';
-        const feedbackSource = assessment.aiGrade ? 'AI Feedback' : 'Teacher Feedback';
+      subjectTests.forEach(test => {
+        const score = test.grade || test.aiGrade || 'Not graded';
+        const submittedDate = test.submittedAt ? 
+          test.submittedAt.toDate().toLocaleDateString() : 'Not submitted';
+        const feedback = test.feedback || 'No feedback available';
+        const feedbackSource = test.aiGrade ? 'AI Feedback' : 'Teacher Feedback';
         
-        assessmentsHTML += `
+        testsHTML += `
           <div class="assessment-item">
             <div class="assessment-header">
-              <div class="assessment-title">${assessment.name || 'Unnamed Assessment'} (${assessment.type})</div>
+              <div class="assessment-title">${test.testName || 'Test'}</div>
               <div class="assessment-score">${score}${typeof score === 'number' ? '%' : ''}</div>
             </div>
             <div class="assessment-date">Submitted: ${submittedDate}</div>
@@ -1444,7 +1485,7 @@
         `;
       });
       
-      assessmentList.innerHTML = assessmentsHTML;
+      assessmentList.innerHTML = testsHTML;
     }
 
     // Update notification badge
@@ -1642,7 +1683,7 @@
       });
 
       // Navigation event listeners
-      document.getElementById('tests-overview').addEventListener('click', showTestDetails);
+      document.getElementById('test-overview').addEventListener('click', showTestDetails);
       document.getElementById('back-from-tests').addEventListener('click', backToOverview);
       document.getElementById('back-from-details').addEventListener('click', backToOverview);
 
