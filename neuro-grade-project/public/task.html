@@ -23,16 +23,10 @@
       doc,
       getDoc,
       deleteDoc,
-      orderBy
+      orderBy,
+      updateDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { 
-      getStorage, 
-      ref, 
-      uploadBytes,
-      uploadBytesResumable,
-      getDownloadURL,
-      deleteObject
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -48,14 +42,12 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
     
     console.log("Firebase initialized successfully");
     
     // Make Firebase objects globally available
     window.firebaseAuth = auth;
     window.firebaseDb = db;
-    window.firebaseStorage = storage;
     window.firebaseFunctions = {
       onAuthStateChanged,
       signOut,
@@ -68,11 +60,8 @@
       getDoc,
       deleteDoc,
       orderBy,
-      ref,
-      uploadBytes,
-      uploadBytesResumable,
-      getDownloadURL,
-      deleteObject
+      updateDoc,
+      serverTimestamp
     };
   </script>
 <style>
@@ -124,10 +113,11 @@
     /* Top left logo */
     .top-left-logo {
       position: absolute;
-      top: -35px;
-      left: -10px;
-      height: 200px;
+      top: 20px;
+      left: 20px;
+      height: 60px;
       z-index: 1000;
+      object-fit: contain;
     }
 
     /* Sidebar */
@@ -831,6 +821,223 @@
       transform: rotate(90deg);
     }
 
+    /* Message and Notification Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      z-index: 2000;
+      animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6c757d;
+      transition: all 0.2s;
+    }
+    
+    .modal-close:hover {
+      color: #2c3e50;
+      transform: scale(1.1);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .notification-item, .message-item {
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .notification-item:hover, .message-item:hover {
+      background: #f8f9fa;
+    }
+    
+    .notification-title, .message-sender {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: #2c3e50;
+    }
+    
+    .notification-content, .message-preview {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+    }
+    
+    .notification-time, .message-time {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    
+    .empty-notifications, .empty-messages {
+      text-align: center;
+      padding: 2rem;
+      color: #6c757d;
+    }
+    
+    .empty-notifications i, .empty-messages i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Test details popup */
+    .test-details-popup {
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+    }
+    
+    .test-details-content {
+      padding: 0;
+    }
+    
+    .test-info {
+      padding: 20px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .test-info h4 {
+      font-size: 22px;
+      color: #8e44ad;
+      margin-bottom: 10px;
+    }
+    
+    .test-info p {
+      margin-bottom: 8px;
+      color: #555;
+    }
+    
+    .questions-preview {
+      padding: 20px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .questions-preview h4 {
+      font-size: 18px;
+      color: #8e44ad;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .question-preview-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .question-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .question-preview-number {
+      font-weight: bold;
+      color: #8e44ad;
+    }
+    
+    .question-preview-type {
+      font-size: 12px;
+      background: #8e44ad;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    
+    .question-preview-text {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #333;
+      line-height: 1.5;
+    }
+    
+    .options-preview {
+      margin-top: 10px;
+    }
+    
+    .option-preview-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    
+    .option-preview-item.correct {
+      background: #e8f5e9;
+      border-left: 4px solid #4caf50;
+    }
+    
+    .option-preview-item.incorrect {
+      background: #fff3e0;
+    }
+    
+    .option-preview-item input[type="radio"] {
+      width: auto;
+    }
+    
+    .expected-answer {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 4px solid #2196f3;
+      margin-top: 10px;
+    }
+    
+    .expected-answer label {
+      font-weight: bold;
+      color: #2196f3;
+      display: block;
+      margin-bottom: 5px;
+    }
+
     /* Responsive design */
     @media (max-width: 992px) {
       .sidebar {
@@ -865,7 +1072,7 @@
       .top-left-logo {
         top: 10px;
         left: 10px;
-        height: 120px;
+        height: 50px;
       }
     }
 
@@ -895,6 +1102,10 @@
       .question-type-selector {
         flex-direction: column;
       }
+      
+      .test-details-popup {
+        width: 95%;
+      }
     }
   </style>
 </head>
@@ -907,7 +1118,7 @@
   </div>
 
   <!-- Top left logo -->
-  <img src="neuro grade logo.jpg" alt="NeuroGrade Logo" class="top-left-logo">
+  <img src="https://via.placeholder.com/150x60/8e44ad/FFFFFF?text=NeuroGrade" alt="NeuroGrade Logo" class="top-left-logo" onerror="this.style.display='none'">
 
   <!-- Mobile menu toggle -->
   <button class="menu-toggle" id="menu-toggle">
@@ -952,7 +1163,7 @@
       </a>
       <div class="top-user" id="user-info">
         <span><b id="user-name">Loading...</b><br><small id="user-email">Loading...</small></span>
-        <img src="https://placehold.co/35x35/8e44ad/FFFFFF?text=?" alt="User" id="user-avatar">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" id="user-avatar">
       </div>
     </div>
 
@@ -981,9 +1192,9 @@
           <div class="questions-container" id="questions-container">
             <h3>Questions</h3>
             <div class="question-type-selector">
-              <button type="button" class="type-btn active" data-type="multiple">Multiple Choice</button>
-              <button type="button" class="type-btn" data-type="short">Short Answer</button>
-              <button type="button" class="type-btn" data-type="long">Long Answer</button>
+              <button type="button" class="type-btn active" data-type="multiple_choice">Multiple Choice</button>
+              <button type="button" class="type-btn" data-type="short_answer">Short Answer</button>
+              <button type="button" class="type-btn" data-type="long_answer">Long Answer</button>
             </div>
             <button type="button" class="add-question-btn" id="add-question-btn">
               <i class="fas fa-plus"></i> Add Question
@@ -991,7 +1202,7 @@
             <!-- Questions will be added here dynamically -->
           </div>
           
-          <button class="create-test-btn" id="create-test-btn">CREATE TEST</button>
+          <button type="button" class="create-test-btn" id="create-test-btn">CREATE TEST</button>
         </div>
       </div>
 
@@ -1024,6 +1235,43 @@
     </div>
   </div>
 
+  <!-- Test Details Popup -->
+  <div class="popup test-details-popup" id="test-details-popup">
+    <button class="popup-close">&times;</button>
+    <h3><i class="fas fa-eye"></i> Test Details</h3>
+    <div class="test-details-content" id="test-details-content">
+      <!-- Test details will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Notifications Modal -->
+  <div class="modal" id="notificationsModal">
+    <div class="modal-header">
+      <h3 class="modal-title">Notifications</h3>
+      <button class="modal-close" id="closeNotifications">&times;</button>
+    </div>
+    <div class="modal-body" id="notificationsList">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading notifications...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Modal -->
+  <div class="modal" id="messagesModal">
+    <div class="modal-header">
+      <h3 class="modal-title">Messages</h3>
+      <button class="modal-close" id="closeMessages">&times;</button>
+    </div>
+    <div class="modal-body" id="messagesList">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading messages...</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
@@ -1053,10 +1301,24 @@
     
     // Popup elements
     const confirmPopup = document.getElementById('confirm-popup');
+    const testDetailsPopup = document.getElementById('test-details-popup');
+    const testDetailsContent = document.getElementById('test-details-content');
     const overlay = document.getElementById('overlay');
     const popupCloseButtons = document.querySelectorAll('.popup-close');
     const cancelDeleteBtn = document.getElementById('cancel-delete');
     const confirmDeleteBtn = document.getElementById('confirm-delete');
+    
+    // Message and notification elements
+    const mailIcon = document.getElementById('mail-icon');
+    const notificationIcon = document.getElementById('notification-icon');
+    const mailBadge = document.getElementById('mail-badge');
+    const notificationBadge = document.getElementById('notification-badge');
+    const notificationsModal = document.getElementById('notificationsModal');
+    const messagesModal = document.getElementById('messagesModal');
+    const closeNotifications = document.getElementById('closeNotifications');
+    const closeMessages = document.getElementById('closeMessages');
+    const notificationsList = document.getElementById('notificationsList');
+    const messagesList = document.getElementById('messagesList');
     
     // Global variables
     let currentUser = null;
@@ -1064,7 +1326,9 @@
     let teacherSubjects = [];
     let questionCounter = 0;
     let testToDelete = null;
-    let currentQuestionType = 'multiple';
+    let currentQuestionType = 'multiple_choice';
+    let notifications = [];
+    let messages = [];
 
     // Initialize the dashboard
     document.addEventListener('DOMContentLoaded', function() {
@@ -1142,9 +1406,11 @@
     // Load dashboard data
     async function loadDashboardData() {
       await loadTests();
+      await loadNotifications();
+      await loadMessages();
     }
 
-    // Load tests from Firestore
+    // Load tests from Firestore using teacher ID
     async function loadTests() {
       try {
         if (!currentUser) return;
@@ -1195,9 +1461,9 @@
         
         if (test.questions && test.questions.length > 0) {
           test.questions.forEach(question => {
-            if (question.type === 'multiple') multipleCount++;
-            else if (question.type === 'short') shortCount++;
-            else if (question.type === 'long') longCount++;
+            if (question.type === 'multiple_choice') multipleCount++;
+            else if (question.type === 'short_answer') shortCount++;
+            else if (question.type === 'long_answer') longCount++;
           });
         }
         
@@ -1247,6 +1513,100 @@
       });
     }
 
+    // View a test - Fetches from Firebase and displays in popup
+    async function viewTest(testId) {
+      try {
+        const testDoc = await window.firebaseFunctions.getDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "tests", testId)
+        );
+        
+        if (testDoc.exists()) {
+          const test = testDoc.data();
+          showTestDetails(test);
+        } else {
+          alert('Test not found');
+        }
+      } catch (error) {
+        console.error("Error viewing test:", error);
+        alert('Failed to load test details');
+      }
+    }
+
+    // Show test details in a popup with all questions and answers
+    function showTestDetails(test) {
+      let questionsHtml = '';
+      if (test.questions && test.questions.length > 0) {
+        test.questions.forEach((question, index) => {
+          let questionContent = '';
+          
+          if (question.type === 'multiple_choice') {
+            let optionsHtml = '';
+            if (question.options) {
+              question.options.forEach((option, optionIndex) => {
+                const isCorrect = optionIndex === question.correctAnswer;
+                optionsHtml += `
+                  <div class="option-preview-item ${isCorrect ? 'correct' : 'incorrect'}">
+                    <input type="radio" ${isCorrect ? 'checked' : ''} disabled>
+                    <span>${option} ${isCorrect ? '(Correct Answer)' : ''}</span>
+                  </div>
+                `;
+              });
+            }
+            
+            questionContent = `
+              <div class="question-preview-text">${question.text}</div>
+              <div class="options-preview">${optionsHtml}</div>
+            `;
+          } else {
+            questionContent = `
+              <div class="question-preview-text">${question.text}</div>
+              ${question.expectedAnswer ? `
+                <div class="expected-answer">
+                  <label>Expected Answer:</label>
+                  <div>${question.expectedAnswer}</div>
+                </div>
+              ` : ''}
+            `;
+          }
+          
+          questionsHtml += `
+            <div class="question-preview-item">
+              <div class="question-preview-header">
+                <span class="question-preview-number">Question ${index + 1}</span>
+                <span class="question-preview-type">${question.type.replace('_', ' ').toUpperCase()}</span>
+              </div>
+              ${questionContent}
+            </div>
+          `;
+        });
+      }
+      
+      testDetailsContent.innerHTML = `
+        <div class="test-info">
+          <h4>${test.title}</h4>
+          <p><strong>Subject:</strong> ${test.subject}</p>
+          <p><strong>Created:</strong> ${formatDate(test.createdAt)}</p>
+          <p><strong>Questions:</strong> ${test.questions ? test.questions.length : 0}</p>
+          ${test.description ? `<p><strong>Description:</strong> ${test.description}</p>` : ''}
+        </div>
+        <div class="questions-preview">
+          <h4>Questions</h4>
+          ${questionsHtml}
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary" id="close-test-details">Close</button>
+        </div>
+      `;
+      
+      testDetailsPopup.style.display = 'block';
+      overlay.style.display = 'block';
+      
+      // Add event listener for close button
+      document.getElementById('close-test-details').addEventListener('click', () => {
+        closePopup(testDetailsPopup);
+      });
+    }
+
     // Add a new question to the form
     function addQuestion() {
       questionCounter++;
@@ -1254,7 +1614,7 @@
       
       let questionHtml = '';
       
-      if (currentQuestionType === 'multiple') {
+      if (currentQuestionType === 'multiple_choice') {
         questionHtml = `
           <div class="question-header">
             <span class="question-number">Question ${questionCounter}</span>
@@ -1283,7 +1643,7 @@
             </div>
           </div>
         `;
-      } else if (currentQuestionType === 'short') {
+      } else if (currentQuestionType === 'short_answer') {
         questionHtml = `
           <div class="question-header">
             <span class="question-number">Question ${questionCounter}</span>
@@ -1303,7 +1663,7 @@
             <textarea id="${questionId}-answer" placeholder="Enter the expected answer"></textarea>
           </div>
         `;
-      } else if (currentQuestionType === 'long') {
+      } else if (currentQuestionType === 'long_answer') {
         questionHtml = `
           <div class="question-header">
             <span class="question-number">Question ${questionCounter}</span>
@@ -1336,7 +1696,7 @@
       // Add event listeners for the new question
       const deleteQuestionBtn = questionItem.querySelector('.delete-question');
       
-      if (currentQuestionType === 'multiple') {
+      if (currentQuestionType === 'multiple_choice') {
         const addOptionBtn = questionItem.querySelector('.add-option');
         addOptionBtn.addEventListener('click', function() {
           addOption(questionId);
@@ -1423,23 +1783,34 @@
       // Collect questions and options
       const questions = [];
       
-      questionItems.forEach((item, index) => {
+      for (let i = 0; i < questionItems.length; i++) {
+        const item = questionItems[i];
         const questionText = item.querySelector('textarea').value.trim();
         
         if (!questionText) {
-          alert(`Please enter text for question ${index + 1}`);
+          alert(`Please enter text for question ${i + 1}`);
           return;
         }
         
-        // Determine question type
-        const questionType = item.querySelector('.question-type').textContent.toLowerCase();
+        // Determine question type from the question item
+        const questionTypeElement = item.querySelector('.question-type');
+        let questionType = currentQuestionType;
+        
+        // Override with the actual type from the question item if available
+        if (questionTypeElement) {
+          const typeText = questionTypeElement.textContent.toLowerCase();
+          if (typeText.includes('multiple')) questionType = 'multiple_choice';
+          else if (typeText.includes('short')) questionType = 'short_answer';
+          else if (typeText.includes('long')) questionType = 'long_answer';
+        }
         
         let questionData = {
+          id: i + 1,
           text: questionText,
           type: questionType
         };
         
-        if (questionType === 'multiple choice') {
+        if (questionType === 'multiple_choice') {
           const optionsList = item.querySelector('.options-list');
           const optionItems = optionsList.querySelectorAll('.option-item');
           
@@ -1447,11 +1818,12 @@
           const options = [];
           let correctAnswer = 0;
           
-          optionItems.forEach((optionItem, optionIndex) => {
+          for (let j = 0; j < optionItems.length; j++) {
+            const optionItem = optionItems[j];
             const optionText = optionItem.querySelector('input[type="text"]').value.trim();
             
             if (!optionText) {
-              alert(`Please enter text for option ${optionIndex + 1} in question ${index + 1}`);
+              alert(`Please enter text for option ${j + 1} in question ${i + 1}`);
               return;
             }
             
@@ -1460,12 +1832,12 @@
             // Check if this option is the correct answer
             const radioInput = optionItem.querySelector('input[type="radio"]');
             if (radioInput.checked) {
-              correctAnswer = optionIndex;
+              correctAnswer = j;
             }
-          });
+          }
           
           if (options.length < 2) {
-            alert(`Please add at least 2 options for question ${index + 1}`);
+            alert(`Please add at least 2 options for question ${i + 1}`);
             return;
           }
           
@@ -1473,12 +1845,15 @@
           questionData.correctAnswer = correctAnswer;
         } else {
           // For short and long answer questions
-          const answerText = item.querySelector('.answer-field textarea').value.trim();
-          questionData.expectedAnswer = answerText;
+          const answerField = item.querySelector('.answer-field textarea');
+          if (answerField) {
+            const answerText = answerField.value.trim();
+            questionData.expectedAnswer = answerText;
+          }
         }
         
         questions.push(questionData);
-      });
+      }
       
       if (questions.length === 0) {
         return;
@@ -1498,8 +1873,8 @@
             questions: questions,
             teacherId: currentUser.uid,
             teacherName: `${currentTeacher.firstName} ${currentTeacher.lastName}`,
-            createdAt: new Date(),
-            type: "practice" // This is a practice test for students
+            createdAt: window.firebaseFunctions.serverTimestamp(),
+            type: "practice"
           }
         );
         
@@ -1515,6 +1890,7 @@
       } catch (error) {
         console.error("Error saving test:", error);
         alert('Failed to create test. Please try again.');
+      } finally {
         createTestBtn.disabled = false;
         createTestBtn.innerHTML = 'CREATE TEST';
       }
@@ -1533,125 +1909,6 @@
       });
       
       questionCounter = 0;
-      
-      createTestBtn.disabled = false;
-      createTestBtn.innerHTML = 'CREATE TEST';
-    }
-
-    // View a test
-    async function viewTest(testId) {
-      try {
-        const testDoc = await window.firebaseFunctions.getDoc(
-          window.firebaseFunctions.doc(window.firebaseDb, "tests", testId)
-        );
-        
-        if (testDoc.exists()) {
-          const test = testDoc.data();
-          showTestDetails(test);
-        } else {
-          alert('Test not found');
-        }
-      } catch (error) {
-        console.error("Error viewing test:", error);
-        alert('Failed to load test details');
-      }
-    }
-
-    // Show test details in a popup
-    function showTestDetails(test) {
-      // Create a popup for test details
-      const testDetailsPopup = document.createElement('div');
-      testDetailsPopup.className = 'popup';
-      testDetailsPopup.id = 'test-details-popup';
-      
-      let questionsHtml = '';
-      if (test.questions && test.questions.length > 0) {
-        test.questions.forEach((question, index) => {
-          let questionContent = '';
-          
-          if (question.type === 'multiple choice') {
-            let optionsHtml = '';
-            question.options.forEach((option, optionIndex) => {
-              const isCorrect = optionIndex === question.correctAnswer;
-              optionsHtml += `
-                <div class="option-item ${isCorrect ? 'correct' : ''}">
-                  <input type="radio" ${isCorrect ? 'checked' : ''} disabled>
-                  <span>${option} ${isCorrect ? '(Correct)' : ''}</span>
-                </div>
-              `;
-            });
-            
-            questionContent = `
-              <div class="question-text">${question.text}</div>
-              <div class="options-list">${optionsHtml}</div>
-            `;
-          } else {
-            questionContent = `
-              <div class="question-text">${question.text}</div>
-              ${question.expectedAnswer ? `
-                <div class="answer-field">
-                  <label>Expected Answer:</label>
-                  <div class="expected-answer">${question.expectedAnswer}</div>
-                </div>
-              ` : ''}
-            `;
-          }
-          
-          questionsHtml += `
-            <div class="question-item">
-              <div class="question-header">
-                <span class="question-number">Question ${index + 1}</span>
-                <span class="question-type">${question.type}</span>
-              </div>
-              ${questionContent}
-            </div>
-          `;
-        });
-      }
-      
-      testDetailsPopup.innerHTML = `
-        <button class="popup-close">&times;</button>
-        <h3><i class="fas fa-eye"></i> Test Details</h3>
-        <div class="popup-content">
-          <div class="test-info">
-            <h4>${test.title}</h4>
-            <p><strong>Subject:</strong> ${test.subject}</p>
-            <p><strong>Created:</strong> ${formatDate(test.createdAt)}</p>
-            <p><strong>Questions:</strong> ${test.questions ? test.questions.length : 0}</p>
-            ${test.description ? `<p><strong>Description:</strong> ${test.description}</p>` : ''}
-          </div>
-          <div class="questions-preview">
-            <h4>Questions</h4>
-            ${questionsHtml}
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-secondary close-test-details">Close</button>
-        </div>
-      `;
-      
-      document.body.appendChild(testDetailsPopup);
-      overlay.style.display = 'block';
-      testDetailsPopup.style.display = 'block';
-      
-      // Add event listeners
-      const closeBtn = testDetailsPopup.querySelector('.popup-close');
-      const closeDetailsBtn = testDetailsPopup.querySelector('.close-test-details');
-      
-      closeBtn.addEventListener('click', () => {
-        testDetailsPopup.remove();
-        overlay.style.display = 'none';
-      });
-      
-      closeDetailsBtn.addEventListener('click', () => {
-        testDetailsPopup.remove();
-        overlay.style.display = 'none';
-      });
-      
-      overlay.addEventListener('click', () => {
-        testDetailsPopup.remove();
-        overlay.style.display = 'none';
-      });
     }
 
     // Confirm deletion
@@ -1689,6 +1946,189 @@
       
       const date = timestamp.toDate();
       return date.toLocaleDateString();
+    }
+
+    // Load notifications from Firestore
+    async function loadNotifications() {
+      try {
+        const notificationsQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "notifications"),
+          window.firebaseFunctions.where("target", "==", "teachers"),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
+        
+        const notificationsSnapshot = await window.firebaseFunctions.getDocs(notificationsQuery);
+        notifications = [];
+        
+        notificationsSnapshot.forEach(doc => {
+          const notificationData = doc.data();
+          notifications.push({ id: doc.id, ...notificationData });
+        });
+        
+        // Update badge count
+        const unreadNotifications = notifications.filter(n => !n.read).length;
+        notificationBadge.textContent = unreadNotifications;
+        
+        // Render notifications in modal
+        renderNotifications();
+      } catch (error) {
+        console.error("Error loading notifications:", error);
+      }
+    }
+
+    // Load messages from Firestore
+    async function loadMessages() {
+      try {
+        const messagesQuery = window.firebaseFunctions.query(
+          window.firebaseFunctions.collection(window.firebaseDb, "messages"),
+          window.firebaseFunctions.where("teacherId", "==", currentUser.uid),
+          window.firebaseFunctions.orderBy("createdAt", "desc")
+        );
+        
+        const messagesSnapshot = await window.firebaseFunctions.getDocs(messagesQuery);
+        messages = [];
+        
+        messagesSnapshot.forEach(doc => {
+          const messageData = doc.data();
+          messages.push({ id: doc.id, ...messageData });
+        });
+        
+        // Update badge count
+        const unreadMessages = messages.filter(m => !m.read).length;
+        mailBadge.textContent = unreadMessages;
+        
+        // Render messages in modal
+        renderMessages();
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
+    }
+
+    // Render notifications in the modal
+    function renderNotifications() {
+      if (notifications.length === 0) {
+        notificationsList.innerHTML = `
+          <div class="empty-notifications">
+            <i class="fas fa-bell-slash"></i>
+            <p>No notifications yet</p>
+            <p>Notifications will appear here</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let notificationsHTML = "";
+      notifications.forEach(notification => {
+        const timeAgo = notification.createdAt ? 
+          formatTimeAgo(notification.createdAt.toDate()) : 'Unknown time';
+        
+        notificationsHTML += `
+          <div class="notification-item ${notification.read ? '' : 'unread'}" data-notification-id="${notification.id}">
+            <div class="notification-title">${notification.title || 'Notification'}</div>
+            <div class="notification-content">${notification.content || ''}</div>
+            <div class="notification-time">${timeAgo}</div>
+          </div>
+        `;
+      });
+      
+      notificationsList.innerHTML = notificationsHTML;
+      
+      // Add click event to mark as read
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const notificationId = this.getAttribute('data-notification-id');
+          markNotificationAsRead(notificationId);
+        });
+      });
+    }
+
+    // Render messages in the modal
+    function renderMessages() {
+      if (messages.length === 0) {
+        messagesList.innerHTML = `
+          <div class="empty-messages">
+            <i class="fas fa-envelope-open"></i>
+            <p>No messages yet</p>
+            <p>Messages from students will appear here</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let messagesHTML = "";
+      messages.forEach(message => {
+        const timeAgo = message.createdAt ? 
+          formatTimeAgo(message.createdAt.toDate()) : 'Unknown time';
+        const preview = message.content ? 
+          (message.content.length > 100 ? message.content.substring(0, 100) + '...' : message.content) : '';
+        
+        messagesHTML += `
+          <div class="message-item ${message.read ? '' : 'unread'}" data-message-id="${message.id}">
+            <div class="message-sender">From: ${message.studentName || 'Student'}</div>
+            <div class="message-preview">${preview}</div>
+            <div class="message-time">${timeAgo}</div>
+          </div>
+        `;
+      });
+      
+      messagesList.innerHTML = messagesHTML;
+      
+      // Add click event to mark as read
+      document.querySelectorAll('.message-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const messageId = this.getAttribute('data-message-id');
+          markMessageAsRead(messageId);
+        });
+      });
+    }
+
+    // Mark notification as read
+    async function markNotificationAsRead(notificationId) {
+      try {
+        const notificationRef = window.firebaseFunctions.doc(window.firebaseDb, "notifications", notificationId);
+        await window.firebaseFunctions.updateDoc(notificationRef, {
+          read: true
+        });
+        
+        // Reload notifications
+        await loadNotifications();
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+      }
+    }
+
+    // Mark message as read
+    async function markMessageAsRead(messageId) {
+      try {
+        const messageRef = window.firebaseFunctions.doc(window.firebaseDb, "messages", messageId);
+        await window.firebaseFunctions.updateDoc(messageRef, {
+          read: true
+        });
+        
+        // Reload messages
+        await loadMessages();
+      } catch (error) {
+        console.error("Error marking message as read:", error);
+      }
+    }
+
+    // Format time ago
+    function formatTimeAgo(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      
+      if (diffInSeconds < 60) {
+        return 'Just now';
+      } else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      } else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else {
+        const days = Math.floor(diffInSeconds / 86400);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+      }
     }
 
     // Setup event listeners
@@ -1740,6 +2180,36 @@
       });
 
       confirmDeleteBtn.addEventListener('click', deleteTest);
+
+      // Message and notification modals
+      mailIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        messagesModal.style.display = 'block';
+        overlay.style.display = 'block';
+      });
+
+      notificationIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        notificationsModal.style.display = 'block';
+        overlay.style.display = 'block';
+      });
+
+      closeNotifications.addEventListener('click', function() {
+        notificationsModal.style.display = 'none';
+        overlay.style.display = 'none';
+      });
+
+      closeMessages.addEventListener('click', function() {
+        messagesModal.style.display = 'none';
+        overlay.style.display = 'none';
+      });
+
+      // Close modals when clicking outside
+      window.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          closeAllPopups();
+        }
+      });
     }
 
     // Close a specific popup
@@ -1750,7 +2220,7 @@
 
     // Close all popups
     function closeAllPopups() {
-      const popups = document.querySelectorAll('.popup');
+      const popups = document.querySelectorAll('.popup, .modal');
       popups.forEach(popup => {
         popup.style.display = 'none';
       });
