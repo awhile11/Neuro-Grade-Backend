@@ -1,1 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Test Interface</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged,
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      where, 
+      getDocs,
+      doc,
+      getDoc,
+      updateDoc,
+      orderBy,
+      onSnapshot,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_jkCjYBpGzkwxtLmC6DKF7g0xxAAUPck",
+      authDomain: "neuro-grade-aefa0.firebaseapp.com",
+      projectId: "neuro-grade-aefa0",
+      storageBucket: "neuro-grade-aefa0.firebasestorage.app",
+      messagingSenderId: "301322876081",
+      appId: "1:301322876081:web:c3fd4b8302da63462e5e90"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    console.log("Firebase initialized successfully");
+    
+    // Make Firebase objects globally available
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.firebaseFunctions = {
+      onAuthStateChanged,
+      signOut,
+      collection,
+      query,
+      where,
+      getDocs,
+      doc,
+      getDoc,
+      updateDoc,
+      orderBy,
+      onSnapshot,
+      addDoc,
+      serverTimestamp
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .test-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #007BFF;
+    }
+
+    .instructions {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 30px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .question {
+      margin-bottom: 35px;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #8e44ad;
+    }
+
+    .question h3 {
+      margin-bottom: 15px;
+      color: #333;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .question-number {
+      background-color: #8e44ad;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .question-type {
+      display: inline-block;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background-color: #e9ecef;
+      color: #6c757d;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .options label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .options label:hover {
+      background-color: #f8f9fa;
+    }
+
+    input[type="radio"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .text-answer-container {
+      margin-top: 15px;
+    }
+
+    .short-answer-input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .short-answer-input:focus {
+      outline: none;
+      border-color: #007BFF;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .long-answer-textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.5;
+    }
+
+    .long-answer-textarea:focus {
+      outline: none;
+      border-color: #007BFF;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+      padding: 8px;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      border: 1px solid #e9ecef;
+    }
+
+    .toolbar button {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .toolbar button:hover {
+      background-color: #e9ecef;
+    }
+
+    .toolbar button.active {
+      background-color: #007BFF;
+      color: white;
+      border-color: #007BFF;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .nav-btn {
+      padding: 12px 25px;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background-color 0.3s;
+    }
+
+    .nav-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .nav-btn.primary {
+      background-color: #007BFF;
+    }
+
+    .nav-btn.primary:hover {
+      background-color: #0056b3;
+    }
+
+    .page-indicator {
+      text-align: center;
+      margin: 15px 0;
+      font-weight: bold;
+      color: #6c757d;
+    }
+
+    .question-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      justify-content: center;
+    }
+
+    .question-nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: bold;
+    }
+
+    .question-nav-btn:hover {
+      background-color: #e9ecef;
+    }
+
+    .question-nav-btn.active {
+      background-color: #007BFF;
+      color: white;
+      border-color: #007BFF;
+    }
+
+    .question-nav-btn.answered {
+      background-color: #28a745;
+      color: white;
+      border-color: #28a745;
+    }
+
+    .question-nav-btn.marked {
+      background-color: #ffc107;
+      color: white;
+      border-color: #ffc107;
+    }
+
+    .timer {
+      font-size: 18px;
+      font-weight: bold;
+      color: #dc3545;
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .mark-btn {
+      background-color: #ffc107;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .mark-btn:hover {
+      background-color: #e0a800;
+    }
+
+    .mark-btn.marked {
+      background-color: #e0a800;
+    }
+
+    .question-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 15px;
+        padding: 20px;
+      }
+      
+      .test-info {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .toolbar {
+        justify-content: center;
+      }
+      
+      .question-nav {
+        gap: 5px;
+      }
+      
+      .question-nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+      }
+
+      .navigation {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-btn {
+        width: 100%;
+      }
+    }
+
+    /* Loading states */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+    
+    .loading i {
+      font-size: 24px;
+      margin-bottom: 10px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .modal-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #007BFF;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+    
+    .danger-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .danger-btn:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 id="test-title">Loading Test...</h1>
+    
+    <div class="test-info">
+      <div><strong>Subject:</strong> <span id="test-subject">Loading...</span></div>
+      <div><strong>Time Allowed:</strong> <span id="test-time">Loading...</span></div>
+      <div><strong>Total Questions:</strong> <span id="test-questions">Loading...</span></div>
+    </div>
+    
+    <div class="timer" id="timer">Time Remaining: --:--</div>
+    
+    <div class="instructions" id="instructions">
+      <p><strong>Instructions:</strong></p>
+      <div id="instructions-content">
+        <ul>
+          <li>Answer all the questions below.</li>
+          <li>Multiple-choice questions require selecting one answer.</li>
+          <li>For short answer questions, type your answer in the text box.</li>
+          <li>For long answer questions, provide a detailed response.</li>
+          <li>You can navigate between questions using the Previous/Next buttons or the question navigation bar.</li>
+          <li>Submit your test before the time expires.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="page-indicator" id="page-indicator">Page 1 of 1</div>
+
+    <div class="question-nav" id="question-nav"></div>
+
+    <form id="test-form">
+      <div id="questions-container">
+        <!-- Questions will be dynamically inserted here -->
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading questions...</p>
+        </div>
+      </div>
+
+      <div class="navigation">
+        <button type="button" class="nav-btn" id="prev-btn">Previous Page</button>
+        <button type="button" class="nav-btn primary" id="next-btn">Next Page</button>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Test</button>
+    </form>
+  </div>
+
+  <!-- Submit Test Modal -->
+  <div class="modal" id="submitTestModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Submit Test</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to submit your test? You still have time remaining.</p>
+        
+        <div class="modal-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="answeredCount">0</div>
+            <div class="stat-label">Answered</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="markedCount">0</div>
+            <div class="stat-label">Marked</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="unansweredCount">0</div>
+            <div class="stat-label">Unanswered</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="timeRemaining">60:00</div>
+            <div class="stat-label">Time Left</div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="nav-btn" id="cancelSubmitBtn">Cancel</button>
+          <button class="danger-btn" id="confirmSubmitBtn">Submit Test</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentStudent = null;
+    let currentTest = null;
+    let testQuestions = [];
+    let currentPage = 1;
+    let questionsPerPage = 4;
+    let totalPages = 1;
+    let totalQuestions = 0;
+    let userAnswers = {};
+    let markedQuestions = new Set();
+    let timerInterval = null;
+    let timeRemaining = 0;
+    let testAttemptId = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Firebase authentication
+      initializeAuth();
+    });
+
+    // Initialize Firebase authentication
+    function initializeAuth() {
+      window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, async (user) => {
+        if (user) {
+          currentUser = user;
+          await loadStudentData(user.uid);
+        } else {
+          // Redirect to login page if not authenticated
+          window.location.href = 'index.html';
+        }
+      });
+    }
+
+    // Load student data from Firestore
+    async function loadStudentData(uid) {
+      try {
+        const studentDoc = await window.firebaseFunctions.getDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "students", uid)
+        );
+        
+        if (studentDoc.exists()) {
+          currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+          await loadTestData();
+        } else {
+          console.error("Student data not found");
+        }
+      } catch (error) {
+        console.error("Error loading student data:", error);
+      }
+    }
+
+    // Load test data from URL parameter
+    async function loadTestData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const testId = urlParams.get('testId');
+      
+      if (!testId) {
+        alert('No test ID provided. Redirecting to tests page.');
+        window.location.href = 'student-tests.html';
+        return;
+      }
+      
+      try {
+        // Get test data
+        const testDoc = await window.firebaseFunctions.getDoc(
+          window.firebaseFunctions.doc(window.firebaseDb, "tests", testId)
+        );
+        
+        if (testDoc.exists()) {
+          currentTest = { id: testDoc.id, ...testDoc.data() };
+          testQuestions = currentTest.questions || [];
+          totalQuestions = testQuestions.length;
+          totalPages = Math.ceil(totalQuestions / questionsPerPage);
+          
+          console.log("Loaded test:", currentTest.title);
+          console.log("Questions:", testQuestions);
+          
+          // Initialize user answers object
+          testQuestions.forEach((question, index) => {
+            userAnswers[index] = {
+              questionId: question.id,
+              type: question.type,
+              answer: null,
+              marked: false
+            };
+          });
+          
+          // Create test attempt
+          await createTestAttempt();
+          
+          // Initialize timer
+          timeRemaining = (currentTest.duration || 60) * 60; // Convert minutes to seconds
+          startTimer();
+          
+          // Render the test interface
+          renderTestInterface();
+          
+          // Setup event listeners
+          setupEventListeners();
+        } else {
+          alert('Test not found. Redirecting to tests page.');
+          window.location.href = 'student-tests.html';
+        }
+      } catch (error) {
+        console.error("Error loading test data:", error);
+        alert('Error loading test. Please try again.');
+      }
+    }
+
+    // Create a test attempt in Firestore
+    async function createTestAttempt() {
+      try {
+        const attemptData = {
+          testId: currentTest.id,
+          studentId: currentStudent.id,
+          studentName: `${currentStudent.firstName} ${currentStudent.lastName}`,
+          startedAt: window.firebaseFunctions.serverTimestamp(),
+          answers: {},
+          status: 'in-progress'
+        };
+        
+        const docRef = await window.firebaseFunctions.addDoc(
+          window.firebaseFunctions.collection(window.firebaseDb, "testAttempts"),
+          attemptData
+        );
+        
+        testAttemptId = docRef.id;
+        console.log("Test attempt created with ID:", testAttemptId);
+      } catch (error) {
+        console.error("Error creating test attempt:", error);
+      }
+    }
+
+    // Start the test timer
+    function startTimer() {
+      updateTimerDisplay();
+      
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          submitTest();
+        }
+      }, 1000);
+    }
+
+    // Update timer display
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      document.getElementById('timer').textContent = 
+        `Time Remaining: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Change color when time is running low
+      if (timeRemaining < 300) { // 5 minutes
+        document.getElementById('timer').style.color = '#dc3545';
+        document.getElementById('timer').style.backgroundColor = '#ffe6e6';
+      }
+    }
+
+    // Render the test interface
+    function renderTestInterface() {
+      // Set test title
+      document.getElementById('test-title').textContent = currentTest.title || 'Test';
+      document.getElementById('test-subject').textContent = currentTest.subject || 'Not specified';
+      document.getElementById('test-time').textContent = `${currentTest.duration || 60} minutes`;
+      document.getElementById('test-questions').textContent = totalQuestions;
+      
+      // Create question navigation buttons
+      createQuestionNav();
+      
+      // Render questions
+      renderQuestions();
+      
+      // Show first page
+      showPage(currentPage);
+    }
+
+    // Create question navigation sidebar
+    function createQuestionNav() {
+      const questionNav = document.getElementById('question-nav');
+      questionNav.innerHTML = '';
+      
+      for (let i = 1; i <= totalQuestions; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'question-nav-btn';
+        btn.textContent = i;
+        btn.dataset.question = i;
+        btn.addEventListener('click', () => navigateToQuestion(i));
+        questionNav.appendChild(btn);
+      }
+    }
+
+    // Render questions
+    function renderQuestions() {
+      const questionsContainer = document.getElementById('questions-container');
+      questionsContainer.innerHTML = '';
+      
+      // Create pages
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'page';
+        pageDiv.id = `page${pageNum}`;
+        
+        // Calculate which questions belong to this page
+        const startIndex = (pageNum - 1) * questionsPerPage;
+        const endIndex = Math.min(startIndex + questionsPerPage, totalQuestions);
+        
+        // Add questions to this page
+        for (let i = startIndex; i < endIndex; i++) {
+          const question = testQuestions[i];
+          const questionElement = createQuestionElement(question, i);
+          pageDiv.appendChild(questionElement);
+        }
+        
+        questionsContainer.appendChild(pageDiv);
+      }
+      
+      // Track answered questions
+      trackAnsweredQuestions();
+    }
+
+    // Create question element based on question type
+    function createQuestionElement(question, index) {
+      const questionDiv = document.createElement('div');
+      questionDiv.className = 'question';
+      questionDiv.id = `q${index + 1}`;
+      
+      const questionHeader = document.createElement('h3');
+      const questionNumber = document.createElement('span');
+      questionNumber.className = 'question-number';
+      questionNumber.textContent = index + 1;
+      
+      const questionType = document.createElement('span');
+      questionType.className = 'question-type';
+      questionType.textContent = getQuestionTypeLabel(question.type);
+      
+      questionHeader.appendChild(questionNumber);
+      questionHeader.appendChild(document.createTextNode(question.text));
+      questionHeader.appendChild(questionType);
+      
+      questionDiv.appendChild(questionHeader);
+      
+      // Add question actions (mark for review)
+      const questionActions = document.createElement('div');
+      questionActions.className = 'question-actions';
+      
+      const markBtn = document.createElement('button');
+      markBtn.type = 'button';
+      markBtn.className = 'mark-btn';
+      markBtn.textContent = 'Mark for Review';
+      markBtn.addEventListener('click', () => toggleMarkQuestion(index));
+      
+      questionActions.appendChild(markBtn);
+      questionDiv.appendChild(questionActions);
+      
+      // Create appropriate input based on question type
+      if (question.type === 'multiple_choice') {
+        createMultipleChoiceInput(question, index, questionDiv);
+      } else if (question.type === 'short_answer') {
+        createShortAnswerInput(question, index, questionDiv);
+      } else if (question.type === 'long_answer') {
+        createLongAnswerInput(question, index, questionDiv);
+      } else {
+        // Default to short answer for unknown types
+        createShortAnswerInput(question, index, questionDiv);
+      }
+      
+      return questionDiv;
+    }
+
+    // Create multiple choice input
+    function createMultipleChoiceInput(question, index, container) {
+      const optionsDiv = document.createElement('div');
+      optionsDiv.className = 'options';
+      
+      if (question.options && question.options.length > 0) {
+        question.options.forEach((option, optionIndex) => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = `q${index + 1}`;
+          input.value = optionIndex;
+          
+          // Check if this option is selected
+          if (userAnswers[index] && userAnswers[index].answer === optionIndex.toString()) {
+            input.checked = true;
+          }
+          
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(option));
+          optionsDiv.appendChild(label);
+        });
+      } else {
+        optionsDiv.innerHTML = '<p>No options available for this question.</p>';
+      }
+      
+      container.appendChild(optionsDiv);
+    }
+
+    // Create short answer input
+    function createShortAnswerInput(question, index, container) {
+      const answerContainer = document.createElement('div');
+      answerContainer.className = 'text-answer-container';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'short-answer-input';
+      input.placeholder = 'Type your answer here...';
+      input.name = `q${index + 1}`;
+      
+      // Set initial value if answer exists
+      if (userAnswers[index] && userAnswers[index].answer) {
+        input.value = userAnswers[index].answer;
+      }
+      
+      answerContainer.appendChild(input);
+      container.appendChild(answerContainer);
+    }
+
+    // Create long answer input
+    function createLongAnswerInput(question, index, container) {
+      const answerContainer = document.createElement('div');
+      answerContainer.className = 'text-answer-container';
+      
+      const textarea = document.createElement('textarea');
+      textarea.className = 'long-answer-textarea';
+      textarea.placeholder = 'Type your detailed answer here...';
+      textarea.name = `q${index + 1}`;
+      
+      // Set initial value if answer exists
+      if (userAnswers[index] && userAnswers[index].answer) {
+        textarea.value = userAnswers[index].answer;
+      }
+      
+      answerContainer.appendChild(textarea);
+      container.appendChild(answerContainer);
+    }
+
+    // Get question type label
+    function getQuestionTypeLabel(type) {
+      const typeLabels = {
+        'multiple_choice': 'Multiple Choice',
+        'short_answer': 'Short Answer',
+        'long_answer': 'Long Answer',
+        'essay': 'Essay',
+        'true_false': 'True/False'
+      };
+      
+      return typeLabels[type] || type;
+    }
+
+    // Track answered questions
+    function trackAnsweredQuestions() {
+      // Track radio button changes
+      const radioInputs = document.querySelectorAll('input[type="radio"]');
+      radioInputs.forEach(input => {
+        input.addEventListener('change', function() {
+          const questionId = this.name.substring(1); // Remove 'q' from name
+          const questionIndex = parseInt(questionId) - 1;
+          userAnswers[questionIndex].answer = this.value;
+          markQuestionAsAnswered(questionIndex);
+        });
+      });
+      
+      // Track text input changes
+      const textInputs = document.querySelectorAll('.short-answer-input');
+      textInputs.forEach(input => {
+        input.addEventListener('input', function() {
+          const questionId = this.name.substring(1); // Remove 'q' from name
+          const questionIndex = parseInt(questionId) - 1;
+          userAnswers[questionIndex].answer = this.value;
+          markQuestionAsAnswered(questionIndex);
+        });
+      });
+      
+      // Track textarea changes
+      const textareas = document.querySelectorAll('.long-answer-textarea');
+      textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+          const questionId = this.name.substring(1); // Remove 'q' from name
+          const questionIndex = parseInt(questionId) - 1;
+          userAnswers[questionIndex].answer = this.value;
+          markQuestionAsAnswered(questionIndex);
+        });
+      });
+    }
+
+    // Mark question as answered
+    function markQuestionAsAnswered(questionIndex) {
+      const btn = document.querySelector(`.question-nav-btn[data-question="${questionIndex + 1}"]`);
+      if (btn) {
+        btn.classList.add('answered');
+      }
+    }
+
+    // Toggle mark question for review
+    function toggleMarkQuestion(questionIndex) {
+      if (markedQuestions.has(questionIndex)) {
+        markedQuestions.delete(questionIndex);
+        userAnswers[questionIndex].marked = false;
+        
+        const btn = document.querySelector(`.question-nav-btn[data-question="${questionIndex + 1}"]`);
+        if (btn) {
+          btn.classList.remove('marked');
+        }
+        
+        const markBtn = document.querySelector(`#q${questionIndex + 1} .mark-btn`);
+        if (markBtn) {
+          markBtn.textContent = 'Mark for Review';
+          markBtn.classList.remove('marked');
+        }
+      } else {
+        markedQuestions.add(questionIndex);
+        userAnswers[questionIndex].marked = true;
+        
+        const btn = document.querySelector(`.question-nav-btn[data-question="${questionIndex + 1}"]`);
+        if (btn) {
+          btn.classList.add('marked');
+        }
+        
+        const markBtn = document.querySelector(`#q${questionIndex + 1} .mark-btn`);
+        if (markBtn) {
+          markBtn.textContent = 'Unmark Question';
+          markBtn.classList.add('marked');
+        }
+      }
+      
+      updateSubmitModalStats();
+    }
+
+    // Show page
+    function showPage(pageNum) {
+      // Hide all pages
+      for (let i = 1; i <= totalPages; i++) {
+        const page = document.getElementById(`page${i}`);
+        if (page) {
+          page.style.display = 'none';
+        }
+      }
+      
+      // Show the selected page
+      const currentPageElement = document.getElementById(`page${pageNum}`);
+      if (currentPageElement) {
+        currentPageElement.style.display = 'block';
+      }
+      
+      // Update navigation buttons
+      document.getElementById('prev-btn').disabled = pageNum === 1;
+      document.getElementById('next-btn').disabled = pageNum === totalPages;
+      
+      // Update page indicator
+      document.getElementById('page-indicator').textContent = `Page ${pageNum} of ${totalPages}`;
+      
+      // Update question navigation
+      updateQuestionNav(pageNum);
+      
+      currentPage = pageNum;
+    }
+
+    // Navigate to page
+    function navigateToPage(pageNum) {
+      if (pageNum >= 1 && pageNum <= totalPages) {
+        showPage(pageNum);
+      }
+    }
+
+    // Navigate to question
+    function navigateToQuestion(questionNum) {
+      const pageNum = Math.ceil(questionNum / questionsPerPage);
+      showPage(pageNum);
+      
+      // Scroll to the question
+      const questionElement = document.getElementById(`q${questionNum}`);
+      if (questionElement) {
+        questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Update question navigation
+    function updateQuestionNav(currentPage) {
+      const buttons = document.querySelectorAll('.question-nav-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('active');
+        const questionNum = parseInt(btn.dataset.question);
+        const pageNum = Math.ceil(questionNum / questionsPerPage);
+        if (pageNum === currentPage) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    // Update submit modal statistics
+    function updateSubmitModalStats() {
+      const answeredCount = Object.values(userAnswers).filter(answer => answer.answer !== null && answer.answer !== '').length;
+      const markedCount = markedQuestions.size;
+      const unansweredCount = totalQuestions - answeredCount;
+      
+      document.getElementById('answeredCount').textContent = answeredCount;
+      document.getElementById('markedCount').textContent = markedCount;
+      document.getElementById('unansweredCount').textContent = unansweredCount;
+      document.getElementById('timeRemaining').textContent = document.getElementById('timer').textContent.replace('Time Remaining: ', '');
+    }
+
+    // Submit the test
+    async function submitTest() {
+      // Clear the timer
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      
+      try {
+        // Collect all answers from the form
+        collectAllAnswers();
+        
+        // Update test attempt in Firestore
+        const attemptRef = window.firebaseFunctions.doc(window.firebaseDb, "testAttempts", testAttemptId);
+        await window.firebaseFunctions.updateDoc(attemptRef, {
+          submittedAt: window.firebaseFunctions.serverTimestamp(),
+          answers: userAnswers,
+          status: 'submitted'
+        });
+        
+        // Also save to manual test submissions collection
+        await saveToManualSubmissions();
+        
+        console.log("Test submitted with answers:", userAnswers);
+        
+        // Redirect to tests page
+        alert('Test submitted successfully!');
+        window.location.href = 'student-tests.html';
+      } catch (error) {
+        console.error("Error submitting test:", error);
+        alert('Error submitting test. Please try again.');
+      }
+    }
+
+    // Save to manual test submissions collection
+    async function saveToManualSubmissions() {
+      try {
+        const submissionData = {
+          testId: currentTest.id,
+          testTitle: currentTest.title,
+          testSubject: currentTest.subject,
+          studentId: currentStudent.id,
+          studentName: `${currentStudent.firstName} ${currentStudent.lastName}`,
+          studentEmail: currentStudent.email,
+          submittedAt: window.firebaseFunctions.serverTimestamp(),
+          answers: userAnswers,
+          timeSpent: (currentTest.duration * 60) - timeRemaining, // Time spent in seconds
+          status: 'submitted',
+          markedQuestions: Array.from(markedQuestions)
+        };
+        
+        await window.firebaseFunctions.addDoc(
+          window.firebaseFunctions.collection(window.firebaseDb, "manual test submissions"),
+          submissionData
+        );
+        
+        console.log("Test submission saved to manual test submissions collection");
+      } catch (error) {
+        console.error("Error saving to manual test submissions:", error);
+        throw error;
+      }
+    }
+
+    // Collect all answers from the form
+    function collectAllAnswers() {
+      // For radio buttons (multiple choice)
+      const radioInputs = document.querySelectorAll('input[type="radio"]:checked');
+      radioInputs.forEach(input => {
+        const questionId = input.name.substring(1); // Remove 'q' from name
+        const questionIndex = parseInt(questionId) - 1;
+        userAnswers[questionIndex].answer = input.value;
+      });
+      
+      // For text inputs (short answer)
+      const textInputs = document.querySelectorAll('.short-answer-input');
+      textInputs.forEach(input => {
+        const questionId = input.name.substring(1); // Remove 'q' from name
+        const questionIndex = parseInt(questionId) - 1;
+        userAnswers[questionIndex].answer = input.value;
+      });
+      
+      // For textareas (long answer)
+      const textareas = document.querySelectorAll('.long-answer-textarea');
+      textareas.forEach(textarea => {
+        const questionId = textarea.name.substring(1); // Remove 'q' from name
+        const questionIndex = parseInt(questionId) - 1;
+        userAnswers[questionIndex].answer = textarea.value;
+      });
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Previous question button
+      document.getElementById('prev-btn').addEventListener('click', () => {
+        if (currentPage > 1) {
+          navigateToPage(currentPage - 1);
+        }
+      });
+      
+      // Next question button
+      document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          navigateToPage(currentPage + 1);
+        } else {
+          // Last page - show submit modal
+          document.getElementById('submitTestModal').classList.add('active');
+          updateSubmitModalStats();
+        }
+      });
+      
+      // Submit test button
+      document.getElementById('test-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('submitTestModal').classList.add('active');
+        updateSubmitModalStats();
+      });
+      
+      // Cancel submit button
+      document.getElementById('cancelSubmitBtn').addEventListener('click', () => {
+        document.getElementById('submitTestModal').classList.remove('active');
+      });
+      
+      // Confirm submit button
+      document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
+        submitTest();
+      });
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(e) {
+        const modal = document.getElementById('submitTestModal');
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+      
+      // Prevent accidental page refresh or navigation
+      window.addEventListener('beforeunload', (e) => {
+        if (timerInterval) {
+          e.preventDefault();
+          e.returnValue = 'Your test progress will be lost if you leave this page. Are you sure?';
+          return e.returnValue;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
